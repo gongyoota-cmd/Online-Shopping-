@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
-
+    
     <style>
         /* --- CSS VARIABLES (Theme Colors) --- */
         :root {
@@ -351,8 +351,8 @@
         <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
     </div>
     <div class="slider-container" id="partyProductsContainer"> 
+        <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
     </div>
-
 
     <div class="section-title">
         <span data-lang-key="shoes_title">Popular Shoes</span>
@@ -370,7 +370,7 @@
             <div class="p-price">60,000 Ks</div>
         </div>
         <div class="product-card">
-            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=300&q=80" class="p-img">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit:crop&w=300&q=80" class="p-img">
             <div class="p-name">Nike Sneakers White</div>
             <div class="p-price">85,000 Ks</div>
         </div>
@@ -421,38 +421,50 @@
     </footer>
 
     <script>
-        // *** Supabase Keys များ (ကိုကို့ Project မှ အစအဆုံး ထည့်သွင်းထားပါသည်) ***
-        const SUPABASE_URL = 'https://bklmuzzbkkhffdngeppt.supabase.co';
-        // Key ကို အစအဆုံး ထည့်သွင်းပြီးဖြစ်သည်။
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbG11enl...'; 
-        
+        /* --- SUPABASE INTEGRATION START --- */
+
+        // *** Supabase Keys များ (YOUR_FULL_SUPABASE_ANON_KEY_HERE ကို မဖြစ်မနေ ပြင်ပါ) ***
+        const SUPABASE_URL = 'https://bklmuzzbkkhffdngeppt.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'YOUR_FULL_SUPABASE_ANON_KEY_HERE'; // 🛑 ဒီနေရာမှာ ကိုကို့ရဲ့ Key အပြည့်အစုံကို ထည့်ရပါမယ်
+
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // *** Product များကို Database မှ ဆွဲထုတ်ပြသခြင်း Function ***
         async function fetchProducts() {
-            // products table မှ data အားလုံးကို fetch လုပ်ခြင်း။
+            const container = document.getElementById('partyProductsContainer');
+            
+            // Loading Message ကို ရှင်းပစ်ရန်
+            if (container) {
+                container.innerHTML = `<p style='text-align:center; padding: 20px; font-size:14px; color: var(--text-color);'>Loading products...</p>`;
+            }
+
+
             let { data: products, error } = await supabase
                 .from('products') 
-                .select('*');
+                .select('*')
+                .limit(4); // ၄ ခုသာ ပြသရန်
 
-            if (error) {
-                console.error("Error fetching products:", error);
-                document.getElementById('partyProductsContainer').innerHTML = 
-                    "<p style='text-align:center; padding: 20px; color: var(--text-color);'>Product များ မပေါ်ပါ။ Browser လုံခြုံရေးကြောင့် ဖြစ်နိုင်ပါသည်။</p>";
+            if (error || !products || products.length === 0) {
+                console.error("Error fetching products:", error || "No products found. Check RLS and Anon Key.");
+                if (container) {
+                    container.innerHTML = 
+                        "<p style='text-align:center; padding: 20px; font-size:14px; color: var(--text-color);'>Database connection error or no products found. Check RLS and Anon Key.</p>";
+                }
                 return;
             }
 
-            const container = document.getElementById('partyProductsContainer');
-            
             if (container) {
                 let htmlContent = '';
                 // Product တစ်ခုချင်းစီအတွက် HTML Card များ ဖန်တီးခြင်း
                 products.forEach(product => {
+                    // price ကို ဒေါ်လာ Format နှင့် ပြသခြင်း
+                    const formattedPrice = product.price ? `$${parseFloat(product.price).toFixed(2)}` : 'N/A';
+                    
                     htmlContent += `
                         <div class="product-card">
-                            <img src="${product.image_url}" class="p-img">
+                            <img src="${product.image_url}" class="p-img" alt="${product.name}">
                             <div class="p-name">${product.name}</div>
-                            <div class="p-price">$${parseFloat(product.price).toFixed(2)}</div>
+                            <div class="p-price">${formattedPrice}</div>
                         </div>
                     `;
                 });
@@ -460,11 +472,8 @@
             }
         }
         
-        // Website စဖွင့်တာနဲ့ products တွေကို ခေါ်ယူရန်
-        window.onload = function() {
-            fetchProducts(); 
-        }
-
+        // --- SUPABASE INTEGRATION END ---
+        
         /* --- ၁။ SOUND SYSTEM (တောက် အသံ) --- */
         function playClickSound() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -560,6 +569,18 @@
             const box = document.getElementById('chatBox');
             box.style.display = (box.style.display === "block") ? "none" : "block";
         }
+        function sendMessage() {
+            // Chat Send Logic...
+        }
+        function filterProducts() {
+            // Search Logic...
+        }
+
+        // Website စဖွင့်တာနဲ့ products တွေကို ခေါ်ယူရန်
+        window.onload = function() {
+            fetchProducts(); 
+        }
+
     </script>
 
 </body>
