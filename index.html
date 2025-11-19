@@ -35,394 +35,394 @@
             --input-bg: #333333;
         }
 
-        /* --- Global Styles --- */
+        /* Basic Settings */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
+            overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
-        
-        /* --- Header --- */
-        .header {
+
+        /* Header */
+        header {
             background-color: var(--header-bg);
             color: var(--header-text);
-            padding: 10px 15px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .logo {
-            font-size: 1.2em;
-            font-weight: bold;
-            text-decoration: none;
-            color: var(--header-text);
-        }
-        .header-icons a, .header-icons button {
-            color: var(--header-text);
-            margin-left: 15px;
-            font-size: 1.1em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
+            z-index: 100;
+            transition: background-color 0.3s;
         }
 
-        /* --- Menu Sidebar --- */
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 2000;
-            top: 0;
-            left: 0;
-            background-color: var(--menu-bg);
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 1.1em;
-            color: var(--text-color);
-            display: block;
-            transition: 0.3s;
+
+        .nav-icons i {
+            font-size: 20px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* Search Bar */
+        #searchContainer {
+            display: none;
+            background: var(--bg-color);
+            padding: 10px;
+            text-align: center;
             border-bottom: 1px solid var(--border-color);
         }
-        .sidebar a:hover {
-            background-color: var(--border-color);
-        }
-        .sidebar .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-            color: var(--text-color);
-            border-bottom: none;
-        }
-        .overlay {
-            position: fixed;
-            display: none;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1500;
-            cursor: pointer;
-        }
-        .overlay.active {
-            display: block;
-        }
-
-        /* --- Main Content --- */
-        .container {
-            padding: 0 15px;
-        }
-        
-        /* --- Banner --- */
-        .banner {
-            width: 100%;
-            height: 50vh; /* Adjust height for mobile view */
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* --- Section Titles --- */
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0 15px 0;
-        }
-        .section-title span {
-            font-size: 1.4em;
-            font-weight: bold;
-        }
-        .shop-link {
-            font-size: 0.9em;
-            text-decoration: none;
-            color: #007bff; /* Primary link color */
-            font-weight: bold;
-        }
-
-        /* --- Product Slider/Container --- */
-        .slider-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            padding-bottom: 15px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .slider-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* --- Product Card --- */
-        .product-card {
-            flex: 0 0 160px; /* Fixed width for card */
-            margin-right: 15px;
-            scroll-snap-align: start;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-            text-decoration: none;
-            color: var(--text-color);
-        }
-        .product-card:last-child {
-            margin-right: 0;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .product-image {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-        .product-info {
-            padding: 10px;
-        }
-        .product-name {
-            font-size: 0.9em;
-            font-weight: bold;
-            margin: 5px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        .product-price {
-            font-size: 0.9em;
-            color: #28a745; /* Price color */
-            font-weight: bold;
-        }
-
-        /* --- Footer --- */
-        .footer-main {
-            background-color: var(--footer-bg);
-            padding: 20px 15px;
-            margin-top: 30px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        .footer-main p {
-            font-size: 0.9em;
-            margin: 5px 0;
-        }
-        .footer-text a {
-            color: var(--text-color);
-            text-decoration: none;
-            margin-right: 10px;
-        }
-        .footer-copyright {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.8em;
-            color: var(--text-color);
-        }
-
-        /* --- Search & Chat Overlay --- */
-        #searchContainer, #chatBox {
-            position: fixed;
-            top: 60px;
-            right: 0;
+        #searchInput {
             width: 90%;
-            max-width: 350px;
-            background-color: var(--menu-bg);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            padding: 15px;
-            z-index: 1001;
-            display: none; /* Initially hidden */
-            border-radius: 8px;
-        }
-        .search-input, .chat-input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
+            padding: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--input-bg);
             color: var(--text-color);
             border-radius: 4px;
-        }
-        .chat-messages {
-            height: 200px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            padding: 5px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-        .chat-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .search-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
+            font-size: 16px;
         }
 
-        /* --- Media Queries (for larger screens) --- */
-        @media (min-width: 768px) {
-            .banner {
-                height: 70vh;
-            }
-            .container {
-                padding: 0 50px;
-            }
-            .slider-container {
-                /* Allow multiple rows for desktop */
-                flex-wrap: wrap; 
-                justify-content: flex-start;
-            }
-            .product-card {
-                flex: 0 0 200px; /* Slightly wider cards */
-                margin-right: 20px;
-                margin-bottom: 20px;
-            }
-            .product-card:nth-child(4n) {
-                margin-right: 0; /* No margin on the fourth card in a row */
-            }
+        /* Side Menu Structure */
+        .side-menu {
+            height: 100%;
+            width: 280px;
+            position: fixed;
+            z-index: 200;
+            top: 0;
+            left: -280px;
+            background-color: var(--menu-bg);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            transition: left 0.3s, background-color 0.3s;
+            display: flex;
+            flex-direction: column; 
         }
+        .side-menu.active { left: 0; }
+        
+        .menu-top { flex: 1; padding-top: 20px; } 
+        
+        .menu-bottom { 
+            padding: 20px; 
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        } 
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .menu-header {
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .menu-item:hover { opacity: 0.7; }
+        .menu-item.sale { color: #d32f2f; font-weight: bold; }
+
+        /* Settings Icons (Language & Theme) */
+        .setting-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            text-align: center;
+        }
+        .setting-label {
+            font-size: 10px;
+            display: block;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
+        .overlay.active { display: block; }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .hero-img { width: 100%; height: auto; display: block; }
+
+        /* Slider Section */
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0 15px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .shop-link {
+            font-size: 12px;
+            font-weight: normal;
+            border: 1px solid var(--text-color);
+            padding: 5px 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            text-transform: uppercase;
+        }
+
+        .slider-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .slider-container::-webkit-scrollbar { display: none; }
+
+        .product-card {
+            flex: 0 0 160px;
+            scroll-snap-align: start;
+            text-align: left;
+            background-color: var(--card-bg);
+            border-radius: 4px;
+            padding-bottom: 10px;
+            text-decoration: none; /* Make links look like cards */
+            color: var(--text-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .p-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 4px 4px 0 0;
+        }
+        .p-name {
+            font-size: 13px;
+            margin: 10px 10px 0 10px;
+            color: var(--text-color);
+            height: 36px;
+            overflow: hidden;
+        }
+        .p-price { 
+            font-weight: bold; 
+            margin: 5px 10px 0 10px; 
+            font-size: 14px; 
+            color: #28a745; /* Green color for price */
+        }
+
+        /* Footer (White Background) */
+        .main-footer {
+            background-color: var(--footer-bg);
+            color: var(--text-color);
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+        .footer-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        .footer-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        .footer-text a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        .copyright {
+            margin-top: 30px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Chat Box */
+        .chat-box {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .chat-header { background: var(--header-bg); color: var(--header-text); padding: 10px; display: flex; justify-content: space-between;}
+        .chat-body { height: 200px; padding: 10px; overflow-y: auto; background: var(--bg-color); }
+        .chat-input-area { display: flex; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 10px; border: none; background: var(--input-bg); color: var(--text-color); outline: none; }
+        .send-btn { padding: 0 15px; background: var(--header-bg); color: var(--header-text); border: none; }
+
     </style>
 </head>
-<body id="body">
+<body>
 
-    <header class="header">
-        <button onclick="toggleMenu()" style="color:var(--header-text); font-size:1.4em; background:none; border:none; cursor:pointer;">
-            <i class="fas fa-bars"></i>
-        </button>
-        <a href="#" class="logo">K ONLINE SHOPPING</a>
-        <div class="header-icons">
-            <button onclick="toggleSearch()" id="searchIcon"><i class="fas fa-search"></i></button>
-            <button onclick="toggleChat()" id="chatIcon"><i class="fas fa-comment"></i></button>
-            <a href="#"><i class="fas fa-shopping-bag"></i></a>
+    <div class="overlay" onclick="closeAll()"></div>
+
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo">K Online Shopping</div>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <i class="fas fa-headset" onclick="toggleChat()"></i> 
+            <i class="fas fa-shopping-bag"></i>
         </div>
     </header>
 
-    <div id="sideMenu" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeAll()">&times;</a>
-        <a href="#" data-lang-key="home">Home</a>
-        <a href="#" data-lang-key="new_arrivals">New Arrivals</a>
-        <a href="#" data-lang-key="shoes">Shoes</a>
-        <a href="#" data-lang-key="bags">Bags</a>
-        <a href="#" data-lang-key="contact_us">Contact Us</a>
-        <button onclick="toggleDarkMode()" style="display:flex; justify-content:space-between; width:100%; background:none; border:none; color:var(--text-color); padding: 10px 15px; cursor:pointer;">
-            <span data-lang-key="dark_mode">Dark Mode</span>
-            <span id="themeToggleText">LIGHT</span> 
-            <i id="themeToggleIcon" class="fas fa-sun"></i>
-        </button>
-    </div>
-    <div class="overlay" onclick="closeAll()"></div>
-
     <div id="searchContainer">
-        <input type="text" class="search-input" placeholder="Search products..." id="searchInput">
-        <button onclick="filterProducts()" class="search-button">Search</button>
+        <input type="text" id="searchInput" data-lang-placeholder="search_ph" placeholder="Search products..." onkeyup="filterProducts()">
     </div>
 
-    <div id="chatBox">
-        <div class="chat-messages" id="chatMessages">
-            <p>Welcome to K Online Shopping chat!</p>
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-top">
+            <div class="close-btn" onclick="toggleMenu()">&times;</div>
+            <div class="menu-header" data-lang-key="women">WOMEN</div>
+            <a href="index.html" class="menu-item"><span data-lang-key="home">HOME</span></a>
+            <a href="sale.html" class="menu-item sale"><span data-lang-key="sale">SALE</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="new-in.html" class="menu-item"><span data-lang-key="new_in">NEW IN</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="clothing.html" class="menu-item"><span data-lang-key="clothing">CLOTHING</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="shoes.html" class="menu-item"><span data-lang-key="shoes">SHOES</span> <i class="fas fa-chevron-right"></i></a>
+            <a href="accessories.html" class="menu-item"><span data-lang-key="accessories">ACCESSORIES</span> <i class="fas fa-chevron-right"></i></a>
         </div>
-        <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput">
-        <button onclick="sendMessage()" class="chat-button">Send</button>
+
+        <div class="menu-bottom">
+            <div class="setting-icon" onclick="toggleLanguage()">
+                <i class="fas fa-globe"></i>
+                <span class="setting-label" id="langLabel">EN</span>
+            </div>
+            <div class="setting-icon" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span class="setting-label" id="themeLabel">DARK</span>
+            </div>
+        </div>
     </div>
 
-    <main class="container">
-        <section class="banner">
-            <img src="https://images.unsplash.com/photo-1627941558963-7928d3886f77?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Model in a blue dress by the sea">
-        </section>
-
-        <section>
-            <div class="section-title">
-                <span data-lang-key="party_title">The Party Preview</span>
-                <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
-            </div>
-            <div class="slider-container" id="partyProductsContainer">
-                <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-title">
-                <span data-lang-key="shoes_title">Popular Shoes</span>
-                <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
-            </div>
-            <div class="slider-container" id="shoesProductsContainer">
-                <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-title">
-                <span data-lang-key="bags_title">New Bag Designs</span>
-                <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
-            </div>
-            <div class="slider-container" id="bagsProductsContainer">
-                <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="footer-main">
-        <div class="footer-text">
-            <p data-lang-key="contact_us">Contact Us</p>
-            <p data-lang-key="about_us">About Us</p>
-            <p data-lang-key="login_register"><a href="#">Login</a> / <a href="#">Register</a></p>
-            <p data-lang-key="orders">Track Orders</p>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span data-lang-key="cust_service">Customer Service</span>
+            <i class="fas fa-times" style="cursor:pointer" onclick="toggleChat()"></i>
         </div>
-        <div class="footer-copyright">
-            <span data-lang-key="copyright">Copyright © K Online Shopping 2025</span>
+        <div class="chat-body" id="chatBody">
+            <div class="message" style="background:#eee; padding:8px; border-radius:5px; font-size:14px; color:#333;" data-lang-key="welcome_msg">မင်္ဂလာပါ... K Online Shopping မှ ကြိုဆိုပါတယ်။</div>
         </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="...">
+            <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="hero-section">
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=600&q=80" class="hero-img" alt="Hero Banner">
+    </div>
+
+    <div class="section-title">
+        <span data-lang-key="party_title">The Party Preview</span>
+        <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
+    </div>
+    <div class="slider-container" id="partyProductsContainer"> 
+        <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
+    </div>
+
+    <div class="section-title">
+        <span data-lang-key="shoes_title">Popular Shoes</span>
+        <a href="shoes.html" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
+    </div>
+    <div class="slider-container" id="shoesProductsContainer">
+        <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
+    </div>
+
+    <div class="section-title">
+        <span data-lang-key="bags_title">New Bag Designs</span>
+        <a href="#" class="shop-link" data-lang-key="shop_now">SHOP NOW</a>
+    </div>
+    <div class="slider-container" id="bagsProductsContainer">
+        <p style="text-align:center; padding: 20px; font-size:14px; color: var(--text-color);">Loading products...</p>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-title" data-lang-key="contact_us">ဆက်သွယ်ရန်</div>
+        <p class="footer-text">
+            K Online Shopping<br>
+            Yangon, Myanmar<br>
+            09752965423<br>
+            customercare@konline.shopping
+        </p>
+        <div class="footer-title" style="margin-top:30px;" data-lang-key="about_us">လူကြီးမင်း၏အကောင့်</div>
+        <p class="footer-text">
+            <a href="#"><span data-lang-key="login">အကောင့်သို့ဝင်မည်</span></a><br>
+            <span data-lang-key="orders">မှာယူထားသည့်ပစ္စည်းစာရင်း</span><br>
+            <span data-lang-key="track">ပစ္စည်းရောက်ရှိမှုအခြေအနေ</span>
+        </p>
+        <div class="copyright">@ K Online Shopping 2025</div>
     </footer>
 
     <script>
-        // *** Supabase Keys များ (YOUR_FULL_SUPABASE_ANON_KEY_HERE ကို မဖြစ်မနေ ပြင်ပါ) ***
+        /* --- SUPABASE INTEGRATION START --- */
+
+        // *** Supabase Keys များ (YOUR_FULL_SUPABASE_ANON_KEY_HERE ကို ကိုကို့ Key နဲ့ အစားထိုးပါ) ***
         const SUPABASE_URL = 'https://bklmuzzbkkhffdngeppt.supabase.co'; 
         const SUPABASE_ANON_KEY = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbG11emJra2JoZnRtZHhxb3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyOTk1OTAsImV4cCI6MjA3ODg3NTU5MH0.jD7fg_XYSlXPYs1EWIku22DwjjuGVE5WmN8NHx0jvfM'; // 🛑 Key အစစ်အမှန်ကို ထည့်သွင်းထားပါတယ်
 
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // *** Product များကို Database မှ ဆွဲထုတ်ပြသခြင်း Function ***
+        // Function ကို ID, limit, offset တို့ဖြင့် ပြင်ဆင်လိုက်ပါ
         async function fetchProducts(containerId, limitCount, offsetCount) {
-            const container = document.getElementById(containerId); // Container ID မှန်အောင် ပြင်ဆင်ပြီး
+            const container = document.getElementById(containerId); 
+            
+            // Loading Message ကို ပြသရန်
+            if (container) {
+                container.innerHTML = `<p style='text-align:center; padding: 20px; font-size:14px; color: var(--text-color);'>Loading products...</p>`;
+            }
 
-            // 1. Database မှ Product များ ဆွဲထုတ်ခြင်း
+            // Database မှ Product များ ဆွဲထုတ်ခြင်း (Limit/Offset ခွဲထုတ်)
             let { data: products, error } = await supabase
-                .from('products') // ✅ Table Name မှန်အောင် ပြင်ဆင်ပြီး
+                .from('products') 
                 .select('*')
-                .limit(limitCount)
+                .limit(limitCount) 
                 .range(offsetCount, offsetCount + limitCount - 1); 
 
             if (error || !products || products.length === 0) {
@@ -434,34 +434,94 @@
                 return;
             }
 
-            // 2. Product များကို HTML Card အဖြစ် ဖန်တီးခြင်း
-            let htmlContent = '';
-            products.forEach(product => {
-                const formattedPrice = product.price.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                htmlContent += `
-                    <a href="#" class="product-card">
-                        <img src="${product.image_url}" alt="${product.name}" class="product-image">
-                        <div class="product-info">
-                            <p class="product-name">${product.name}</p>
-                            <p class="product-price">${formattedPrice} Ks</p>
-                        </div>
-                    </a>
-                `;
-            });
-
-            // 3. Container ထဲသို့ ထည့်သွင်းခြင်း
             if (container) {
-                container.innerHTML = htmlContent;
+                let htmlContent = '';
+                // Product တစ်ခုချင်းစီအတွက် HTML Card များ ဖန်တီးခြင်း
+                products.forEach(product => {
+                    // price ကို မြန်မာငွေ Format နှင့် ပြသခြင်း
+                    const formattedPrice = product.price ? parseFloat(product.price).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : 'N/A';
+                    
+                    htmlContent += `
+                        <a href="#" class="product-card">
+                            <img src="${product.image_url}" class="p-img" alt="${product.name}">
+                            <div class="p-name">${product.name}</div>
+                            <div class="p-price">${formattedPrice} Ks</div>
+                        </a>
+                    `;
+                });
+                container.innerHTML = htmlContent; 
             }
         }
         
-        /* --- Theme Toggle --- */
-        function toggleDarkMode() {
-            const body = document.getElementById('body');
-            const icon = document.getElementById('themeToggleIcon');
-            const label = document.getElementById('themeToggleText');
-            const isDark = body.classList.toggle('dark-mode');
+        // --- SUPABASE INTEGRATION END ---
+        
+        /* --- ၁။ SOUND SYSTEM (တောက် အသံ) --- */
+        function playClickSound() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.05);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+        }
+        document.addEventListener('click', () => playClickSound());
 
+        /* --- ၂။ LANGUAGE SYSTEM (ဘာသာစကားပြောင်း) --- */
+        let currentLang = 'en';
+        const translations = {
+            en: {
+                women: "WOMEN", home: "HOME", sale: "SALE", new_in: "NEW IN",
+                clothing: "CLOTHING", shoes: "SHOES", accessories: "ACCESSORIES",
+                cust_service: "Customer Service", welcome_msg: "Hello! Welcome to K Online Shopping.",
+                party_title: "The Party Preview", shoes_title: "Popular Shoes", bags_title: "New Bag Designs",
+                shop_now: "SHOP NOW", contact_us: "CONTACT US", about_us: "MY ACCOUNT",
+                login: "Log In", orders: "My Orders", track: "Track Order",
+                search_ph: "Search products..."
+            },
+            my: {
+                women: "အမျိုးသမီး", home: "ပင်မစာမျက်နှာ", sale: "လျှော့ဈေး", new_in: "ပစ္စည်းအသစ်များ",
+                clothing: "အဝတ်အထည်", shoes: "ဖိနပ်များ", accessories: "အသုံးအဆောင်များ",
+                cust_service: "သုံးစွဲသူ ဝန်ဆောင်မှု", welcome_msg: "မင်္ဂလာပါ... K Online Shopping မှ ကြိုဆိုပါတယ်။",
+                party_title: "ပါတီအကြိုသုံးသပ်ချက်", shoes_title: "လူကြိုက်များသော ဖိနပ်များ", bags_title: "အိတ်ဒီဇိုင်းသစ်များ",
+                shop_now: "ယခုဝယ်မည်", contact_us: "ဆက်သွယ်ရန်", about_us: "လူကြီးမင်း၏အကောင့်",
+                login: "အကောင့်သို့ဝင်မည်", orders: "မှာယူထားသည့်ပစ္စည်းစာရင်း", track: "ပစ္စည်းရောက်ရှိမှုအခြေအနေ",
+                search_ph: "ပစ္စည်းရှာရန်..."
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'my' : 'en';
+            document.getElementById('langLabel').innerText = currentLang.toUpperCase();
+            
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if(translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-lang-placeholder');
+                if(translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
+        }
+
+        /* --- ၃။ DARK MODE SYSTEM (အလင်း/အမှောင်) --- */
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            
             if (isDark) {
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
@@ -499,14 +559,14 @@
 
         // Website စဖွင့်တာနဲ့ products တွေကို ခေါ်ယူရန်
         window.onload = function() {
-            // 1. The Party Preview (ပထမဆုံး ၃ ခု)
+            // 1. The Party Preview (ပထမဆုံး ၃ ခု၊ စရံနံပါတ် 0 ကနေ စဆွဲ)
             fetchProducts('partyProductsContainer', 3, 0); 
             
-            // 2. Popular Shoes (နောက်ထပ် ၃ ခု)
-            fetchProducts('shoesProductsContainer', 3, 3); // Database မှာ ၄ ခုမြောက်ကနေ စဆွဲ
+            // 2. Popular Shoes (နောက်ထပ် ၃ ခု၊ စရံနံပါတ် 3 ကနေ စဆွဲ)
+            fetchProducts('shoesProductsContainer', 3, 3); 
             
-            // 3. New Bag Designs (နောက်ထပ် ၃ ခု)
-            fetchProducts('bagsProductsContainer', 3, 6); // Database မှာ ၇ ခုမြောက်ကနေ စဆွဲ
+            // 3. New Bag Designs (နောက်ထပ် ၃ ခု၊ စရံနံပါတ် 6 ကနေ စဆွဲ)
+            fetchProducts('bagsProductsContainer', 3, 6); 
         }
 
     </script>
