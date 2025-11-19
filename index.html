@@ -49,9 +49,12 @@
     </footer>
 
     <script>
-        // URL နှင့် KEY (ကိုကို့ အကောင့်အသစ်)
-        const SUPABASE_URL = 'https://bklmuzbkkbhftmdxqopt.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbG11emJra2JoZnRtZHhxb3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyOTk1OTAsImV4cCI6MjA3ODg3NTU5MH0.jD7fg_XYSlXPYs1EWIku22DwjjuGVE5WmN8NHx0jvfM'; 
+        // ***********************************************************
+        //  NEW PROJECT CREDENTIALS (hfsv...)
+        // ***********************************************************
+        
+        const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -63,30 +66,22 @@
                 .from('products')
                 .select('*');
 
-            // ************************************************
-            // ERROR ရှာဖွေခြင်း (ဒီနေရာ ပြင်ထားပါတယ်)
-            // ************************************************
             if (error) {
-                console.error("Supabase Error:", error);
-                // Error အကြောင်းအရင်းကို Website ပေါ်မှာ တိုက်ရိုက်ပြမည်
-                container.innerHTML = `<div style="padding:20px; color:red;">
-                    <strong>Error ဖြစ်နေပါတယ်:</strong><br>
-                    ${error.message}<br><br>
-                    <small>Code: ${error.code}</small>
-                </div>`;
+                console.error("Database Error:", error);
+                // အကယ်၍ Table မရှိသေးရင် 404 Error ပြပါလိမ့်မယ်
+                container.innerHTML = `<p style="padding:20px; color:red;">Error: ${error.message} (Check if 'products' table exists)</p>`;
                 return;
             }
 
             if (!products || products.length === 0) {
-                container.innerHTML = `<p style="padding:20px;">Database ချိတ်မိပါသည်၊ သို့သော် ပစ္စည်းမရှိပါ။ (Table ထဲတွင် Data ရှိမရှိ စစ်ပါ)</p>`;
+                container.innerHTML = `<p style="padding:20px;">No products found. (Add data in Supabase)</p>`;
                 return;
             }
 
             let html = '';
             products.forEach(p => {
                 const price = p.price ? Number(p.price).toLocaleString() : '0';
-                // image_url မရှိရင် မပြဘဲထားမယ်
-                const img = p.image_url ? p.image_url : 'https://via.placeholder.com/160?text=No+Image';
+                const img = p.image_url ? p.image_url : 'https://via.placeholder.com/160';
                 
                 html += `
                     <a href="#" class="product-card">
