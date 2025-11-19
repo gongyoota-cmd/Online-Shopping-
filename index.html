@@ -14,7 +14,7 @@
             --header-bg: #2d2d2d; --header-text: #ffffff;
             --card-bg: #ffffff; --accent-color: #d32f2f;
         }
-        /* Dark Mode Variables */
+        /* Dark Mode */
         body.dark-mode {
             --bg-color: #121212; --text-color: #e0e0e0;
             --header-bg: #000000; --header-text: #ffffff;
@@ -28,27 +28,44 @@
         .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; position: relative; }
         .user-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: none; border: 1px solid white; }
 
-        /* SEARCH */
-        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
-        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
-
-        /* MENU */
+        /* MENU & OVERLAY */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; }
         .overlay.active { display: block; }
         .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: var(--card-bg); transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
         .side-menu.active { left: 0; }
-        
         .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: var(--card-bg); color: #777; }
         .tab.active { border-bottom: 3px solid #2d2d2d; color: var(--text-color); background: var(--bg-color); }
-        
         .menu-content { flex: 1; overflow-y: auto; }
         .menu-section { display: none; }
         .menu-section.active { display: block; }
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
-        /* PRODUCTS */
+        /* --- NEW: AUTO SLIDER (LOGO/BANNER) --- */
+        .slider-frame {
+            width: 100%; overflow: hidden; margin-bottom: 20px; position: relative;
+            height: 180px; /* Adjust height here */
+        }
+        .slide-images {
+            display: flex; width: 300%; /* 3 images = 300% */
+            animation: slideAnimation 12s infinite ease-in-out;
+        }
+        .img-container { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #ddd; overflow: hidden;}
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* SLIDER ANIMATION KEYFRAMES */
+        @keyframes slideAnimation {
+            0% { margin-left: 0; }
+            30% { margin-left: 0; }
+            35% { margin-left: -100%; }
+            65% { margin-left: -100%; }
+            70% { margin-left: -200%; }
+            95% { margin-left: -200%; }
+            100% { margin-left: 0; }
+        }
+
+        /* PRODUCTS AREA */
         .main-content { padding: 15px; padding-bottom: 80px; }
         .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
@@ -57,23 +74,11 @@
         .p-info { padding: 10px; padding-bottom: 50px; }
         .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
         .p-price { font-weight: bold; font-size: 14px; color: var(--text-color); }
-
-        /* ADD TO CART BUTTON */
         .cart-btn { position: absolute; bottom: 10px; right: 10px; background: #2d2d2d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
-        
-        /* SUPPORT CHAT BUTTON (FIXED BOTTOM RIGHT) */
-        .support-btn {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #007bff; color: white; width: 50px; height: 50px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .chat-box {
-            display: none; position: fixed; bottom: 80px; right: 20px;
-            width: 300px; height: 400px; background: var(--card-bg);
-            border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd;
-        }
+
+        /* SUPPORT CHAT */
+        .support-btn { position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .chat-box { display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
         .chat-header { background: #007bff; color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
         .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
         .chat-input-area { display: flex; border-top: 1px solid #ddd; }
@@ -85,12 +90,20 @@
         .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
         .close-modal { float: right; font-size: 24px; cursor: pointer; }
         
+        /* Payment Styles (RESTORED) */
+        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; }
+        .pay-icon { width: 40px; height: 40px; border-radius: 5px; margin-right: 10px; object-fit: contain; background: white; border: 1px solid #eee;}
+
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
         .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
         .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         
-        /* SETTINGS ITEM */
+        /* Search */
+        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
+        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+
+        /* Settings */
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -98,7 +111,7 @@
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #2196F3; }
         input:checked + .slider:before { transform: translateX(20px); }
-
+        
         .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -132,18 +145,30 @@
         <div style="font-weight:bold;">K Online Shopping</div>
         <div class="nav-icons">
             <i class="fas fa-search" onclick="toggleSearch()"></i>
-            
-            <i class="fas fa-user" onclick="checkAuth()">
-                <span class="user-dot" id="userDot"></span>
-            </i>
-            
+            <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
             <i class="fas fa-cog" onclick="openSettings()"></i>
         </div>
     </header>
     <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
 
     <div class="main-content">
-        <div class="section-title" id="pageTitle">The Party Preview</div>
+        
+        <div class="slider-frame">
+            <div class="slide-images">
+                <div class="img-container">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600" alt="Banner 1">
+                </div>
+                <div class="img-container">
+                    <img src="https://images.unsplash.com/photo-1445205170230-05328324f30f?w=600" alt="Banner 2">
+                </div>
+                <div class="img-container">
+                    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600" alt="Banner 3">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title" id="pageTitle">All Products</div>
+        <div id="loading" style="text-align:center; padding:20px; display:none;">Loading...</div>
         <div class="product-grid" id="productsContainer"></div>
     </div>
 
@@ -166,17 +191,12 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
             <h3>Settings</h3>
-            
             <div class="setting-row">
-                <span>Dark Mode (အမှောင်)</span>
-                <label class="switch">
-                    <input type="checkbox" onchange="toggleTheme(this)">
-                    <span class="slider"></span>
-                </label>
+                <span>Dark Mode</span>
+                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)"><span class="slider"></span></label>
             </div>
-
             <div class="setting-row">
-                <span>Language (ဘာသာစကား)</span>
+                <span>Language</span>
                 <button class="order-btn" style="width:auto; padding:5px 15px; margin:0;" onclick="toggleLanguage()" id="langBtn">EN</button>
             </div>
         </div>
@@ -221,6 +241,16 @@
                 <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
                 <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:#d32f2f;"></div></div>
             </div>
+            
+            <div class="pay-row">
+                <img src="https://cdn-icons-png.flaticon.com/512/8377/8377258.png" class="pay-icon"> 
+                <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div>
+            </div>
+            <div class="pay-row">
+                <img src="https://cdn-icons-png.flaticon.com/512/3037/3037136.png" class="pay-icon"> 
+                <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div>
+            </div>
+
             <div class="input-group"><label>Slip (Photo)</label><input type="file" id="slipInput"></div>
             <button class="order-btn" id="sendBtn" onclick="sendOrder()">Admin ထံသို့ ပို့မည်</button>
         </div>
@@ -246,8 +276,7 @@
         let currentProducts = [];
         let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
 
-        // *** SAMPLE DATA (To make it look good immediately) ***
-        // These will show if DB is empty or loading
+        // SAMPLE DATA (10 Items Per Category)
         const sampleData = {
             clothing: [
                 {name: "Summer Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500"},
@@ -288,7 +317,7 @@
         };
 
         window.onload = function() {
-            loadProducts('all', 'The Party Preview');
+            loadProducts('all', 'All Products');
             updateUserUI();
         }
 
@@ -297,29 +326,16 @@
             else document.getElementById('userDot').style.display = 'none';
         }
 
-        // --- SETTINGS & THEME ---
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-        
-        function toggleTheme(checkbox) {
-            if(checkbox.checked) document.body.classList.add('dark-mode');
-            else document.body.classList.remove('dark-mode');
-        }
-        
+        function toggleTheme(cb) { document.body.classList.toggle('dark-mode', cb.checked); }
         let currentLang = 'en';
         function toggleLanguage() {
             currentLang = (currentLang === 'en') ? 'my' : 'en';
             document.getElementById('langBtn').innerText = (currentLang === 'en') ? 'EN' : 'MY';
-            
-            // Simple Text Replacement (Example)
-            if(currentLang === 'my') {
-                document.querySelector('[data-t="shop_cat"]').innerText = "ပစ္စည်းအမျိုးအစားများ";
-            } else {
-                document.querySelector('[data-t="shop_cat"]').innerText = "SHOP BY CATEGORY";
-            }
-            alert("Language changed to " + (currentLang==='en'?'English':'Myanmar'));
+            if(currentLang === 'my') document.querySelector('[data-t="shop_cat"]').innerText = "ပစ္စည်းအမျိုးအစားများ";
+            else document.querySelector('[data-t="shop_cat"]').innerText = "SHOP BY CATEGORY";
         }
 
-        // --- CHAT ---
         function toggleChat() {
             const box = document.getElementById('chatBox');
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
@@ -333,8 +349,6 @@
                 div.innerText = input.value;
                 body.appendChild(div);
                 input.value = '';
-                
-                // Auto Reply Simulation
                 setTimeout(() => {
                     const reply = document.createElement('div');
                     reply.style.cssText = "background:#eee; color:#333; padding:8px; border-radius:5px; margin-bottom:5px; display:table;";
@@ -345,11 +359,7 @@
             }
         }
 
-        // --- AUTH & HISTORY ---
-        function checkAuth() {
-            if(currentUser) openHistory();
-            else document.getElementById('authModal').style.display = 'flex';
-        }
+        function checkAuth() { if(currentUser) openHistory(); else document.getElementById('authModal').style.display = 'flex'; }
         function showAuthForm(type) {
             if(type === 'login') {
                 document.getElementById('loginForm').style.display='block';
@@ -394,25 +404,21 @@
             con.innerHTML = html;
         }
 
-        // --- PRODUCTS ---
         async function loadProducts(cat, title) {
             document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
             
-            // TRY FETCHING FROM DB
             let q = supabase.from('products').select('*');
             if(cat!=='all' && cat!=='men_all') q = q.eq('category', cat);
             let { data } = await q;
 
-            // FALLBACK TO SAMPLE DATA IF DB EMPTY
             if (!data || data.length === 0) {
                 console.log("Using Sample Data");
                 if(cat === 'all') data = [...sampleData.clothing, ...sampleData.shoes, ...sampleData.bag];
                 else if(sampleData[cat]) data = sampleData[cat];
-                else data = sampleData.clothing; // default
+                else data = sampleData.clothing;
             }
-
             currentProducts = data || [];
             renderProducts(currentProducts, title);
         }
@@ -433,7 +439,6 @@
             });
         }
 
-        // --- CART & ORDER ---
         function buyItem(idx) {
             if(!currentUser) { checkAuth(); return; }
             const p = currentProducts[idx];
@@ -447,34 +452,28 @@
             const btn = document.getElementById('sendBtn');
             const file = document.getElementById('slipInput').files[0];
             btn.innerText="Sending..."; btn.disabled=true;
-            
             const pName = document.getElementById('modal-name').innerText;
             const pPrice = document.getElementById('modal-price').innerText;
-
             await supabase.from('orders').insert([{
                 customer_name: currentUser.name, customer_phone: currentUser.phone,
                 item_name: pName, price: pPrice, status: 'pending'
             }]);
-
             const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${currentUser.phone}\n👗 ${pName}\n💰 ${pPrice}`;
             const fd = new FormData();
             fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
             if(file) fd.append("photo", file); else fd.append("text", caption);
-            
             const endpoint = file ? 'sendPhoto' : 'sendMessage';
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`, {method:'POST', body:fd});
-            
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
             btn.innerText="Admin ထံသို့ ပို့မည်"; btn.disabled=false;
         }
 
-        // UI Helpers
         function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
         function toggleSearch() { const b=document.getElementById('searchBox'); b.style.display=b.style.display==='block'?'none':'block'; }
         function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function searchProducts() { /* ... existing logic ... */ }
-        function switchTab(t) { /* ... existing logic ... */ }
+        function switchTab(t) { /* ... */ }
+        function searchProducts() { /* ... */ }
     </script>
 </body>
 </html>
