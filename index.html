@@ -9,153 +9,98 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <style>
-        :root {
-            --bg-color: #f9f9f9; --text-color: #333;
-            --header-bg: #2d2d2d; --header-text: #ffffff;
-            --card-bg: #ffffff; --accent-color: #d32f2f;
-        }
+        :root { --bg-color: #f9f9f9; --text-color: #333; --header-bg: #2d2d2d; --header-text: #ffffff; }
         body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); }
         
         /* HEADER */
-        header { background: var(--header-bg); color: var(--header-text); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header { background: var(--header-bg); color: var(--header-text); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; }
 
-        /* SEARCH BOX */
-        #searchBox {
-            display: none; background: white; padding: 10px; border-bottom: 1px solid #ddd;
-            position: sticky; top: 60px; z-index: 99;
-        }
-        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        /* SEARCH */
+        #searchBox { display: none; background: white; padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
+        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
 
-        /* MENU (Footer Moved Here) */
+        /* MENU */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; }
         .overlay.active { display: block; }
-        
-        .side-menu { height: 100%; width: 300px; position: fixed; top: 0; left: -300px; background: white; transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
+        .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: white; transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
         .side-menu.active { left: 0; }
-
-        .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+        
+        .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: #fff; color: #777; }
         .tab.active { border-bottom: 3px solid #2d2d2d; color: #2d2d2d; background: #f4f4f4; }
         
-        .menu-content { flex: 1; overflow-y: auto; } /* Scrollable Area */
+        .menu-content { flex: 1; overflow-y: auto; }
         .menu-section { display: none; }
         .menu-section.active { display: block; }
-
-        .menu-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer;
-            font-weight: 500; color: #333;
-        }
-        .menu-item img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
-
-        /* MENU FOOTER (NEW LOCATION) */
-        .menu-footer {
-            padding: 20px; text-align: center; background: #f4f4f4; border-top: 1px solid #ddd; font-size: 12px; color: #666; flex-shrink: 0;
-        }
+        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         
-        /* PRODUCTS GRID */
+        /* MENU FOOTER */
+        .menu-footer { padding: 20px; text-align: center; background: #f4f4f4; font-size: 12px; color: #666; border-top: 1px solid #ddd; }
+
+        /* PRODUCTS */
         .main-content { padding: 15px; padding-bottom: 80px; }
         .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
-        
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-
-        .product-card { 
-            background: white; border-radius: 8px; overflow: hidden; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; 
-            display: flex; flex-direction: column;
-        }
+        .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
         .p-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        .p-info { padding: 10px; padding-bottom: 50px; /* Space for cart button */ }
+        .p-info { padding: 10px; padding-bottom: 50px; }
         .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
         .p-price { font-weight: bold; font-size: 14px; color: #333; }
-        
-        /* CART ICON (FIXED & CLICKABLE) */
+
+        /* CART BUTTON (FIXED) */
         .cart-btn {
             position: absolute; bottom: 10px; right: 10px;
-            background: var(--header-bg); color: white;
+            background: #2d2d2d; color: white;
             width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 50; /* High Z-Index */
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
-        .cart-btn:active { transform: scale(0.9); }
+        .cart-btn:active { transform: scale(0.9); background: #000; }
 
-        /* CHECKOUT POPUP */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 400px; border-radius: 10px; padding: 20px;
-            max-height: 90vh; overflow-y: auto; position: relative;
-        }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; }
-        
-        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 5px; }
-        .pay-icon { width: 40px; height: 40px; border-radius: 5px; margin-right: 10px; object-fit: contain; background: white; border: 1px solid #eee;}
+        /* POPUP */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .close-modal { float: right; font-size: 24px; cursor: pointer; }
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; margin-bottom: 5px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        
-        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;}
+        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        .pay-row { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .pay-icon { width: 30px; height: 30px; margin-right: 10px; }
     </style>
 </head>
 <body>
 
     <div class="overlay" onclick="toggleMenu()"></div>
-
+    
     <div class="side-menu" id="sideMenu">
         <div class="menu-tabs">
             <div class="tab active" onclick="switchTab('women')">WOMEN</div>
             <div class="tab" onclick="switchTab('men')">MEN</div>
         </div>
-
         <div class="menu-content">
             <div id="women-menu" class="menu-section active">
-                <div style="padding:15px; background:#f4f4f4; font-weight:bold;">SHOP BY CATEGORY</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products')">
-                    <span>All Products</span> <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing')">
-                    <div style="display:flex; align-items:center;"><img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=50"> Clothing</div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes')">
-                    <div style="display:flex; align-items:center;"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=50"> Shoes</div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags & Accessories')">
-                    <div style="display:flex; align-items:center;"><img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=50"> Bags</div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
+                <div style="padding:15px; background:#eee; font-weight:bold;">SHOP BY CATEGORY</div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products')">All Products <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing')">Clothing <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes')">Shoes <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags')">Bags <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
-                <div style="padding:15px; background:#f4f4f4; font-weight:bold;">SHOP FOR MEN</div>
-                <div class="menu-item" onclick="loadProducts('men_clothing', 'Men Clothing')">
-                    <span>Clothing</span> <i class="fas fa-chevron-right"></i>
-                </div>
+                <div style="padding:15px; background:#eee; font-weight:bold;">SHOP FOR MEN</div>
+                <div class="menu-item" onclick="loadProducts('men_clothing', 'Men Clothing')">Clothing <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
-
-        <div class="menu-footer">
-            Yangon, Myanmar<br>09752965423<br>
-            @ K Online Shopping 2025
-        </div>
+        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ K Online Shopping 2025</div>
     </div>
 
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 18px;">K Online Shopping</div>
-        <div class="nav-icons">
-            <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <i class="fas fa-shopping-bag"></i>
-        </div>
+        <div style="font-weight:bold;">K Online Shopping</div>
+        <div><i class="fas fa-search" onclick="toggleSearch()"></i> <i class="fas fa-shopping-bag" style="margin-left:15px;"></i></div>
     </header>
-
-    <div id="searchBox">
-        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
-    </div>
+    <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
 
     <div class="main-content">
         <div class="section-title" id="pageTitle">The Party Preview</div>
@@ -165,203 +110,153 @@
 
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
-            <div class="close-modal" onclick="closeModal()">×</div>
-            <h3 style="margin-top:0;">Order Form</h3>
-            
-            <div style="display:flex; gap:10px; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3>Order Form</h3>
+            <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
                 <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
                 <div>
-                    <div id="modal-name" style="font-weight:bold; font-size:14px;">Product Name</div>
+                    <div id="modal-name" style="font-weight:bold;">Name</div>
                     <div id="modal-price" style="color:#d32f2f;">0 Ks</div>
                 </div>
             </div>
-
-            <div class="pay-row">
-                <img src="https://play-lh.googleusercontent.com/cnC_h7oVjQp61vE3v9QvQh0s_R_1M0q2q3q4p9r_z0s.png" class="pay-icon">
-                <div><div style="font-weight:bold;">KPay</div><div style="font-size:12px;">09752965423 (Ko Ko)</div></div>
-            </div>
-            <div class="pay-row">
-                <img src="https://play-lh.googleusercontent.com/WB0MhVqgA3v4.png" class="pay-icon">
-                <div><div style="font-weight:bold;">Wave Money</div><div style="font-size:12px;">09752965423 (Ko Ko)</div></div>
-            </div>
-
-            <div class="input-group">
-                <label>Name (နာမည်)</label>
-                <input type="text" id="userName" placeholder="သင့်နာမည်ထည့်ပါ">
-            </div>
-            <div class="input-group">
-                <label>Phone (ဖုန်းနံပါတ်)</label>
-                <input type="tel" id="userPhone" placeholder="09xxxxxxxxx">
-            </div>
             
-            <div class="input-group">
-                <label>Payment Slip (ငွေလွှဲပြေစာ)</label>
-                <div style="border: 2px dashed #ccc; padding: 20px; text-align: center; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('slipInput').click()">
-                    <i class="fas fa-camera"></i> Click to upload
-                </div>
-                <input type="file" id="slipInput" accept="image/*" style="display:none" onchange="previewSlip()">
-                <img id="slipPreview" src="" style="width:100%; margin-top:10px; border-radius:5px; display:none;">
-            </div>
+            <div class="pay-row"><img src="https://cdn-icons-png.flaticon.com/512/8377/8377258.png" class="pay-icon"> <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div></div>
+            <div class="pay-row"><img src="https://cdn-icons-png.flaticon.com/512/3037/3037136.png" class="pay-icon"> <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div></div>
 
+            <div class="input-group"><label>Name</label><input type="text" id="userName"></div>
+            <div class="input-group"><label>Phone</label><input type="tel" id="userPhone"></div>
+            <div class="input-group"><label>Slip (Photo)</label><input type="file" id="slipInput"></div>
+            
             <button class="order-btn" id="sendBtn" onclick="sendOrder()">Admin ထံသို့ ပို့မည်</button>
-            <p id="statusMsg" style="text-align:center; font-size:12px; margin-top:10px;"></p>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // *** CONFIGURATION ***
         const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
-        
         const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
-        // 👇👇👇 ကိုကို့ Group ID ဒီမှာထည့်ပါ (မရှိသေးရင် -100xxxxx ဥပမာ)
-        const CHAT_ID = 'YOUR_CHAT_ID_HERE'; 
+        const CHAT_ID = 'YOUR_CHAT_ID_HERE'; // <--- PUT YOUR GROUP ID HERE
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentProducts = []; // Data Store
 
-        // --- SOUND ---
+        // Sound
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playClickSound() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            if(audioCtx.state==='suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.value=800; o.start(); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.05); o.stop(audioCtx.currentTime+0.05);
         }
-        document.addEventListener('click', (e) => { if(!e.target.closest('input')) playClickSound(); });
+        document.addEventListener('click', (e)=>{ if(!e.target.closest('input')) playClickSound() });
 
-        // --- UI LOGIC ---
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.querySelector('.overlay').classList.toggle('active');
-        }
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.menu-section').forEach(s => s.classList.remove('active'));
-            if(tabName === 'women') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('women-menu').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('men-menu').classList.add('active');
-            }
-        }
-        function toggleSearch() {
-            const box = document.getElementById('searchBox');
-            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-            if(box.style.display === 'block') document.getElementById('searchInput').focus();
+        // UI Functions
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
+        function toggleSearch() { const b=document.getElementById('searchBox'); b.style.display=b.style.display==='block'?'none':'block'; }
+        function switchTab(t) { 
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
+            if(t==='women'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('women-menu').classList.add('active'); }
+            else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('men-menu').classList.add('active'); }
         }
 
-        // --- PRODUCTS LOGIC ---
-        async function searchProducts() {
-            const keyword = document.getElementById('searchInput').value;
-            if(keyword.length < 2) return;
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Searching...</p>';
-            let { data } = await supabaseClient.from('products').select('*').ilike('name', `%${keyword}%`);
-            renderProducts(data, `Results for "${keyword}"`);
-        }
-
-        async function loadProducts(category, title) {
+        // Load Products
+        async function loadProducts(cat, title) {
+            document.getElementById('loading').style.display='block';
+            document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('productsContainer').innerHTML = '';
-            let query = supabaseClient.from('products').select('*');
-            if (category !== 'all' && category !== 'men_all') query = query.eq('category', category);
-            let { data } = await query;
-            document.getElementById('loading').style.display = 'none';
-            renderProducts(data, title);
+            
+            let q = supabaseClient.from('products').select('*');
+            if(cat!=='all' && cat!=='men_all') q = q.eq('category', cat);
+            
+            let { data } = await q;
+            currentProducts = data || []; // Store global
+            renderProducts(currentProducts, title);
+            document.getElementById('loading').style.display='none';
         }
 
-        function renderProducts(products, title) {
+        async function searchProducts() {
+            let val = document.getElementById('searchInput').value;
+            if(val.length<2) return;
+            let { data } = await supabaseClient.from('products').select('*').ilike('name', `%${val}%`);
+            currentProducts = data || [];
+            renderProducts(currentProducts, 'Search Results');
+        }
+
+        function renderProducts(list, title) {
             document.getElementById('pageTitle').innerText = title;
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '';
-            if (!products || products.length === 0) {
-                container.innerHTML = `<p style="grid-column:1/-1; text-align:center;">No items found.</p>`;
-                return;
-            }
-            let html = '';
-            products.forEach(p => {
-                const price = p.price ? Number(p.price).toLocaleString() : '0';
-                const img = p.image_url ? p.image_url : 'https://via.placeholder.com/300';
-                // Special Fix for Clicking: event.stopPropagation
-                const safeName = p.name.replace(/["']/g, ""); 
-                const safeImg = img.replace(/["']/g, "");
+            const con = document.getElementById('productsContainer');
+            con.innerHTML = '';
+            
+            if(!list.length) { con.innerHTML='<p>No products found.</p>'; return; }
+
+            list.forEach((p, index) => {
+                // Use INDEX to avoid string errors
+                let img = p.image_url || 'https://via.placeholder.com/300';
+                let price = Number(p.price).toLocaleString();
                 
-                html += `
-                    <div class="product-card">
-                        <img src="${img}" class="p-img">
-                        <div class="p-info">
-                            <div class="p-name">${p.name}</div>
-                            <div class="p-price">${price} Ks</div>
-                        </div>
-                        <div class="cart-btn" onclick="event.stopPropagation(); openCart('${safeName}', '${price}', '${safeImg}')">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                    </div>`;
+                con.innerHTML += `
+                <div class="product-card">
+                    <img src="${img}" class="p-img">
+                    <div class="p-info">
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-price">${price} Ks</div>
+                    </div>
+                    <div class="cart-btn" onclick="openCart(${index})">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>`;
             });
-            container.innerHTML = html;
         }
 
-        // --- CART FUNCTIONS ---
-        function openCart(name, price, img) {
-            document.getElementById('modal-name').innerText = name;
-            document.getElementById('modal-price').innerText = price + " Ks";
-            document.getElementById('modal-img').src = img;
+        // Cart Logic (New Index System)
+        function openCart(index) {
+            const p = currentProducts[index]; // Get exact product
+            document.getElementById('modal-name').innerText = p.name;
+            document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + " Ks";
+            document.getElementById('modal-img').src = p.image_url || '';
             document.getElementById('checkoutModal').style.display = 'flex';
         }
         function closeModal() { document.getElementById('checkoutModal').style.display = 'none'; }
-        function previewSlip() {
-            const file = document.getElementById('slipInput').files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => { document.getElementById('slipPreview').src = e.target.result; document.getElementById('slipPreview').style.display='block'; };
-                reader.readAsDataURL(file);
-            }
-        }
 
+        // Send Order
         async function sendOrder() {
-            if (CHAT_ID === 'YOUR_CHAT_ID_HERE') { alert("Telegram Group ID မရှိသေးပါ!"); return; }
+            if (CHAT_ID === 'YOUR_CHAT_ID_HERE') { alert("Please add Group ID in Code"); return; }
+            const btn = document.getElementById('sendBtn');
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
-            const fileInput = document.getElementById('slipInput');
-            const btn = document.getElementById('sendBtn');
+            const file = document.getElementById('slipInput').files[0];
             
-            if (!name || !phone) { alert("အမည်နှင့် ဖုန်းနံပါတ် ဖြည့်ပါ"); return; }
-            btn.disabled = true; btn.innerText = "Sending...";
+            if(!name || !phone) { alert("အမည်နှင့် ဖုန်းနံပါတ် ထည့်ပါ"); return; }
             
-            const productName = document.getElementById('modal-name').innerText;
-            const price = document.getElementById('modal-price').innerText;
-            const caption = `🛍️ *New Order!*\n👤 ${name}\n📞 ${phone}\n👗 ${productName}\n💰 ${price}`;
+            btn.innerText = "Sending..."; btn.disabled = true;
             
-            const formData = new FormData();
-            formData.append("chat_id", CHAT_ID);
-            formData.append("caption", caption);
-            formData.append("parse_mode", "Markdown");
+            const pName = document.getElementById('modal-name').innerText;
+            const pPrice = document.getElementById('modal-price').innerText;
+            const caption = `🛒 *New Order*\n👤 ${name}\n📞 ${phone}\n👗 ${pName}\n💰 ${pPrice}`;
+
+            const fd = new FormData();
+            fd.append("chat_id", CHAT_ID);
+            fd.append("caption", caption);
+            fd.append("parse_mode", "Markdown");
             
-            if(fileInput.files[0]) {
-                formData.append("photo", fileInput.files[0]);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+            if(file) {
+                fd.append("photo", file);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
             } else {
-                formData.append("text", caption);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', body: formData });
+                fd.append("text", caption);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {method:'POST', body:fd});
             }
             
-            alert("Order Sent to Admin!");
+            alert("Order Sent!");
             closeModal();
-            btn.disabled = false; btn.innerText = "Admin ထံသို့ ပို့မည်";
+            btn.innerText = "Admin ထံသို့ ပို့မည်"; btn.disabled = false;
         }
 
-        // Start
+        // Init
         loadProducts('all', 'The Party Preview');
-
     </script>
 </body>
 </html>
