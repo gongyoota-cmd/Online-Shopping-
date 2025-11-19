@@ -220,14 +220,14 @@
             background-color: var(--card-bg);
             border-radius: 4px;
             padding-bottom: 10px;
-            text-decoration: none; /* Link underline ဖျောက်ရန် */
+            text-decoration: none; 
         }
         .p-img {
             width: 100%;
             height: 220px;
             object-fit: cover;
             border-radius: 4px;
-            background-color: #eee; /* ပုံမလာခင် loading color */
+            background-color: #eee; 
         }
         .p-name {
             font-size: 13px;
@@ -392,11 +392,14 @@
     </footer>
 
     <script>
-        // --- 1. SUPABASE SETUP (FIXED) ---
-        const SUPABASE_URL = 'https://bklmuzzbkkhffdngeppt.supabase.co'; 
+        // --- 1. SUPABASE SETUP (CORRECTED) ---
+        
+        // မြမြက Key ထဲကနေ Project Ref ကိုဆွဲထုတ်ပြီး URL အမှန်ကို ဒီမှာ ပြင်ထည့်ပေးထားပါတယ်
+        const SUPABASE_URL = 'https://bklmuzzbkkbhftmdxqopt.supabase.co'; 
+        
+        // ကိုကို ပို့ပေးတဲ့ Key အမှန်
         const SUPABASE_ANON_KEY = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbG11emJra2JoZnRtZHhxb3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyOTk1OTAsImV4cCI6MjA3ODg3NTU5MH0.jD7fg_XYSlXPYs1EWIku22DwjjuGVE5WmN8NHx0jvfM'; 
 
-        // FIX: Use a different variable name to avoid conflict with global 'supabase' object
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Function to fetch products safely
@@ -405,16 +408,15 @@
             if (!container) return;
 
             try {
-                // Using supabaseClient instead of supabase
                 let { data: products, error } = await supabaseClient
                     .from('products')
-                    .select('*')
+                    .select('*') // Note: Database မှာ 'price' နဲ့ 'image_url' column မရှိရင် အောက်မှာ error တက်နိုင်ပါတယ်
                     .limit(limitCount)
                     .range(offsetCount, offsetCount + limitCount - 1);
 
                 if (error) {
                     console.error("Supabase Error:", error);
-                    container.innerHTML = `<p style="padding:20px; color:red;">Connection Error. Check Console.</p>`;
+                    container.innerHTML = `<p style="padding:20px; color:red;">Connection Error: ${error.message}</p>`;
                     return;
                 }
 
@@ -425,11 +427,10 @@
 
                 let htmlContent = '';
                 products.forEach(product => {
-                    // SAFE PRICE FORMATTING
-                    const priceValue = Number(product.price) || 0;
+                    // Database မှာ column မရှိရင် 0 နဲ့ default image ပေါ်အောင် လုပ်ထားပါတယ်
+                    const priceValue = product.price ? Number(product.price) : 0;
                     const formattedPrice = priceValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     
-                    // FALLBACK IMAGE if url is missing
                     const imgUrl = product.image_url ? product.image_url : 'https://via.placeholder.com/160?text=No+Image';
 
                     htmlContent += `
@@ -557,12 +558,10 @@
             }
         }
         function filterProducts() {
-            // Search logic can be added here later
-            console.log("Searching for:", document.getElementById('searchInput').value);
+            // Search logic...
         }
 
         // --- 6. INITIALIZATION ---
-        // Run this when the page is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             console.log("Page Loaded. Fetching products...");
             fetchProducts('partyProductsContainer', 3, 0); 
