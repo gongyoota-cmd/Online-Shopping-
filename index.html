@@ -14,7 +14,11 @@
         
         /* HEADER */
         header { background: var(--header-bg); color: var(--header-text); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; }
+        .nav-icons { display: flex; gap: 20px; }
+        .nav-icons i { font-size: 20px; cursor: pointer; position: relative; }
+        
+        /* USER STATUS DOT */
+        .user-status-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: none; border: 1px solid white; }
 
         /* SEARCH */
         #searchBox { display: none; background: white; padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
@@ -25,17 +29,13 @@
         .overlay.active { display: block; }
         .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: white; transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
         .side-menu.active { left: 0; }
-        
         .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: #fff; color: #777; }
         .tab.active { border-bottom: 3px solid #2d2d2d; color: #2d2d2d; background: #f4f4f4; }
-        
         .menu-content { flex: 1; overflow-y: auto; }
         .menu-section { display: none; }
         .menu-section.active { display: block; }
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* MENU FOOTER */
         .menu-footer { padding: 20px; text-align: center; background: #f4f4f4; font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
         /* PRODUCTS */
@@ -48,26 +48,26 @@
         .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
         .p-price { font-weight: bold; font-size: 14px; color: #333; }
 
-        /* CART BUTTON (FIXED) */
-        .cart-btn {
-            position: absolute; bottom: 10px; right: 10px;
-            background: #2d2d2d; color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-        }
-        .cart-btn:active { transform: scale(0.9); background: #000; }
+        .cart-btn { position: absolute; bottom: 10px; right: 10px; background: #2d2d2d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+        .cart-btn:active { transform: scale(0.9); }
 
-        /* POPUP */
+        /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: white; width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; }
         .close-modal { float: right; font-size: 24px; cursor: pointer; }
+        
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
         .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;}
-        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
         .pay-row { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .pay-icon { width: 30px; height: 30px; margin-right: 10px; }
+        .pay-icon { width: 30px; height: 30px; margin-right: 10px; object-fit:contain; }
+
+        /* ORDER HISTORY STYLES */
+        .history-item { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { font-size: 20px; }
+        .status-text { font-size: 10px; color: #666; display: block; }
+
     </style>
 </head>
 <body>
@@ -98,7 +98,11 @@
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
         <div style="font-weight:bold;">K Online Shopping</div>
-        <div><i class="fas fa-search" onclick="toggleSearch()"></i> <i class="fas fa-shopping-bag" style="margin-left:15px;"></i></div>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <i class="fas fa-user" onclick="checkUserStatus()">
+                <span class="user-status-dot" id="loginDot"></span>
+            </i> <i class="fas fa-shopping-bag" onclick="checkUserStatus()"></i> </div>
     </header>
     <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
 
@@ -108,9 +112,38 @@
         <div class="product-grid" id="productsContainer"></div>
     </div>
 
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h3 style="text-align:center;">အကောင့်ဝင်ပါ / အသစ်ဖွင့်ပါ</h3>
+            <p style="text-align:center; font-size:12px; color:#666;">မှာယူထားသော ပစ္စည်းများကို ကြည့်ရှုရန် ဖုန်းနံပါတ်ထည့်ပါ။</p>
+            
+            <div class="input-group">
+                <label>ဖုန်းနံပါတ် (09xxxxxxxxx)</label>
+                <input type="tel" id="loginPhone">
+            </div>
+            <div class="input-group">
+                <label>Password (ကြိုက်ရာဂဏန်းပေးပါ)</label>
+                <input type="password" id="loginPass" placeholder="လျှို့ဝှက်နံပါတ်">
+            </div>
+            <button class="order-btn" onclick="performLogin()">ဝင်မည် / အကောင့်ဖွင့်မည်</button>
+        </div>
+    </div>
+
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('historyModal')">&times;</span>
+            <h3>My Orders</h3>
+            <div id="historyList">
+                <p style="text-align:center;">Loading...</p>
+            </div>
+            <button class="order-btn" onclick="logout()" style="background:#d32f2f; margin-top:20px;">Logout</button>
+        </div>
+    </div>
+
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <span class="close-modal" onclick="closeModal('checkoutModal')">&times;</span>
             <h3>Order Form</h3>
             <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
                 <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
@@ -123,11 +156,18 @@
             <div class="pay-row"><img src="https://cdn-icons-png.flaticon.com/512/8377/8377258.png" class="pay-icon"> <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div></div>
             <div class="pay-row"><img src="https://cdn-icons-png.flaticon.com/512/3037/3037136.png" class="pay-icon"> <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div></div>
 
-            <div class="input-group"><label>Name</label><input type="text" id="userName"></div>
-            <div class="input-group"><label>Phone</label><input type="tel" id="userPhone"></div>
             <div class="input-group"><label>Slip (Photo)</label><input type="file" id="slipInput"></div>
             
             <button class="order-btn" id="sendBtn" onclick="sendOrder()">Admin ထံသို့ ပို့မည်</button>
+        </div>
+    </div>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content" style="text-align:center;">
+            <i class="fas fa-check-circle" style="font-size:50px; color:#4CAF50; margin-bottom:10px;"></i>
+            <h3>👾 Order sent!</h3>
+            <p>Payment successful, delivery will be made soon.🎉</p>
+            <button class="order-btn" onclick="closeModal('successModal')">OK</button>
         </div>
     </div>
 
@@ -136,32 +176,152 @@
         const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
         const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
-        const CHAT_ID = '-5098597126'; // <--- PUT YOUR GROUP ID HERE
+        const CHAT_ID = '-5098597126'; 
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentProducts = []; // Data Store
+        let currentProducts = [];
+        let currentUser = localStorage.getItem('kshop_user'); // Stores Phone Number
 
-        // Sound
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playClickSound() {
-            if(audioCtx.state==='suspended') audioCtx.resume();
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            o.frequency.value=800; o.start(); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.05); o.stop(audioCtx.currentTime+0.05);
+        // INIT
+        window.onload = function() {
+            loadProducts('all', 'The Party Preview');
+            if(currentUser) document.getElementById('loginDot').style.display = 'block';
         }
-        document.addEventListener('click', (e)=>{ if(!e.target.closest('input')) playClickSound() });
 
-        // UI Functions
+        // --- AUTHENTICATION LOGIC ---
+        function checkUserStatus() {
+            if(currentUser) {
+                openHistory();
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        }
+
+        function performLogin() {
+            const phone = document.getElementById('loginPhone').value;
+            const pass = document.getElementById('loginPass').value;
+            if(!phone || !pass) { alert("ဖုန်းနံပါတ် နှင့် Password ထည့်ပါ"); return; }
+            
+            // Simple Local Login (For real security, use Supabase Auth later)
+            localStorage.setItem('kshop_user', phone);
+            localStorage.setItem('kshop_name', "Customer"); // Default Name
+            currentUser = phone;
+            document.getElementById('loginDot').style.display = 'block';
+            closeModal('loginModal');
+            alert("အကောင့်ဝင်ခြင်း အောင်မြင်ပါသည်!");
+            openHistory();
+        }
+
+        function logout() {
+            localStorage.removeItem('kshop_user');
+            currentUser = null;
+            document.getElementById('loginDot').style.display = 'none';
+            closeModal('historyModal');
+            alert("Logout ပြီးပါပြီ");
+        }
+
+        // --- ORDER HISTORY LOGIC ---
+        async function openHistory() {
+            document.getElementById('historyModal').style.display = 'flex';
+            const container = document.getElementById('historyList');
+            container.innerHTML = '<p style="text-align:center;">Loading history...</p>';
+
+            // Fetch orders matching phone number
+            let { data: orders, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .eq('customer_phone', currentUser)
+                .order('created_at', { ascending: false });
+
+            if(error || !orders || orders.length === 0) {
+                container.innerHTML = '<p style="text-align:center;">မှာယူထားသော ပစ္စည်းမရှိသေးပါ။</p>';
+                return;
+            }
+
+            let html = '';
+            orders.forEach(order => {
+                let icon = '⏳'; // Default Pending
+                if(order.status === 'reject') icon = '⛔';
+                else if(order.status === 'coming') icon = '🟡';
+                else if(order.status === 'owned') icon = '🟢';
+
+                html += `
+                <div class="history-item">
+                    <div>
+                        <div style="font-weight:bold;">${order.item_name}</div>
+                        <div style="font-size:12px; color:#666;">${order.price}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <span class="status-badge">${icon}</span>
+                        <span class="status-text">${order.status}</span>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // --- BUY LOGIC ---
+        function buyItem(index) {
+            if(!currentUser) {
+                alert("ဝယ်ယူရန် အကောင့်အရင်ဝင်ပါ");
+                document.getElementById('loginModal').style.display = 'flex';
+                return;
+            }
+            const p = currentProducts[index];
+            document.getElementById('modal-name').innerText = p.name;
+            document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + " Ks";
+            document.getElementById('modal-img').src = p.image_url || '';
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        async function sendOrder() {
+            const btn = document.getElementById('sendBtn');
+            const file = document.getElementById('slipInput').files[0];
+            
+            btn.innerText = "Sending..."; btn.disabled = true;
+            
+            const pName = document.getElementById('modal-name').innerText;
+            const pPrice = document.getElementById('modal-price').innerText;
+            const userName = localStorage.getItem('kshop_name') || "Customer";
+            
+            // 1. Save to Supabase 'orders' table
+            const { error } = await supabaseClient
+                .from('orders')
+                .insert([
+                    { 
+                        customer_name: userName, 
+                        customer_phone: currentUser, 
+                        item_name: pName, 
+                        price: pPrice,
+                        status: 'pending' 
+                    }
+                ]);
+
+            // 2. Send to Telegram
+            const caption = `🛍️ *New Order*\n👤 ${userName}\n📞 ${currentUser}\n👗 ${pName}\n💰 ${pPrice}`;
+            const fd = new FormData();
+            fd.append("chat_id", CHAT_ID);
+            fd.append("caption", caption);
+            fd.append("parse_mode", "Markdown");
+            
+            if(file) {
+                fd.append("photo", file);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
+            } else {
+                fd.append("text", caption);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {method:'POST', body:fd});
+            }
+            
+            closeModal('checkoutModal');
+            document.getElementById('successModal').style.display = 'flex';
+            btn.innerText = "Admin ထံသို့ ပို့မည်"; btn.disabled = false;
+        }
+
+        // --- STANDARD FUNCTIONS ---
         function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
         function toggleSearch() { const b=document.getElementById('searchBox'); b.style.display=b.style.display==='block'?'none':'block'; }
-        function switchTab(t) { 
-            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
-            if(t==='women'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('women-menu').classList.add('active'); }
-            else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('men-menu').classList.add('active'); }
-        }
-
-        // Load Products
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
         async function loadProducts(cat, title) {
             document.getElementById('loading').style.display='block';
             document.getElementById('productsContainer').innerHTML='';
@@ -172,7 +332,7 @@
             if(cat!=='all' && cat!=='men_all') q = q.eq('category', cat);
             
             let { data } = await q;
-            currentProducts = data || []; // Store global
+            currentProducts = data || [];
             renderProducts(currentProducts, title);
             document.getElementById('loading').style.display='none';
         }
@@ -189,14 +349,12 @@
             document.getElementById('pageTitle').innerText = title;
             const con = document.getElementById('productsContainer');
             con.innerHTML = '';
-            
             if(!list.length) { con.innerHTML='<p>No products found.</p>'; return; }
 
             list.forEach((p, index) => {
-                // Use INDEX to avoid string errors
                 let img = p.image_url || 'https://via.placeholder.com/300';
                 let price = Number(p.price).toLocaleString();
-                
+                // Click Cart -> triggers buyItem(index)
                 con.innerHTML += `
                 <div class="product-card">
                     <img src="${img}" class="p-img">
@@ -204,59 +362,23 @@
                         <div class="p-name">${p.name}</div>
                         <div class="p-price">${price} Ks</div>
                     </div>
-                    <div class="cart-btn" onclick="openCart(${index})">
+                    <div class="cart-btn" onclick="buyItem(${index})">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                 </div>`;
             });
         }
-
-        // Cart Logic (New Index System)
-        function openCart(index) {
-            const p = currentProducts[index]; // Get exact product
-            document.getElementById('modal-name').innerText = p.name;
-            document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + " Ks";
-            document.getElementById('modal-img').src = p.image_url || '';
-            document.getElementById('checkoutModal').style.display = 'flex';
+        
+        // Sound
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playClickSound() {
+            if(audioCtx.state==='suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.value=800; o.start(); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.05); o.stop(audioCtx.currentTime+0.05);
         }
-        function closeModal() { document.getElementById('checkoutModal').style.display = 'none'; }
+        document.addEventListener('click', (e)=>{ if(!e.target.closest('input')) playClickSound() });
 
-        // Send Order
-        async function sendOrder() {
-            if (CHAT_ID === 'YOUR_CHAT_ID_HERE') { alert("Please add Group ID in Code"); return; }
-            const btn = document.getElementById('sendBtn');
-            const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            const file = document.getElementById('slipInput').files[0];
-            
-            if(!name || !phone) { alert("အမည်နှင့် ဖုန်းနံပါတ် ထည့်ပါ"); return; }
-            
-            btn.innerText = "Sending..."; btn.disabled = true;
-            
-            const pName = document.getElementById('modal-name').innerText;
-            const pPrice = document.getElementById('modal-price').innerText;
-            const caption = `🛒 *New Order*\n👤 ${name}\n📞 ${phone}\n👗 ${pName}\n💰 ${pPrice}`;
-
-            const fd = new FormData();
-            fd.append("chat_id", CHAT_ID);
-            fd.append("caption", caption);
-            fd.append("parse_mode", "Markdown");
-            
-            if(file) {
-                fd.append("photo", file);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
-            } else {
-                fd.append("text", caption);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {method:'POST', body:fd});
-            }
-            
-            alert("Order Sent!");
-            closeModal();
-            btn.innerText = "Admin ထံသို့ ပို့မည်"; btn.disabled = false;
-        }
-
-        // Init
-        loadProducts('all', 'The Party Preview');
     </script>
 </body>
 </html>
