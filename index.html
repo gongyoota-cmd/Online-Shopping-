@@ -3,29 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Lab ✿</title>
+    <title>K Online Shopping</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <style>
         :root {
-            --bg-color: #f9f9f9; 
-            --text-color: #333;
-            --header-bg: #4a148c; /* Deep Purple */
-            --header-text: #ffffff;
-            --card-bg: #ffffff; 
-            --accent-color: #e91e63; /* Vibrant Pink/Magenta for logo/main CTA */
-            --vibrant-blue: #03a9f4; /* For Chat/Switches */
+            --bg-color: #f9f9f9; --text-color: #333;
+            --header-bg: #2d2d2d; --header-text: #ffffff;
+            --card-bg: #ffffff; --accent-color: #d32f2f;
         }
         /* Dark Mode */
         body.dark-mode {
-            --bg-color: #121212; 
-            --text-color: #e0e0e0;
-            --header-bg: #000000; 
-            --header-text: #ffffff;
+            --bg-color: #121212; --text-color: #e0e0e0;
+            --header-bg: #000000; --header-text: #ffffff;
             --card-bg: #1e1e1e;
-            --vibrant-blue: #4fc3f7;
         }
 
         body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); transition: 0.3s; }
@@ -42,21 +35,21 @@
         .side-menu.active { left: 0; }
         .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: var(--card-bg); color: #777; }
-        .tab.active { border-bottom: 3px solid var(--accent-color); color: var(--text-color); background: var(--bg-color); }
+        .tab.active { border-bottom: 3px solid #2d2d2d; color: var(--text-color); background: var(--bg-color); }
         .menu-content { flex: 1; overflow-y: auto; }
         .menu-section { display: none; }
         .menu-section.active { display: block; }
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
-        /* --- SLIDER WITH DOTS & ROUNDED CORNERS (BIGGER SIZE) --- */
+        /* --- SLIDER WITH DOTS & ROUNDED CORNERS (MODIFIED FOR BIGGER SIZE) --- */
         .slider-container { 
             position: relative; width: 95%; margin: 15px auto; overflow: hidden; 
-            border-radius: 15px;
-            height: 50vh; 
+            border-radius: 15px; /* Rounded corners */
+            height: 50vh; /* Banner ကို မျက်နှာပြင်ရဲ့ အမြင့် တစ်ဝက်လောက် ပေးလိုက်သည် */
         }
         .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
-        .slide { min-width: 100%; height: 100%; }
+        .slide { min-width: 100%; height: 100%; } /* အမြင့်ကို Container အတိုင်း 100% ပေးလိုက်သည် */
         .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
         
         .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
@@ -72,32 +65,45 @@
         .p-info { padding: 10px; padding-bottom: 50px; }
         .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
         .p-price { font-weight: bold; font-size: 14px; color: var(--text-color); }
-        .cart-btn { position: absolute; bottom: 10px; right: 10px; background: var(--accent-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+        .cart-btn { position: absolute; bottom: 10px; right: 10px; background: #2d2d2d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
 
-        /* SUPPORT CHAT (Vibrant Blue) */
-        .support-btn { position: fixed; bottom: 20px; right: 20px; background: var(--vibrant-blue); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        /* SUPPORT CHAT */
+        .support-btn { position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .chat-box { display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
-        .chat-header { background: var(--vibrant-blue); color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        
+        .chat-header { background: #007bff; color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
+        .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
+        .chat-input-area { display: flex; border-top: 1px solid #ddd; }
+        .chat-input { flex: 1; padding: 10px; border: none; outline: none; }
+        .chat-send { padding: 0 15px; background: white; border: none; color: #007bff; cursor: pointer; }
+
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .order-btn { width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
+        .close-modal { float: right; font-size: 24px; cursor: pointer; }
         
-        /* Settings Select Box Style */
-        #langSelect {
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            font-size: 14px;
-            cursor: pointer;
-        }
+        /* Payment Styles (REAL LOGOS) */
+        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; border: 1px solid #eee; }
+        .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
 
-        /* Switch Color */
-        input:checked + .slider { background-color: var(--vibrant-blue); }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        
+        /* Search */
+        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
+        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
 
-        /* NOTE: Remaining styles (input, history-item, etc.) are kept for structure */
+        /* Settings */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2196F3; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        
+        .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body id="body">
@@ -113,24 +119,24 @@
             <div id="women-menu" class="menu-section active">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
                 <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span>Bags</span> <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
+                <div style="padding:15px; background:var(--bg-color); font-weight:bold;">MEN'S FASHION</div>
+                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span>All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span>Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
-        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab ✿ 2025</div>
+        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ K Online Shopping 2025</div>
     </div>
 
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab ✿</div>
+        <div style="font-weight:bold;">K Online Shopping</div>
         <div class="nav-icons">
             <i class="fas fa-search" onclick="toggleSearch()"></i>
             <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
@@ -155,7 +161,10 @@
 
     <div class="support-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
     <div class="chat-box" id="chatBox">
-        <div class="chat-header" data-t="chat_title">Support Chat</div>
+        <div class="chat-header">
+            <span>Support Chat</span>
+            <i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer;"></i>
+        </div>
         <div class="chat-body" id="chatBody">
             <div style="background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; margin-bottom:5px;">မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?</div>
         </div>
@@ -175,11 +184,7 @@
             </div>
             <div class="setting-row">
                 <span>Language</span>
-                <select id="langSelect" onchange="toggleLanguage(this.value)">
-                    <option value="en">English (EN)</option>
-                    <option value="my">မြန်မာ (MY)</option>
-                    <option value="th">ไทย (TH)</option>
-                </select>
+                <button class="order-btn" style="width:auto; padding:5px 15px; margin:0;" onclick="toggleLanguage()" id="langBtn">EN</button>
             </div>
         </div>
     </div>
@@ -209,7 +214,7 @@
     <div class="modal" id="historyModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('historyModal')">&times;</span>
-            <h3 data-t="history_title">My Orders</h3>
+            <h3>My Orders</h3>
             <div id="historyList"><p style="text-align:center;">Loading...</p></div>
             <button class="order-btn" onclick="doLogout()" style="background:#d32f2f; margin-top:20px;">Logout</button>
         </div>
@@ -218,10 +223,10 @@
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('checkoutModal')">&times;</span>
-            <h3 data-t="order_form">Order Form</h3>
+            <h3>Order Form</h3>
             <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
                 <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
-                <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:var(--accent-color);"></div></div>
+                <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:#d32f2f;"></div></div>
             </div>
             
             <div class="pay-row">
@@ -235,21 +240,21 @@
             
             <div style="margin-top: 15px;">
                 <div class="input-group">
-                    <label data-t="address_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
+                    <label>Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
                     <textarea id="addressInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color);"></textarea>
                 </div>
                 <div class="input-group">
-                    <label data-t="contact_label">Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
+                    <label>Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
                     <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
                 </div>
                 <div class="input-group">
-                    <label data-t="note_label">Note (အကြောင်းအရာ)</label>
+                    <label>Note (အကြောင်းအရာ)</label>
                     <input type="text" id="noteInput" placeholder="Note">
                 </div>
             </div>
 
-            <div class="input-group"><label data-t="slip_label">Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
-            <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled data-t="send_btn">Admin ထံသို့ ပို့မည်</button>
+            <div class="input-group"><label>Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
+            <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled>Admin ထံသို့ ပို့မည်</button>
         </div>
     </div>
 
@@ -273,64 +278,37 @@
         let currentProducts = [];
         let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
 
-        // --- TRANSLATION MAP (EN, MY, TH) ---
-        const currentTranslations = {
-            en: {
-                shop_cat: "WOMEN'S FASHION", all: "All Products", clothing: "Clothing", shoes: "Shoes", bag: "Bags",
-                men_cat: "MEN'S FASHION", accessories: "Accessories",
-                order_form: "Order Form", address_label: "Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)", contact_label: "Contact Phone (ဆက်သွယ်ရန်ဖုန်း)", note_label: "Note (အကြောင်းအရာ)",
-                slip_label: "Payment Slip (ပြေစာ)", send_btn: "Send to Admin", chat_title: "Support Chat", history_title: "My Orders"
-            },
-            my: {
-                shop_cat: "အမျိုးသမီးဖက်ရှင်", all: "ပစ္စည်းအားလုံး", clothing: "အဝတ်အထည်", shoes: "ဖိနပ်", bag: "အိတ်",
-                men_cat: "အမျိုးသားဖက်ရှင်", accessories: "အသုံးအဆောင်",
-                order_form: "မှာယူမှုပုံစံ", address_label: "ပို့ဆောင်ရန်လိပ်စာ", contact_label: "ဆက်သွယ်ရန်ဖုန်း", note_label: "အကြောင်းအရာ",
-                slip_label: "ငွေလွှဲပြေစာ", send_btn: "Admin ထံသို့ ပို့မည်", chat_title: "အကူအညီချတ်", history_title: "မှာယူမှုမှတ်တမ်း"
-            },
-            th: {
-                shop_cat: "แฟชั่นสตรี", all: "สินค้าทั้งหมด", clothing: "เสื้อผ้า", shoes: "รองเท้า", bag: "กระเป๋า",
-                men_cat: "แฟชั่นบุรุษ", accessories: "เครื่องประดับ",
-                order_form: "แบบฟอร์มคำสั่งซื้อ", address_label: "ที่อยู่จัดส่ง", contact_label: "เบอร์ติดต่อ", note_label: "หมายเหตุ",
-                slip_label: "สลิปการชำระเงิน", send_btn: "ส่งถึงแอดมิน", chat_title: "แชทสนับสนุน", history_title: "คำสั่งซื้อของฉัน"
-            }
-        };
-
-        let currentLang = localStorage.getItem('kshop_lang') || 'en';
-        
-        // --- EXTENDED SAMPLE PRODUCTS (for fallback) ---
+        // --- EXTENDED SAMPLE PRODUCTS (Approx. 15 items per category for each gender) ---
         const allSampleProducts = [
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'clothing') ---
             {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women"},
             {name: "High Waist Jeans", price: 35000, image_url: "https://images.unsplash.com/photo-1598226485892-0b70d234a949?w=500", category: "clothing", gender: "women"},
             {name: "Lace Blouse Top", price: 18000, image_url: "https://images.unsplash.com/photo-1598227653243-7f21226194b6?w=500", category: "clothing", gender: "women"},
             {name: "Maxi Skirt", price: 28000, image_url: "https://images.unsplash.com/photo-1545695027-e45f942f9e4f?w=500", category: "clothing", gender: "women"},
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'shoes') ---
             {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women"},
             {name: "White Sneakers", price: 32000, image_url: "https://images.unsplash.com/photo-1552346154-21d32810cb99?w=500", category: "shoes", gender: "women"},
             {name: "Leather Boots", price: 65000, image_url: "https://images.unsplash.com/photo-1560769629-9fae24749f7e?w=500", category: "shoes", gender: "women"},
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'bag') ---
             {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women"},
             {name: "Clutch Purse", price: 22000, image_url: "https://images.unsplash.com/photo-1558983942-887413f173c3?w=500", category: "bag", gender: "women"},
+            
+            // --- MEN PRODUCTS (gender: 'men', category: 'clothing') ---
             {name: "Slim Fit Shirt", price: 38000, image_url: "https://images.unsplash.com/photo-1545892520-22c710471b05?w=500", category: "clothing", gender: "men"},
             {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men"},
             {name: "Cargo Pants", price: 42000, image_url: "https://images.unsplash.com/photo-1541348233713-333065608d4b?w=500", category: "clothing", gender: "men"},
+            // --- MEN PRODUCTS (gender: 'men', category: 'shoes') ---
             {name: "Black Leather Shoes", price: 68000, image_url: "https://images.unsplash.com/photo-1525966222881-8b394017f912?w=500", category: "shoes", gender: "men"},
             {name: "Running Trainers", price: 55000, image_url: "https://images.unsplash.com/photo-1594247514332-9c946f11277a?w=500", category: "shoes", gender: "men"},
+            // --- MEN PRODUCTS (gender: 'men', category: 'accessories') ---
             {name: "Sports Watch", price: 95000, image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", category: "accessories", gender: "men"},
             {name: "Leather Wallet", price: 30000, image_url: "https://images.unsplash.com/photo-1629864275069-b5d1e44d825c?w=500", category: "accessories", gender: "men"},
         ];
 
-        // --- WINDOW ONLOAD ---
         window.onload = function() {
-            // Load language preference and apply
-            const langSelect = document.getElementById('langSelect');
-            if (langSelect.options.length > 0 && currentTranslations[currentLang]) {
-                langSelect.value = currentLang;
-                applyLanguage(currentLang);
-            }
-            
-            // Initial product and UI load
-            loadProducts('all', currentTranslations[currentLang].all, 'women'); 
+            loadProducts('all', 'All Products', 'women'); // Initial load with Women All Products
             updateUserUI();
             loadBanners(); 
-            
             // Load Dark Mode Preference on startup
             if(localStorage.getItem('kshop_dark_mode') === 'on') {
                 document.body.classList.add('dark-mode');
@@ -338,40 +316,19 @@
             }
         }
 
-        // --- LANGUAGE FUNCTIONS ---
-        function applyLanguage(lang) {
-            const t = currentTranslations[lang];
-            if (!t) return;
-            
-            // Apply text to all elements with a data-t attribute
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (t[key]) {
-                    el.innerText = t[key];
-                }
-            });
-
-            // Specific element updates (like placeholder or non-data-t elements)
-            document.querySelector('.chat-input').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            document.querySelector('.menu-footer small').innerText = `© ${t.app_name || 'Fashion Lab'} 2025`; 
-        }
-
-        function toggleLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('kshop_lang', lang);
-            applyLanguage(lang);
-        }
-
-        // --- SLIDER LOGIC ---
+        // --- SLIDER LOGIC (Load from Supabase) ---
         let slideIndex = 0;
         
         async function loadBanners() {
             const { data, error } = await supabase
                 .from('banners')
                 .select('image_url')
-                .order('order_index', { ascending: true }); 
+                .order('order_index', { ascending: true }); // order_index အတိုင်း စီပါမည်
 
-            if (error) { console.error("Error loading banners:", error); return; }
+            if (error) {
+                console.error("Error loading banners:", error);
+                return;
+            }
 
             const wrapper = document.getElementById('sliderWrapper');
             const dotsContainer = document.getElementById('dotsContainer');
@@ -379,11 +336,15 @@
             dotsContainer.innerHTML = '';
 
             data.forEach((b, index) => {
+                // 1. Slide ပုံ ထည့်သွင်းခြင်း
                 wrapper.innerHTML += `<div class="slide"><img src="${b.image_url}" alt="Banner ${index + 1}"></div>`;
+                
+                // 2. Dot ထည့်သွင်းခြင်း
                 const activeClass = index === 0 ? ' active' : '';
                 dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
             });
             
+            // Banners များ တင်ပြီးမှ Slider ကို စပါမည်
             if(data && data.length > 0) {
                  startSlider();
             }
@@ -394,7 +355,7 @@
             setInterval(() => {
                 slideIndex++;
                 showSlides();
-            }, 3000); 
+            }, 3000); // Change every 3 seconds
         }
         function showSlides() {
             const slides = document.querySelectorAll('.slide');
@@ -423,9 +384,17 @@
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
         function toggleTheme(cb) { 
             document.body.classList.toggle('dark-mode', cb.checked); 
-            localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off');
+            localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off'); // Save preference
         }
         
+        let currentLang = 'en';
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'my' : 'en';
+            document.getElementById('langBtn').innerText = (currentLang === 'en') ? 'EN' : 'MY';
+            if(currentLang === 'my') document.querySelector('[data-t="shop_cat"]').innerText = "ပစ္စည်းအမျိုးအစားများ";
+            else document.querySelector('[data-t="shop_cat"]').innerText = "WOMEN'S FASHION";
+        }
+
         // --- CHAT ---
         function toggleChat() {
             const box = document.getElementById('chatBox');
@@ -527,6 +496,7 @@
                 // Filter the extended sample list based on requested gender and category
                 data = allSampleProducts.filter(p => {
                     const genderMatch = p.gender === gender;
+                    // Check if category matches or if 'all' is requested
                     const categoryMatch = cat === 'all' || p.category === cat;
                     return genderMatch && categoryMatch;
                 });
@@ -568,6 +538,7 @@
             document.getElementById('sendBtn').disabled = true; 
         }
 
+        // Function to check if file is uploaded
         function checkSlipFile() {
             const file = document.getElementById('slipInput').files[0];
             document.getElementById('sendBtn').disabled = !file;
@@ -577,10 +548,12 @@
             const btn = document.getElementById('sendBtn');
             const file = document.getElementById('slipInput').files[0];
             
+            // Get the data from the new fields
             const address = document.getElementById('addressInput').value;
             const contactPhone = document.getElementById('contactPhoneInput').value;
             const note = document.getElementById('noteInput').value;
 
+            // Input Validation - ENSURE ALL REQUIRED FIELDS ARE FILLED
             if (!address.trim() || !contactPhone.trim() || !file) {
                 alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
                 btn.disabled = false; return;
@@ -596,21 +569,21 @@
                 item_name: pName, price: pPrice, status: 'pending', address: address, note: note
             }]);
 
+            // Updated Caption to include new fields
             const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pName}\n💰 ${pPrice}`;
 
             const fd = new FormData();
             fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
+            // Always send photo because we enforced file upload
             fd.append("photo", file); 
             
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
             
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
-            // Set text back using current language
-            btn.innerText=currentTranslations[currentLang].send_btn; 
-            btn.disabled=false;
-            document.getElementById('slipInput').value = ''; 
-            document.getElementById('sendBtn').disabled = true;
+            btn.innerText="Admin ထံသို့ ပို့မည်"; btn.disabled=false;
+            document.getElementById('slipInput').value = ''; // Reset file input
+            document.getElementById('sendBtn').disabled = true; // Re-disable button
         }
 
         function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
@@ -623,10 +596,12 @@
             if(t==='women'){ 
                 document.querySelectorAll('.tab')[0].classList.add('active'); 
                 document.getElementById('women-menu').classList.add('active'); 
+                // loadProducts('all', 'All Products', 'women'); // Optionally reload products when switching tab
             }
             else { 
                 document.querySelectorAll('.tab')[1].classList.add('active'); 
                 document.getElementById('men-menu').classList.add('active'); 
+                // loadProducts('all', 'Men All Products', 'men'); // Optionally reload products when switching tab
             }
         }
     </script>
