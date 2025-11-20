@@ -106,7 +106,7 @@
         .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
-<body>
+<body id="body">
 
     <div class="overlay" onclick="toggleMenu()"></div>
     
@@ -180,7 +180,7 @@
             <h3>Settings</h3>
             <div class="setting-row">
                 <span>Dark Mode</span>
-                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)"><span class="slider"></span></label>
+                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)" id="darkModeToggle"><span class="slider"></span></label>
             </div>
             <div class="setting-row">
                 <span>Language</span>
@@ -278,22 +278,47 @@
         let currentProducts = [];
         let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
 
-        // --- 5 SAMPLE PRODUCTS (INITIAL LOAD) ---
-        const sampleData = [
-            {name: "Summer Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500"},
-            {name: "Running Shoes", price: 45000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
-            {name: "Leather Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500"},
-            {name: "White Blouse", price: 18000, image_url: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=500"},
-            {name: "Classic Heels", price: 35000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500"}
+        // --- EXTENDED SAMPLE PRODUCTS (Approx. 15 items per category for each gender) ---
+        const allSampleProducts = [
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'clothing') ---
+            {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women"},
+            {name: "High Waist Jeans", price: 35000, image_url: "https://images.unsplash.com/photo-1598226485892-0b70d234a949?w=500", category: "clothing", gender: "women"},
+            {name: "Lace Blouse Top", price: 18000, image_url: "https://images.unsplash.com/photo-1598227653243-7f21226194b6?w=500", category: "clothing", gender: "women"},
+            {name: "Maxi Skirt", price: 28000, image_url: "https://images.unsplash.com/photo-1545695027-e45f942f9e4f?w=500", category: "clothing", gender: "women"},
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'shoes') ---
+            {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women"},
+            {name: "White Sneakers", price: 32000, image_url: "https://images.unsplash.com/photo-1552346154-21d32810cb99?w=500", category: "shoes", gender: "women"},
+            {name: "Leather Boots", price: 65000, image_url: "https://images.unsplash.com/photo-1560769629-9fae24749f7e?w=500", category: "shoes", gender: "women"},
+            // --- WOMEN PRODUCTS (gender: 'women', category: 'bag') ---
+            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women"},
+            {name: "Clutch Purse", price: 22000, image_url: "https://images.unsplash.com/photo-1558983942-887413f173c3?w=500", category: "bag", gender: "women"},
+            
+            // --- MEN PRODUCTS (gender: 'men', category: 'clothing') ---
+            {name: "Slim Fit Shirt", price: 38000, image_url: "https://images.unsplash.com/photo-1545892520-22c710471b05?w=500", category: "clothing", gender: "men"},
+            {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men"},
+            {name: "Cargo Pants", price: 42000, image_url: "https://images.unsplash.com/photo-1541348233713-333065608d4b?w=500", category: "clothing", gender: "men"},
+            // --- MEN PRODUCTS (gender: 'men', category: 'shoes') ---
+            {name: "Black Leather Shoes", price: 68000, image_url: "https://images.unsplash.com/photo-1525966222881-8b394017f912?w=500", category: "shoes", gender: "men"},
+            {name: "Running Trainers", price: 55000, image_url: "https://images.unsplash.com/photo-1594247514332-9c946f11277a?w=500", category: "shoes", gender: "men"},
+            // --- MEN PRODUCTS (gender: 'men', category: 'accessories') ---
+            {name: "Sports Watch", price: 95000, image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", category: "accessories", gender: "men"},
+            {name: "Leather Wallet", price: 30000, image_url: "https://images.unsplash.com/photo-1629864275069-b5d1e44d825c?w=500", category: "accessories", gender: "men"},
         ];
 
         window.onload = function() {
-            loadProducts('all', 'All Products');
+            loadProducts('all', 'All Products', 'women'); // Initial load with Women All Products
             updateUserUI();
-            loadBanners(); // NEW: Load Banners from Supabase and then start the slider
+            loadBanners(); 
+            // Load Dark Mode Preference on startup
+            if(localStorage.getItem('kshop_dark_mode') === 'on') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').checked = true;
+            }
         }
 
-        // NEW: Function to load banners from Supabase
+        // --- SLIDER LOGIC (Load from Supabase) ---
+        let slideIndex = 0;
+        
         async function loadBanners() {
             const { data, error } = await supabase
                 .from('banners')
@@ -302,7 +327,6 @@
 
             if (error) {
                 console.error("Error loading banners:", error);
-                // Error ရှိရင် default (ဒါမှမဟုတ် လုံးဝမပြဘဲ) ထားနိုင်သည်
                 return;
             }
 
@@ -326,8 +350,6 @@
             }
         }
         
-        // --- SLIDER LOGIC ---
-        let slideIndex = 0;
         function startSlider() {
             showSlides();
             setInterval(() => {
@@ -338,7 +360,7 @@
         function showSlides() {
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
-            if (slides.length === 0) return; // No slides loaded
+            if (slides.length === 0) return; 
             
             if (slideIndex >= slides.length) slideIndex = 0;
             if (slideIndex < 0) slideIndex = slides.length - 1;
@@ -365,17 +387,10 @@
             localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off'); // Save preference
         }
         
-        // Load theme preference on startup
-        if(localStorage.getItem('kshop_dark_mode') === 'on') {
-            document.body.classList.add('dark-mode');
-            document.querySelector('#settingsModal input[type="checkbox"]').checked = true;
-        }
-
         let currentLang = 'en';
         function toggleLanguage() {
             currentLang = (currentLang === 'en') ? 'my' : 'en';
             document.getElementById('langBtn').innerText = (currentLang === 'en') ? 'EN' : 'MY';
-            // Placeholder: Add more translation logic here (e.g., using a translation map)
             if(currentLang === 'my') document.querySelector('[data-t="shop_cat"]').innerText = "ပစ္စည်းအမျိုးအစားများ";
             else document.querySelector('[data-t="shop_cat"]').innerText = "WOMEN'S FASHION";
         }
@@ -461,35 +476,30 @@
             con.innerHTML = html;
         }
 
-        // --- PRODUCTS (UPDATED TO FILTER BY GENDER AND CATEGORY) ---
+        // --- PRODUCTS (LOAD FROM DB OR SAMPLES) ---
         async function loadProducts(cat, title, gender = 'women') { 
             document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
             document.getElementById('pageTitle').innerText = title;
             
-            // TRY FETCHING FROM DB
-            let q = supabase.from('products').select('*');
-            
-            // Gender ကို အမြဲတမ်း စစ်ဆေးပါမည်
-            q = q.eq('gender', gender); 
-            
-            // Category ကို 'all' မဟုတ်ရင် ထပ်စစ်ပါမည်။ (Example: 'clothing', 'shoes', 'bag')
+            // 1. TRY FETCHING FROM DB
+            let q = supabase.from('products').select('*').eq('gender', gender); 
             if(cat !== 'all') { 
                 q = q.eq('category', cat);
             }
-            
             let { data } = await q;
 
-            // FALLBACK TO SAMPLE DATA (5 ITEMS) IF DB EMPTY
+            // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY
             if (!data || data.length === 0) {
-                console.log("Using Sample Data");
-                // Sample data ကို 'women' ရဲ့ 'all' မှာသာ ပြပါမယ်
-                if (cat === 'all' && gender === 'women') {
-                    data = sampleData;
-                } else {
-                    data = []; 
-                }
+                console.log(`Using Sample Data for ${gender} - ${cat}`);
+                // Filter the extended sample list based on requested gender and category
+                data = allSampleProducts.filter(p => {
+                    const genderMatch = p.gender === gender;
+                    // Check if category matches or if 'all' is requested
+                    const categoryMatch = cat === 'all' || p.category === cat;
+                    return genderMatch && categoryMatch;
+                });
             }
 
             currentProducts = data || [];
