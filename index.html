@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Lab</title>
+    <title>Fashion Lab ✿</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
@@ -125,12 +125,12 @@
                 <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
-        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
+        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab ✿ 2025</div>
     </div>
 
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 24px; letter-spacing: 1px; color: var(--accent-color); text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Fashion Lab</div>
+        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab ✿</div>
         <div class="nav-icons">
             <i class="fas fa-search" onclick="toggleSearch()"></i>
             <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
@@ -297,7 +297,7 @@
 
         let currentLang = localStorage.getItem('kshop_lang') || 'en';
         
-        // --- EXTENDED SAMPLE PRODUCTS ---
+        // --- EXTENDED SAMPLE PRODUCTS (for fallback) ---
         const allSampleProducts = [
             {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women"},
             {name: "High Waist Jeans", price: 35000, image_url: "https://images.unsplash.com/photo-1598226485892-0b70d234a949?w=500", category: "clothing", gender: "women"},
@@ -321,8 +321,10 @@
         window.onload = function() {
             // Load language preference and apply
             const langSelect = document.getElementById('langSelect');
-            langSelect.value = currentLang;
-            applyLanguage(currentLang);
+            if (langSelect.options.length > 0 && currentTranslations[currentLang]) {
+                langSelect.value = currentLang;
+                applyLanguage(currentLang);
+            }
             
             // Initial product and UI load
             loadProducts('all', currentTranslations[currentLang].all, 'women'); 
@@ -339,6 +341,7 @@
         // --- LANGUAGE FUNCTIONS ---
         function applyLanguage(lang) {
             const t = currentTranslations[lang];
+            if (!t) return;
             
             // Apply text to all elements with a data-t attribute
             document.querySelectorAll('[data-t]').forEach(el => {
@@ -350,16 +353,13 @@
 
             // Specific element updates (like placeholder or non-data-t elements)
             document.querySelector('.chat-input').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            document.querySelector('#checkoutModal h3').innerText = t.order_form;
-            document.querySelector('#historyModal h3').innerText = t.history_title;
+            document.querySelector('.menu-footer small').innerText = `© ${t.app_name || 'Fashion Lab'} 2025`; 
         }
 
         function toggleLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('kshop_lang', lang);
             applyLanguage(lang);
-            // Optionally reload products to update the title, but not required for function
-            // loadProducts('all', currentTranslations[lang].all, 'women');
         }
 
         // --- SLIDER LOGIC ---
@@ -606,6 +606,7 @@
             
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
+            // Set text back using current language
             btn.innerText=currentTranslations[currentLang].send_btn; 
             btn.disabled=false;
             document.getElementById('slipInput').value = ''; 
