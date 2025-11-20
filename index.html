@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Lab</title>
+    <title>K Online Shopping</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <style>
-        :root { --bg-color: #f9f9f9; --text-color: #333; --header-bg: #2d2d2d; --header-text: #ffffff; --card-bg: #ffffff; }
-        body.dark-mode { --bg-color: #121212; --text-color: #e0e0e0; --header-bg: #000000; --header-text: #ffffff; --card-bg: #1e1e1e; }
+        :root {
+            --bg-color: #f9f9f9; --text-color: #333;
+            --header-bg: #2d2d2d; --header-text: #ffffff;
+            --card-bg: #ffffff; --accent-color: #d32f2f;
+        }
+        /* Dark Mode */
+        body.dark-mode {
+            --bg-color: #121212; --text-color: #e0e0e0;
+            --header-bg: #000000; --header-text: #ffffff;
+            --card-bg: #1e1e1e;
+        }
 
         body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); transition: 0.3s; }
         
@@ -19,47 +28,69 @@
         .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; position: relative; }
         .user-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: none; border: 1px solid white; }
 
-        /* SLIDER */
-        .slider-container { position: relative; width: 95%; margin: 15px auto; overflow: hidden; border-radius: 15px; }
+        /* MENU & OVERLAY */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; }
+        .overlay.active { display: block; }
+        .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: var(--card-bg); transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
+        .side-menu.active { left: 0; }
+        .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
+        .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: var(--card-bg); color: #777; }
+        .tab.active { border-bottom: 3px solid #2d2d2d; color: var(--text-color); background: var(--bg-color); }
+        .menu-content { flex: 1; overflow-y: auto; }
+        .menu-section { display: none; }
+        .menu-section.active { display: block; }
+        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
+
+        /* --- SLIDER WITH DOTS & ROUNDED CORNERS --- */
+        .slider-container { position: relative; width: 95%; margin: 15px auto; overflow: hidden; border-radius: 15px; /* Rounded corners */ }
         .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
-        .slide { min-width: 100%; height: 300px; /* Increased height fix */ }
+        .slide { min-width: 100%; height: 180px; }
         .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
+        
         .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
         .dot { height: 8px; width: 8px; margin: 0 4px; background-color: rgba(255,255,255,0.5); border-radius: 50%; display: inline-block; transition: background-color 0.3s; }
         .dot.active { background-color: #fff; width: 20px; border-radius: 4px; }
 
-        /* PRODUCTS */
+        /* PRODUCTS AREA */
         .main-content { padding: 15px; padding-bottom: 80px; }
-        .product-grid { display: grid; grid-template-columns: 1fr; /* Single Column Fix */ gap: 15px; }
+        .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .product-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
-        .p-img { width: 100%; height: 300px; /* Increased image height */ object-fit: cover; background: #eee; }
+        .p-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
         .p-info { padding: 10px; padding-bottom: 50px; }
+        .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
+        .p-price { font-weight: bold; font-size: 14px; color: var(--text-color); }
         .cart-btn { position: absolute; bottom: 10px; right: 10px; background: #2d2d2d; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
 
-        /* SUPPORT CHAT (Draggable Fix) */
+        /* SUPPORT CHAT */
         .support-btn { position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .chat-box { 
-            display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg);
-            border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd;
-        }
-        .chat-header { background: #007bff; color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; cursor: grab; }
+        .chat-box { display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
+        .chat-header { background: #007bff; color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
         .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
         .chat-input-area { display: flex; border-top: 1px solid #ddd; }
         .chat-input { flex: 1; padding: 10px; border: none; outline: none; }
         .chat-send { padding: 0 15px; background: white; border: none; color: #007bff; cursor: pointer; }
-        .bot-message { display: flex; align-items: flex-start; margin-bottom: 8px; }
-        .bot-icon { margin-right: 8px; font-size: 16px; color: #007bff; }
-        .bot-text { background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; max-width: 85%; }
 
         /* MODALS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
         .close-modal { float: right; font-size: 24px; cursor: pointer; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
-        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; }
+        
+        /* Payment Styles (REAL LOGOS) */
+        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; border: 1px solid #eee; }
         .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
-        .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+        .order-btn { width: 100%; padding: 12px; background: #2d2d2d; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        
+        /* Search */
+        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
+        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+
+        /* Settings */
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -68,15 +99,7 @@
         input:checked + .slider { background-color: #2196F3; }
         input:checked + .slider:before { transform: translateX(20px); }
         
-        /* --- CRITICAL FIX: SIDE MENU --- */
-        .side-menu { 
-            height: 100%; width: 280px; position: fixed; top: 0; 
-            left: -280px; /* Hides menu off-screen */
-            background: var(--card-bg); transition: left 0.3s; z-index: 200; 
-            display: flex; flex-direction: column; 
-        }
-        .side-menu.active { left: 0; }
-        .overlay.active { display: block; }
+        .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
@@ -109,7 +132,7 @@
 
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold;">Fashion Lab</div>
+        <div style="font-weight:bold;">K Online Shopping</div>
         <div class="nav-icons">
             <i class="fas fa-search" onclick="toggleSearch()"></i>
             <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
@@ -139,8 +162,8 @@
     </div>
 
     <div class="support-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
-    <div class="chat-box" id="chatBox" style="bottom: 80px; right: 20px;">
-        <div class="chat-header" id="chatHeader">
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
             <span>Support Chat</span>
             <i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer;"></i>
         </div>
@@ -157,8 +180,14 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
             <h3>Settings</h3>
-            <div class="setting-row"><span>Dark Mode</span><label class="switch"><input type="checkbox" onchange="toggleTheme(this)"><span class="slider"></span></label></div>
-            <div class="setting-row"><span>Language</span><button class="order-btn" style="width:auto; padding:5px 15px; margin:0;" onclick="toggleLanguage()" id="langBtn">EN</button></div>
+            <div class="setting-row">
+                <span>Dark Mode</span>
+                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>Language</span>
+                <button class="order-btn" style="width:auto; padding:5px 15px; margin:0;" onclick="toggleLanguage()" id="langBtn">EN</button>
+            </div>
         </div>
     </div>
 
@@ -210,15 +239,23 @@
                 <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
                 <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div>
             </div>
-
-            <div class="input-group"><label>Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label><textarea id="deliveryAddress" rows="3" placeholder="လမ်း၊ မြို့နယ်..."></textarea></div>
-            <div class="input-group"><label>Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label><input type="tel" id="contactPhone" placeholder="09xxxxxxxxx"></div>
-            <div class="input-group"><label>Note (အကြောင်းအရာ)</label><input type="text" id="userNote" placeholder="Note"></div>
-
-            <div class="input-group"><label>Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="previewSlip()"></div>
-            <img id="slipPreview" src="" style="width:100%; margin-bottom:10px; border-radius:5px; display:none;">
             
-            <button class="order-btn" id="sendBtn" onclick="sendOrder()">Admin ထံသို့ ပို့မည်</button>
+            <div style="margin-top: 15px;">
+                <div class="input-group">
+                    <label>Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
+                    <textarea id="addressInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color);"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
+                    <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
+                </div>
+                <div class="input-group">
+                    <label>Note (အကြောင်းအရာ)</label>
+                    <input type="text" id="noteInput" placeholder="Note">
+                </div>
+            </div>
+            <div class="input-group"><label>Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
+            <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled>Admin ထံသို့ ပို့မည်</button>
         </div>
     </div>
 
@@ -232,59 +269,128 @@
     </div>
 
     <script>
-        // *** 🛠️ CONFIGURATION - START HERE 🛠️ ***
+        // CONFIG
         const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.jD7fg_XYSlXPYs1EWIku22DwjjuGVE5WmN8NHx0jvfM'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
         const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
         const CHAT_ID = '-5098597126'; 
-        const WEBSITE_DOMAIN = 'https://online-shopping-rust-five.vercel.app'; 
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentProducts = [];
         let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
 
-        // SAMPLE DATA (Used if DB is empty)
+        // --- 5 SAMPLE PRODUCTS (INITIAL LOAD) ---
         const sampleData = [
-            {name: "Summer Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500", category: 'clothing'},
-            {name: "Running Shoes", price: 45000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: 'shoes'},
-            {name: "Leather Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: 'bag'},
-            {name: "White Blouse", price: 18000, image_url: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=500", category: 'clothing'},
-            {name: "Classic Heels", price: 35000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: 'shoes'}
+            {name: "Summer Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500"},
+            {name: "Running Shoes", price: 45000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
+            {name: "Leather Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500"},
+            {name: "White Blouse", price: 18000, image_url: "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?w=500"},
+            {name: "Classic Heels", price: 35000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500"}
         ];
 
         window.onload = function() {
             loadProducts('all', 'All Products');
             updateUserUI();
-            startSlider();
-            checkAdminCommand();
+            startSlider(); // Start Banner Slider
         }
 
         // --- SLIDER LOGIC ---
         let slideIndex = 0;
         function startSlider() {
             showSlides();
-            setInterval(() => { slideIndex++; showSlides(); }, 3000); 
+            setInterval(() => {
+                slideIndex++;
+                showSlides();
+            }, 3000); // Change every 3 seconds
         }
         function showSlides() {
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
             if (slideIndex >= slides.length) slideIndex = 0;
             if (slideIndex < 0) slideIndex = slides.length - 1;
+            
             document.getElementById('sliderWrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
+            
             dots.forEach(d => d.classList.remove('active'));
             dots[slideIndex].classList.add('active');
         }
-        function currentSlide(n) { slideIndex = n; showSlides(); }
+        function currentSlide(n) {
+            slideIndex = n;
+            showSlides();
+        }
 
         function updateUserUI() {
             if(currentUser) document.getElementById('userDot').style.display = 'block';
             else document.getElementById('userDot').style.display = 'none';
         }
 
-        // --- AUTHENTICATION ---
+        // --- SETTINGS & THEME ---
+        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function toggleTheme(cb) { 
+            document.body.classList.toggle('dark-mode', cb.checked); 
+            localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off'); // Save preference
+        }
+        
+        // Load theme preference on startup
+        if(localStorage.getItem('kshop_dark_mode') === 'on') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('#settingsModal input[type="checkbox"]').checked = true;
+        }
+
+        let currentLang = 'en';
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'my' : 'en';
+            document.getElementById('langBtn').innerText = (currentLang === 'en') ? 'EN' : 'MY';
+            // Placeholder: Add more translation logic here (e.g., using a translation map)
+            if(currentLang === 'my') document.querySelector('[data-t="shop_cat"]').innerText = "ပစ္စည်းအမျိုးအစားများ";
+            else document.querySelector('[data-t="shop_cat"]').innerText = "WOMEN'S FASHION";
+        }
+
+        // --- CHAT ---
+        function toggleChat() {
+            const box = document.getElementById('chatBox');
+            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+        }
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            if(input.value.trim()) {
+                const body = document.getElementById('chatBody');
+                const div = document.createElement('div');
+                div.style.cssText = "background:#007bff; color:white; padding:8px; border-radius:5px; margin-bottom:5px; text-align:right; margin-left:auto; display:table;";
+                div.innerText = input.value;
+                body.appendChild(div);
+                input.value = '';
+                setTimeout(() => {
+                    const reply = document.createElement('div');
+                    reply.style.cssText = "background:#eee; color:#333; padding:8px; border-radius:5px; margin-bottom:5px; display:table;";
+                    reply.innerText = "မက်ဆေ့ပို့တာ ကျေးဇူးပါ။ Admin မအားသေးလို့ ခဏစောင့်ပေးပါနော်။";
+                    body.appendChild(reply);
+                    body.scrollTop = body.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // --- AUTH & HISTORY ---
         function checkAuth() {
             if(currentUser) openHistory();
             else document.getElementById('authModal').style.display = 'flex';
+        }
+        function showAuthForm(type) {
+            if(type === 'login') {
+                document.getElementById('tabLogin').style.borderBottom = '2px solid #2d2d2d';
+                document.getElementById('tabRegister').style.borderBottom = 'none';
+                document.getElementById('tabRegister').style.color = '#777';
+                document.getElementById('tabLogin').style.color = 'var(--text-color)';
+                document.getElementById('loginForm').style.display='block';
+                document.getElementById('registerForm').style.display='none';
+            } else {
+                document.getElementById('tabLogin').style.borderBottom = 'none';
+                document.getElementById('tabRegister').style.borderBottom = '2px solid #2d2d2d';
+                document.getElementById('tabLogin').style.color = '#777';
+                document.getElementById('tabRegister').style.color = 'var(--text-color)';
+                document.getElementById('loginForm').style.display='none';
+                document.getElementById('registerForm').style.display='block';
+            }
         }
         async function doLogin() {
             const phone = document.getElementById('lPhone').value;
@@ -310,18 +416,13 @@
             document.getElementById('historyModal').style.display='flex';
             const con = document.getElementById('historyList');
             con.innerHTML = '<p>Loading...</p>';
-            let { data: orders } = await supabase.from('orders').select('*').eq('customer_phone', currentUser.phone).order('created_at', {ascending:false});
+            let { data } = await supabase.from('orders').select('*').eq('customer_phone', currentUser.phone).order('created_at', {ascending:false});
             if(!data || !data.length) { con.innerHTML='<p>No orders yet.</p>'; return; }
             let html = '';
             data.forEach(o => {
                 let icon = '⏳';
                 if(o.status==='reject') icon='⛔'; if(o.status==='coming') icon='🟡'; if(o.status==='owned') icon='🟢';
-                const adminComment = o.admin_comment ? `<small style="color:#007bff; display:block;">Admin Note: ${o.admin_comment}</small>` : '';
-
-                html += `<div class="history-item">
-                    <div><b>${o.item_name}</b> (${o.price})<div style="font-size:12px; color:#666;">Status: ${o.status}</div>${adminComment}</div>
-                    <div style="font-size:20px; text-align:center;">${icon}</div>
-                </div>`;
+                html += `<div class="history-item"><div><b>${o.item_name}</b><br>${o.price}</div><div style="font-size:20px;">${icon}</div></div>`;
             });
             con.innerHTML = html;
         }
@@ -333,13 +434,15 @@
             document.querySelector('.overlay').classList.remove('active');
             document.getElementById('pageTitle').innerText = title;
             
+            // TRY FETCHING FROM DB
             let q = supabase.from('products').select('*');
             if(cat!=='all' && cat!=='men_all') q = q.eq('category', cat);
-            
             let { data } = await q;
 
+            // FALLBACK TO SAMPLE DATA (5 ITEMS) IF DB EMPTY
             if (!data || data.length === 0) {
-                data = sampleData.filter(p => p.category === cat || cat === 'all');
+                console.log("Using Sample Data");
+                data = sampleData; // Always show these 5 items if DB empty
             }
 
             currentProducts = data || [];
@@ -347,7 +450,6 @@
         }
 
         function renderProducts(list, title) {
-            document.getElementById('pageTitle').innerText = title;
             const con = document.getElementById('productsContainer');
             con.innerHTML = '';
             list.forEach((p, index) => {
@@ -371,81 +473,71 @@
             document.getElementById('modal-img').src = p.image_url || '';
             document.getElementById('checkoutModal').style.display = 'flex';
             
-            // CLEAR PREVIOUS SLIP AND INPUTS
+            // NEW: Reset input fields and disable send button on open
+            document.getElementById('addressInput').value = '';
+            document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
+            document.getElementById('noteInput').value = '';
             document.getElementById('slipInput').value = '';
-            document.getElementById('slipPreview').style.display = 'none'; 
+            document.getElementById('sendBtn').disabled = true; 
+        }
+
+        // NEW: Function to check if file is uploaded
+        function checkSlipFile() {
+            const file = document.getElementById('slipInput').files[0];
+            document.getElementById('sendBtn').disabled = !file;
         }
 
         async function sendOrder() {
             const btn = document.getElementById('sendBtn');
             const file = document.getElementById('slipInput').files[0];
-            const address = document.getElementById('deliveryAddress').value;
-            const contactPhone = document.getElementById('contactPhone').value;
-            const userNote = document.getElementById('userNote').value;
-
-            // --- MANDATORY SLIP & FIELDS CHECK ---
-            if (!address || !contactPhone || !file) {
-                 alert("ပို့ဆောင်ရန်လိပ်စာ၊ ဆက်သွယ်ရန်ဖုန်းနှင့် Payment Slip တို့ကို မဖြစ်မနေ ဖြည့်သွင်းရပါမည်။");
-                 return;
-            }
             
+            // NEW: Get the data from the new fields
+            const address = document.getElementById('addressInput').value;
+            const contactPhone = document.getElementById('contactPhoneInput').value;
+            const note = document.getElementById('noteInput').value;
+
+            // Input Validation - ENSURE ALL REQUIRED FIELDS ARE FILLED (based on user request for slip)
+            if (!address.trim() || !contactPhone.trim() || !file) {
+                alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
+                btn.disabled = false; return;
+            }
+
             btn.innerText="Sending..."; btn.disabled=true;
             
             const pName = document.getElementById('modal-name').innerText;
             const pPrice = document.getElementById('modal-price').innerText;
 
-            let { data: newOrder } = await supabase.from('orders').insert([{
-                customer_name: currentUser.name, customer_phone: currentUser.phone,
-                item_name: pName, price: pPrice, status: 'pending',
-                delivery_address: address, user_note: userNote, contact_phone: contactPhone,
-                admin_comment: 'New Order received'
-            }]).select();
+            await supabase.from('orders').insert([{
+                customer_name: currentUser.name, customer_phone: contactPhone,
+                item_name: pName, price: pPrice, status: 'pending', address: address, note: note
+            }]);
 
-            const orderId = newOrder[0].id;
-            const baseLink = `${WEBSITE_DOMAIN}?order_id=${orderId}&status=`;
-            const adminLinks = 
-                `\n\n--- *ADMIN ACTIONS* ---\n` +
-                `⛔ [REJECT](${baseLink}reject)\n` +
-                `🟡 [COMING SOON](${baseLink}coming)\n` +
-                `🟢 [OWNED/DONE](${baseLink}owned)\n`;
+            // NEW: Updated Caption to include new fields
+            const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pName}\n💰 ${pPrice}`;
 
-            const caption = 
-                `🛍️ *New Order [ID: ${orderId}]*\n` +
-                `--------------------------\n` +
-                `👤 User: ${currentUser.name}\n📞 User Phone: ${currentUser.phone}\n` +
-                `📍 *Deliver To:* ${address}\n📞 *Contact:* ${contactPhone}\n` +
-                `📝 Note: ${userNote || 'N/A'}\n` +
-                `👗 Item: ${pName}\n💰 Price: ${pPrice}` +
-                adminLinks;
-            
             const fd = new FormData();
             fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
+            // Always send photo because we enforced file upload
+            fd.append("photo", file); 
             
-            const endpoint = file ? 'sendPhoto' : 'sendMessage';
-            if(file) fd.append("photo", file); else fd.append("text", caption);
-
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`, {method:'POST', body:fd});
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
             
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
-            btn.innerText="Admin ထံသို့ ပို့မည်"; btn.disabled = false;
+            btn.innerText="Admin ထံသို့ ပို့မည်"; btn.disabled=false;
+            document.getElementById('slipInput').value = ''; // Reset file input
+            document.getElementById('sendBtn').disabled = true; // Re-disable button
         }
 
-        // --- UTILITY ---
         function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
         function toggleSearch() { const b=document.getElementById('searchBox'); b.style.display=b.style.display==='block'?'none':'block'; }
         function closeModal(id) { document.getElementById(id).style.display='none'; }
-        
-        function previewSlip() {
-            const file = document.getElementById('slipInput').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('slipPreview').src = e.target.result;
-                    document.getElementById('slipPreview').style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
+        function searchProducts() { /* ... */ }
+        function switchTab(t) { 
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
+            if(t==='women'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('women-menu').classList.add('active'); }
+            else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('men-menu').classList.add('active'); }
         }
     </script>
 </body>
