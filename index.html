@@ -42,10 +42,14 @@
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
-        /* --- SLIDER WITH DOTS & ROUNDED CORNERS --- */
-        .slider-container { position: relative; width: 95%; margin: 15px auto; overflow: hidden; border-radius: 15px; /* Rounded corners */ }
+        /* --- SLIDER WITH DOTS & ROUNDED CORNERS (MODIFIED FOR BIGGER SIZE) --- */
+        .slider-container { 
+            position: relative; width: 95%; margin: 15px auto; overflow: hidden; 
+            border-radius: 15px; /* Rounded corners */
+            height: 50vh; /* Banner ကို မျက်နှာပြင်ရဲ့ အမြင့် တစ်ဝက်လောက် ပေးလိုက်သည် */
+        }
         .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
-        .slide { min-width: 100%; height: 180px; }
+        .slide { min-width: 100%; height: 100%; } /* အမြင့်ကို Container အတိုင်း 100% ပေးလိုက်သည် */
         .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
         
         .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
@@ -114,17 +118,17 @@
         <div class="menu-content">
             <div id="women-menu" class="menu-section active">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags')"><span>Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span>Bags</span> <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('men_all', 'Men All Products')"><span>All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('men_clothing', 'Men Clothing')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('men_shoes', 'Men Shoes')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('men_accessories', 'Accessories')"><span>Accessories</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span>All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span>Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span>Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span>Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
         <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ K Online Shopping 2025</div>
@@ -145,15 +149,9 @@
         
         <div class="slider-container">
             <div class="slider-wrapper" id="sliderWrapper">
-                <div class="slide"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80" alt="Banner 1"></div>
-                <div class="slide"><img src="https://images.unsplash.com/photo-1445205170230-05328324f30f?w=800&q=80" alt="Banner 2"></div>
-                <div class="slide"><img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80" alt="Banner 3"></div>
-            </div>
+                </div>
             <div class="dots-container" id="dotsContainer">
-                <span class="dot active" onclick="currentSlide(0)"></span>
-                <span class="dot" onclick="currentSlide(1)"></span>
-                <span class="dot" onclick="currentSlide(2)"></span>
-            </div>
+                </div>
         </div>
 
         <div class="section-title" id="pageTitle">All Products</div>
@@ -254,6 +252,7 @@
                     <input type="text" id="noteInput" placeholder="Note">
                 </div>
             </div>
+
             <div class="input-group"><label>Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
             <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled>Admin ထံသို့ ပို့မည်</button>
         </div>
@@ -291,9 +290,42 @@
         window.onload = function() {
             loadProducts('all', 'All Products');
             updateUserUI();
-            startSlider(); // Start Banner Slider
+            loadBanners(); // NEW: Load Banners from Supabase and then start the slider
         }
 
+        // NEW: Function to load banners from Supabase
+        async function loadBanners() {
+            const { data, error } = await supabase
+                .from('banners')
+                .select('image_url')
+                .order('order_index', { ascending: true }); // order_index အတိုင်း စီပါမည်
+
+            if (error) {
+                console.error("Error loading banners:", error);
+                // Error ရှိရင် default (ဒါမှမဟုတ် လုံးဝမပြဘဲ) ထားနိုင်သည်
+                return;
+            }
+
+            const wrapper = document.getElementById('sliderWrapper');
+            const dotsContainer = document.getElementById('dotsContainer');
+            wrapper.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            data.forEach((b, index) => {
+                // 1. Slide ပုံ ထည့်သွင်းခြင်း
+                wrapper.innerHTML += `<div class="slide"><img src="${b.image_url}" alt="Banner ${index + 1}"></div>`;
+                
+                // 2. Dot ထည့်သွင်းခြင်း
+                const activeClass = index === 0 ? ' active' : '';
+                dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
+            });
+            
+            // Banners များ တင်ပြီးမှ Slider ကို စပါမည်
+            if(data && data.length > 0) {
+                 startSlider();
+            }
+        }
+        
         // --- SLIDER LOGIC ---
         let slideIndex = 0;
         function startSlider() {
@@ -306,6 +338,8 @@
         function showSlides() {
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
+            if (slides.length === 0) return; // No slides loaded
+            
             if (slideIndex >= slides.length) slideIndex = 0;
             if (slideIndex < 0) slideIndex = slides.length - 1;
             
@@ -427,8 +461,8 @@
             con.innerHTML = html;
         }
 
-        // --- PRODUCTS ---
-        async function loadProducts(cat, title) {
+        // --- PRODUCTS (UPDATED TO FILTER BY GENDER AND CATEGORY) ---
+        async function loadProducts(cat, title, gender = 'women') { 
             document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
@@ -436,13 +470,26 @@
             
             // TRY FETCHING FROM DB
             let q = supabase.from('products').select('*');
-            if(cat!=='all' && cat!=='men_all') q = q.eq('category', cat);
+            
+            // Gender ကို အမြဲတမ်း စစ်ဆေးပါမည်
+            q = q.eq('gender', gender); 
+            
+            // Category ကို 'all' မဟုတ်ရင် ထပ်စစ်ပါမည်။ (Example: 'clothing', 'shoes', 'bag')
+            if(cat !== 'all') { 
+                q = q.eq('category', cat);
+            }
+            
             let { data } = await q;
 
             // FALLBACK TO SAMPLE DATA (5 ITEMS) IF DB EMPTY
             if (!data || data.length === 0) {
                 console.log("Using Sample Data");
-                data = sampleData; // Always show these 5 items if DB empty
+                // Sample data ကို 'women' ရဲ့ 'all' မှာသာ ပြပါမယ်
+                if (cat === 'all' && gender === 'women') {
+                    data = sampleData;
+                } else {
+                    data = []; 
+                }
             }
 
             currentProducts = data || [];
@@ -473,7 +520,7 @@
             document.getElementById('modal-img').src = p.image_url || '';
             document.getElementById('checkoutModal').style.display = 'flex';
             
-            // NEW: Reset input fields and disable send button on open
+            // Reset input fields and disable send button on open
             document.getElementById('addressInput').value = '';
             document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
             document.getElementById('noteInput').value = '';
@@ -481,7 +528,7 @@
             document.getElementById('sendBtn').disabled = true; 
         }
 
-        // NEW: Function to check if file is uploaded
+        // Function to check if file is uploaded
         function checkSlipFile() {
             const file = document.getElementById('slipInput').files[0];
             document.getElementById('sendBtn').disabled = !file;
@@ -491,12 +538,12 @@
             const btn = document.getElementById('sendBtn');
             const file = document.getElementById('slipInput').files[0];
             
-            // NEW: Get the data from the new fields
+            // Get the data from the new fields
             const address = document.getElementById('addressInput').value;
             const contactPhone = document.getElementById('contactPhoneInput').value;
             const note = document.getElementById('noteInput').value;
 
-            // Input Validation - ENSURE ALL REQUIRED FIELDS ARE FILLED (based on user request for slip)
+            // Input Validation - ENSURE ALL REQUIRED FIELDS ARE FILLED
             if (!address.trim() || !contactPhone.trim() || !file) {
                 alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
                 btn.disabled = false; return;
@@ -512,7 +559,7 @@
                 item_name: pName, price: pPrice, status: 'pending', address: address, note: note
             }]);
 
-            // NEW: Updated Caption to include new fields
+            // Updated Caption to include new fields
             const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pName}\n💰 ${pPrice}`;
 
             const fd = new FormData();
@@ -532,12 +579,20 @@
         function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
         function toggleSearch() { const b=document.getElementById('searchBox'); b.style.display=b.style.display==='block'?'none':'block'; }
         function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function searchProducts() { /* ... */ }
+        function searchProducts() { /* TODO: Add search logic */ }
         function switchTab(t) { 
             document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
             document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
-            if(t==='women'){ document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('women-menu').classList.add('active'); }
-            else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('men-menu').classList.add('active'); }
+            if(t==='women'){ 
+                document.querySelectorAll('.tab')[0].classList.add('active'); 
+                document.getElementById('women-menu').classList.add('active'); 
+                // loadProducts('all', 'All Products', 'women'); // Optionally reload products when switching tab
+            }
+            else { 
+                document.querySelectorAll('.tab')[1].classList.add('active'); 
+                document.getElementById('men-menu').classList.add('active'); 
+                // loadProducts('all', 'Men All Products', 'men'); // Optionally reload products when switching tab
+            }
         }
     </script>
 </body>
