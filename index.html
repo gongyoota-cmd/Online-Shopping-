@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Lab</title>
+    <title>K Online Shopping</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <style>
-        /* COLOR THEME */
+        /* --- CSS VARIABLES (Theme Colors) --- */
         :root {
             --bg-color: #f9f9f9; 
             --text-color: #333;
             --header-bg: #4a148c; /* Deep Purple */
             --header-text: #ffffff;
             --card-bg: #ffffff; 
-            --accent-color: #e91e63; /* Pink */
-            --vibrant-blue: #03a9f4; 
+            --accent-color: #e91e63; /* Vibrant Pink/Magenta for CTA */
+            --vibrant-blue: #03a9f4; /* For Chat/Switches */
+            --menu-bg: #ffffff;
+            --border-color: #eeeeee;
+            --footer-bg: #ffffff;
+            --input-bg: #eeeeee;
         }
         /* Dark Mode */
         body.dark-mode {
@@ -27,545 +31,444 @@
             --header-text: #ffffff;
             --card-bg: #1e1e1e;
             --vibrant-blue: #4fc3f7;
+            --menu-bg: #1e1e1e;
+            --border-color: #333333;
+            --footer-bg: #121212;
+            --input-bg: #333333;
         }
 
-        body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); transition: 0.3s; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         
-        /* HEADER */
-        header { background: var(--header-bg); color: var(--header-text); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; position: relative; }
-        .user-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: none; border: 1px solid white; }
+        /* Header & Navigation */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: var(--header-bg); color: var(--header-text); box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5em; font-weight: bold; }
+        .icons { display: flex; gap: 15px; font-size: 1.2em; }
+        .icon { cursor: pointer; }
+        
+        /* Menu Tabs (Women/Men) */
+        .tab-nav { display: flex; justify-content: center; background-color: var(--header-bg); padding: 5px 0; }
+        .tab { padding: 10px 20px; color: #ccc; cursor: pointer; transition: color 0.3s; }
+        .tab.active { color: var(--header-text); font-weight: bold; border-bottom: 3px solid var(--accent-color); }
+        
+        /* Slider/Banners */
+        .slider-container { width: 100%; overflow: hidden; position: relative; margin-top: 5px; }
+        .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; box-sizing: border-box; }
+        .slide img { width: 100%; height: auto; display: block; max-height: 250px; object-fit: cover; }
+        .dots-container { text-align: center; padding: 10px 0; position: absolute; bottom: 5px; width: 100%; }
+        .dot { height: 10px; width: 10px; margin: 0 5px; background-color: #bbb; border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; cursor: pointer; }
+        .dot.active { background-color: var(--accent-color); }
 
-        /* MENU & OVERLAY */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; }
+        /* Side Menu */
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: var(--menu-bg); overflow-x: hidden; transition: 0.5s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .side-menu.active { width: 250px; }
+        .close-btn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; color: var(--text-color); }
+        .menu-item { padding: 10px 25px; text-decoration: none; font-size: 1.1em; color: var(--text-color); display: block; transition: 0.3s; cursor: pointer; }
+        .menu-item:hover { background-color: var(--border-color); }
+        .menu-separator { height: 1px; background-color: var(--border-color); margin: 10px 0; }
+        
+        /* Overlay */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); z-index: 1500; display: none; }
         .overlay.active { display: block; }
-        .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: var(--card-bg); transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
-        .side-menu.active { left: 0; }
-        .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: var(--card-bg); color: #777; }
-        .tab.active { border-bottom: 3px solid var(--accent-color); color: var(--text-color); background: var(--bg-color); }
-        .menu-content { flex: 1; overflow-y: auto; }
-        .menu-section { display: none; }
-        .menu-section.active { display: block; }
-        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
-
-        /* SLIDER */
-        .slider-container { position: relative; width: 95%; margin: 15px auto; overflow: hidden; border-radius: 15px; height: 200px; }
-        .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; height: 100%; }
-        .slide { min-width: 100%; height: 100%; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
-        .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
-        .dot { background-color: rgba(255,255,255,0.5); height: 8px; width: 8px; margin: 0 4px; border-radius: 50%; display: inline-block; transition: background-color 0.3s; }
-        .dot.active { background-color: var(--header-text); width: 20px; border-radius: 4px; }
-
-        /* PRODUCTS GRID (FLEX FIX) */
-        .main-content { padding: 15px; padding-bottom: 80px; }
-        .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
         
-        .product-grid { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 15px; 
+        /* Products Grid */
+        #pageTitle { padding: 10px 15px; font-size: 1.2em; font-weight: bold; }
+        .products-grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 10px; }
+        .product-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; width: 45%; max-width: 200px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+        .product-card img { width: 100%; height: auto; max-height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+        .p-name { font-size: 0.9em; font-weight: 600; margin-bottom: 5px; color: var(--text-color); }
+        .p-price { color: var(--accent-color); font-size: 1.1em; font-weight: bold; }
+        
+        /* Search Box */
+        #searchContainer { padding: 10px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); display: none; position: sticky; top: 50px; z-index: 999; }
+        #searchInput { width: calc(100% - 20px); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--input-bg); color: var(--text-color); }
+        
+        /* Modals (Cart, Checkout, Success) */
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
+        .modal-content { background-color: var(--card-bg); margin: auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .modal-close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal-close:hover, .modal-close:focus { color: var(--accent-color); text-decoration: none; }
+
+        /* Cart & Checkout Specifics */
+        #cartItems > div { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--border-color); padding: 8px 0; }
+        #cartTotal { font-weight: bold; font-size: 1.2em; margin-top: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: 0.3s; font-weight: bold; margin-top: 15px; }
+        .btn-primary { background-color: var(--accent-color); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #c2185b; }
+        .btn-secondary { background-color: #ccc; color: var(--text-color); }
+        .input-group label { display: block; margin-top: 10px; font-weight: 600; }
+        .input-group input, .input-group textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
+
+        /* Loading Spinner */
+        #loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5000; font-size: 2em; color: var(--accent-color); }
+
+        /* Chatbox */
+        #chatBox { display: none; position: fixed; bottom: 20px; right: 20px; z-index: 2000; width: 300px; height: 400px; background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .chat-header { background-color: var(--vibrant-blue); color: white; padding: 10px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .chat-body { height: 300px; overflow-y: auto; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        .chat-input { display: flex; padding: 10px; }
+        .chat-input input { flex-grow: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px 0 0 4px; background-color: var(--input-bg); color: var(--text-color); }
+        .chat-input button { background-color: var(--vibrant-blue); color: white; border: none; padding: 8px 12px; border-radius: 0 4px 4px 0; cursor: pointer; }
+        
+        /* Language Selector */
+        #langSelect { margin-left: 10px; padding: 5px; border-radius: 4px; background-color: var(--header-bg); color: var(--header-text); border: none; }
+
+        /* Login/Register/Profile */
+        #loginModal .input-group input { margin-bottom: 10px; }
+        .toggle-form-btn { background: none; border: none; color: var(--accent-color); cursor: pointer; text-decoration: underline; margin-top: 10px; }
+        .profile-info { padding: 10px; border-bottom: 1px solid var(--border-color); }
+        #logoutBtn { background-color: #f44336; color: white; }
+
+        /* Responsive adjustments */
+        @media (min-width: 600px) {
+            .products-grid { padding: 20px; gap: 20px; }
+            .product-card { width: 30%; }
         }
-        .product-card { 
-            background: var(--card-bg); 
-            border-radius: 8px; 
-            overflow: hidden; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-            width: calc(50% - 7.5px); /* Correct width for 2 columns */
-        }
-        .p-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        .p-info { padding: 10px; padding-bottom: 50px; }
-        .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
-        .p-price { font-weight: bold; font-size: 14px; color: var(--text-color); }
-        .cart-btn { position: absolute; bottom: 10px; right: 10px; background: var(--accent-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
-
-        /* CHAT & MODALS */
-        .support-btn { position: fixed; bottom: 20px; right: 20px; background: var(--vibrant-blue); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .chat-box { display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
-        .chat-header { background: var(--vibrant-blue); color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
-        .chat-input-area { display: flex; border-top: 1px solid #ddd; }
-        .chat-input { flex: 1; padding: 10px; border: none; outline: none; background: var(--card-bg); color: var(--text-color); }
-        .chat-send { padding: 0 15px; background: var(--card-bg); border: none; color: var(--vibrant-blue); cursor: pointer; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
-        .close-modal { float: right; font-size: 24px; cursor: pointer; }
-        
-        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; border: 1px solid #eee; }
-        .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
-        .order-btn { width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        
-        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
-        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
-
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--vibrant-blue); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        #langSelect { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; background: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
-        .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
-<body id="body">
+<body>
 
-    <div class="overlay" onclick="toggleMenu()"></div>
-    
-    <div class="side-menu" id="sideMenu">
-        <div class="menu-tabs">
-            <div class="tab active" onclick="switchTab('women')">WOMEN</div>
-            <div class="tab" onclick="switchTab('men')">MEN</div>
+    <div class="header">
+        <div class="icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo">K Online Shopping</div>
+        <div class="icons">
+            <div class="icon" onclick="toggleSearch()"><i class="fas fa-search"></i></div>
+            <div class="icon" onclick="openModal('cartModal')"><i class="fas fa-shopping-cart"></i><span id="cartCount" style="font-size: 0.7em; vertical-align: top; color: var(--accent-color);"></span></div>
+            <div class="icon" onclick="openModal('loginModal')"><i class="fas fa-user-circle"></i></div>
+            <div class="icon" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></div>
         </div>
-        <div class="menu-content">
-            <div id="women-menu" class="menu-section active">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div id="men-menu" class="menu-section">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
-            </div>
-        </div>
-        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
     </div>
 
-    <header>
-        <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab</div>
-        <div class="nav-icons">
-            <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
-            <i class="fas fa-cog" onclick="openSettings()"></i>
-        </div>
-    </header>
-    <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
+    <div class="tab-nav">
+        <div class="tab active" onclick="switchTab('women', 'All Products (Women)')">WOMEN</div>
+        <div class="tab" onclick="switchTab('men', 'All Products (Men)')">MEN</div>
+        <select id="langSelect" onchange="setLanguage(this.value)">
+            <option value="my">MY</option>
+            <option value="en">EN</option>
+        </select>
+    </div>
 
-    <div class="main-content">
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+    </div>
+
+    <div id="sideMenu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeAll()">&times;</a>
+        <div id="women-menu" class="menu-section active">
+            <a href="#" class="menu-item" onclick="loadProducts('all', 'All Products (Women)', 'women'); closeAll()">All Products</a>
+            <a href="#" class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women'); closeAll()">Clothing</a>
+            <a href="#" class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women'); closeAll()">Shoes</a>
+            <a href="#" class="menu-item" onclick="loadProducts('bag', 'Bags', 'women'); closeAll()">Bags</a>
+        </div>
+        <div id="men-menu" class="menu-section" style="display:none;">
+            <a href="#" class="menu-item" onclick="loadProducts('all', 'All Products (Men)', 'men'); closeAll()">All Products</a>
+            <a href="#" class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'men'); closeAll()">Clothing</a>
+            <a href="#" class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'men'); closeAll()">Shoes</a>
+            <a href="#" class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men'); closeAll()">Accessories</a>
+        </div>
+        <div class="menu-separator"></div>
+        <a href="#" class="menu-item" onclick="openModal('orderHistoryModal'); closeAll()">Order History</a>
+        <a href="#" class="menu-item" onclick="openModal('settingsModal'); closeAll()">Settings</a>
+        <div class="menu-item" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIconMenu"></i> <span id="themeLabelMenu">DARK</span></div>
+    </div>
+
+    <div class="overlay" onclick="closeAll()"></div>
+
+    <div id="mainContent">
         <div class="slider-container">
-            <div class="slider-wrapper" id="sliderWrapper">
-                <div class="slide"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" alt="Banner 1"></div>
+            <div id="sliderWrapper" class="slider-wrapper">
+                </div>
+            <div id="dotsContainer" class="dots-container"></div>
+        </div>
+        
+        <h2 id="pageTitle">All Products (Women)</h2>
+        <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i></div>
+        
+        <div id="productsContainer" class="products-grid">
             </div>
-            <div class="dots-container" id="dotsContainer"></div>
-        </div>
-
-        <div class="section-title" id="pageTitle">All Products</div>
-        <div id="loading" style="text-align:center; padding:20px; display:none;">Loading...</div>
-        <div class="product-grid" id="productsContainer"></div>
     </div>
 
-    <div class="support-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
-    <div class="chat-box" id="chatBox">
-        <div class="chat-header" data-t="chat_title">Support Chat</div>
-        <div class="chat-body" id="chatBody">
-            <div style="background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; margin-bottom:5px;">မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?</div>
+    <div class="icon" style="position: fixed; bottom: 20px; right: 20px; background: var(--vibrant-blue); color: white; padding: 15px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 1000;" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
+
+    <div id="chatBox">
+        <div class="chat-header">Chat <span class="modal-close" onclick="toggleChat()">&times;</span></div>
+        <div class="chat-body">
+            <p>Admin: Welcome! How can I help you?</p>
         </div>
-        <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Type message...">
-            <button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message...">
+            <button><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
-    <div class="modal" id="settingsModal">
+
+    <div id="cartModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
-            <h3 data-t="settings_title">Settings</h3>
-            <div class="setting-row">
-                <span data-t="dark_mode">Dark Mode</span>
-                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)" id="darkModeToggle"><span class="slider"></span></label>
+            <div class="modal-header">
+                <h2 id="cartTitle">Shopping Cart</h2>
+                <span class="modal-close" onclick="closeModal('cartModal')">&times;</span>
             </div>
-            <div class="setting-row">
-                <span data-t="language_title">Language</span>
-                <select id="langSelect" onchange="toggleLanguage(this.value)">
-                    <option value="en">English (EN)</option>
-                    <option value="my">မြန်မာ (MY)</option>
-                    <option value="th">ไทย (TH)</option>
-                </select>
-            </div>
+            <div id="cartItems"></div>
+            <div id="cartTotal">Total: 0 MMK</div>
+            <button class="btn btn-primary" id="checkoutBtn" disabled onclick="openModal('checkoutModal'); closeModal('cartModal')">Checkout</button>
+            <button class="btn btn-secondary" onclick="clearCart()">Clear Cart</button>
         </div>
     </div>
 
-    <div class="modal" id="authModal">
+    <div id="checkoutModal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('authModal')">&times;</span>
-            <h3 style="text-align:center;">Welcome</h3>
-            <div style="display:flex; margin-bottom:20px; border-bottom:1px solid #ddd;">
-                <div style="flex:1; text-align:center; padding:10px; font-weight:bold; border-bottom:2px solid #2d2d2d; cursor:pointer;" id="tabLogin" onclick="showAuthForm('login')" data-t="login_tab">Login</div>
-                <div style="flex:1; text-align:center; padding:10px; color:#777; cursor:pointer;" id="tabRegister" onclick="showAuthForm('register')" data-t="register_tab">Register</div>
+            <div class="modal-header">
+                <h2 id="checkoutTitle">Checkout Details</h2>
+                <span class="modal-close" onclick="closeModal('checkoutModal')">&times;</span>
+            </div>
+            <p>Total Order: <span id="checkoutTotal">0 MMK</span></p>
+            <p id="checkoutItemsList"></p>
+            <div class="input-group">
+                <label for="checkoutName" id="nameLabel">Name</label>
+                <input type="text" id="checkoutName" required>
+            </div>
+            <div class="input-group">
+                <label for="checkoutPhone" id="phoneLabel">Phone</label>
+                <input type="text" id="checkoutPhone" required>
+            </div>
+            <div class="input-group">
+                <label for="checkoutAddress" id="addressLabel">Address</label>
+                <textarea id="checkoutAddress" required></textarea>
+            </div>
+            <div class="input-group">
+                <label id="paymentLabel">Payment Slip (KBZ/CB)</label>
+                <input type="file" id="slipInput" accept="image/*" onchange="document.getElementById('sendBtn').disabled = !this.files.length">
+            </div>
+            <button class="btn btn-primary" id="sendBtn" disabled onclick="sendOrder(this)">Send Order</button>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Success!</h2>
+                <span class="modal-close" onclick="closeModal('successModal')">&times;</span>
+            </div>
+            <p>Your order has been placed successfully. We will contact you shortly.</p>
+            <button class="btn btn-primary" onclick="closeModal('successModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="orderHistoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order History</h2>
+                <span class="modal-close" onclick="closeModal('orderHistoryModal')">&times;</span>
+            </div>
+            <div id="orderHistoryList"></div>
+            <p id="orderHistoryMessage" style="text-align: center; color: #999;"></p>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="loginHeader">Login</h2>
+                <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
             </div>
             <div id="loginForm">
-                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="lPhone"></div>
-                <div class="input-group"><label data-t="pass_label">Password</label><input type="password" id="lPass"></div>
-                <button class="order-btn" onclick="doLogin()" data-t="login_btn">Login</button>
+                <div class="input-group">
+                    <label for="loginPhone">Phone</label>
+                    <input type="text" id="loginPhone" placeholder="09xxxxxxxxx" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button class="btn btn-primary" onclick="loginUser()">Login</button>
+                <button class="toggle-form-btn" onclick="showRegister()">Don't have an account? Register</button>
             </div>
             <div id="registerForm" style="display:none;">
-                <div class="input-group"><label data-t="name_label">Name</label><input type="text" id="rName"></div>
-                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="rPhone"></div>
-                <div class="input-group"><label data-t="pass_label">Password</label><input type="password" id="rPass"></div>
-                <button class="order-btn" onclick="doRegister()" data-t="register_btn">Register</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="historyModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('historyModal')">&times;</span>
-            <h3 data-t="history_title">My Orders</h3>
-            <div id="historyList"><p style="text-align:center;">Loading...</p></div>
-            <button class="order-btn" onclick="doLogout()" style="background:#d32f2f; margin-top:20px;" data-t="logout_btn">Logout</button>
-        </div>
-    </div>
-
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('checkoutModal')">&times;</span>
-            <h3 data-t="order_form">Order Form</h3>
-            <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
-                <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
-                <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:var(--accent-color);"></div></div>
-            </div>
-            
-            <div class="pay-row">
-                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div>
-            </div>
-            <div class="pay-row">
-                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div>
-            </div>
-            
-            <div style="margin-top: 15px;">
                 <div class="input-group">
-                    <label data-t="address_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
-                    <textarea id="addressInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color);"></textarea>
+                    <label for="registerName">Name</label>
+                    <input type="text" id="registerName" required>
                 </div>
                 <div class="input-group">
-                    <label data-t="contact_label">Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
-                    <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
+                    <label for="registerPhone">Phone</label>
+                    <input type="text" id="registerPhone" placeholder="09xxxxxxxxx" required>
                 </div>
                 <div class="input-group">
-                    <label data-t="note_label">Note (အကြောင်းအရာ)</label>
-                    <input type="text" id="noteInput" placeholder="Note">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
                 </div>
+                <button class="btn btn-primary" onclick="registerUser()">Register</button>
+                <button class="toggle-form-btn" onclick="showLogin()">Already have an account? Login</button>
             </div>
-
-            <div class="input-group"><label data-t="slip_label">Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
-            <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled data-t="send_btn">Admin ထံသို့ ပို့မည်</button>
+            <div id="profileView" style="display:none;">
+                <div class="profile-info">Name: <span id="profileName"></span></div>
+                <div class="profile-info">Phone: <span id="profilePhone"></span></div>
+                <button class="btn btn-primary" onclick="openModal('orderHistoryModal'); closeModal('loginModal')">View Orders</button>
+                <button class="btn" id="logoutBtn" onclick="logoutUser()">Logout</button>
+            </div>
         </div>
     </div>
 
-    <div class="modal" id="successModal">
-        <div class="modal-content" style="text-align:center;">
-            <i class="fas fa-check-circle" style="font-size:50px; color:#4CAF50; margin-bottom:10px;"></i>
-            <h3 data-t="order_sent_h3">👾 Order sent!</h3>
-            <p data-t="order_sent_p">Payment successful, delivery will be made soon.🎉</p>
-            <button class="order-btn" onclick="closeModal('successModal')" data-t="ok_btn">OK</button>
-        </div>
-    </div>
 
     <script>
-        // CONFIG
-        const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
-        const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
-        const CHAT_ID = '-5098597126'; 
+        /* ======================================================= */
+        /* === CONFIGURATION & INITIALIZATION (MUST BE UPDATED)=== */
+        /* ======================================================= */
+        
+        // ⚠️ Supabase Credentials - CHANGE THESE
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; // e.g., 'https://abcdxyz.supabase.co'
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE'; // e.g., 'eyJhbGciOiJIUzI1NiIsInR5c...'
+        
+        // ⚠️ Telegram Bot Credentials - CHANGE THESE
+        const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; // e.g., '1234567890:AABBDD_etc_etc'
+        const CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'; // e.g., '-1001234567890' (Make sure to include the minus sign if it's a group)
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let cart = [];
+        let total = 0;
+        let slideIndex = 0;
         let currentProducts = [];
-        let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
+        let currentUser = null; // Stores logged in user data
 
-        // --- TRANSLATION MAP (EN, MY, TH) ---
-        const currentTranslations = {
+        // Translation object (Simplified)
+        const translations = {
             en: {
-                shop_cat: "WOMEN'S FASHION", all: "All Products", clothing: "Clothing", shoes: "Shoes", bag: "Bags",
-                men_cat: "MEN'S FASHION", accessories: "Accessories",
-                order_form: "Order Form", address_label: "Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)", contact_label: "Contact Phone (ဆက်သွယ်ရန်ဖုန်း)", note_label: "Note (အကြောင်းအရာ)",
-                slip_label: "Payment Slip (ပြေစာ)", send_btn: "Send to Admin", chat_title: "Support Chat", history_title: "My Orders",
-                settings_title: "Settings", dark_mode: "Dark Mode", language_title: "Language", login_tab: "Login", register_tab: "Register", phone_label: "Phone", pass_label: "Password", login_btn: "Login", register_btn: "Register", logout_btn: "Logout", name_label: "Name",
-                order_sent_h3: "👾 Order sent!", order_sent_p: "Payment successful, delivery will be made soon.🎉", ok_btn: "OK",
-                search_placeholder: "Search...", chat_reply: "Hello! How can I help you today?" 
+                send_btn: "Send Order",
+                // Add other translations as needed
             },
             my: {
-                shop_cat: "အမျိုးသမီးဖက်ရှင်", all: "ပစ္စည်းအားလုံး", clothing: "အဝတ်အထည်", shoes: "ဖိနပ်", bag: "အိတ်",
-                men_cat: "အမျိုးသားဖက်ရှင်", accessories: "အသုံးအဆောင်",
-                order_form: "မှာယူမှုပုံစံ", address_label: "ပို့ဆောင်ရန်လိပ်စာ", contact_label: "ဆက်သွယ်ရန်ဖုန်း", note_label: "အကြောင်းအရာ",
-                slip_label: "ငွေလွှဲပြေစာ", send_btn: "Admin ထံသို့ ပို့မည်", chat_title: "အကူအညီချတ်", history_title: "မှာယူမှုမှတ်တမ်း",
-                settings_title: "ဆက်တင်များ", dark_mode: "ညမုဒ်", language_title: "ဘာသာစကား", login_tab: "ဝင်ရန်", register_tab: "အကောင့်ဖွင့်ရန်", phone_label: "ဖုန်းနံပါတ်", pass_label: "စကားဝှက်", login_btn: "ဝင်မည်", register_btn: "မှတ်ပုံတင်မည်", logout_btn: "ထွက်မည်", name_label: "နာမည်",
-                order_sent_h3: "👾 မှာယူမှု အောင်မြင်! ", order_sent_p: "ငွေပေးချေမှုအောင်မြင်ပါပြီ၊ မကြာမီ ပို့ဆောင်ပေးပါမည်။🎉", ok_btn: "အိုကေ",
-                search_placeholder: "ရှာဖွေပါ...", chat_reply: "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?" 
-            },
-            th: {
-                shop_cat: "แฟชั่นสตรี", all: "สินค้าทั้งหมด", clothing: "เสื้อผ้า", shoes: "รองเท้า", bag: "กระเป๋า",
-                men_cat: "แฟชั่นบุรุษ", accessories: "เครื่องประดับ",
-                order_form: "แบบฟอร์มคำสั่งซื้อ", address_label: "ที่อยู่จัดส่ง", contact_label: "เบอร์ติดต่อ", note_label: "หมายเหตุ",
-                slip_label: "สลิปการชำระเงิน", send_btn: "ส่งถึงแอดมิน", chat_title: "แชทสนับสนุน", history_title: "คำสั่งซื้อของฉัน",
-                settings_title: "การตั้งค่า", dark_mode: "โหมดกลางคืน", language_title: "ภาษา", login_tab: "เข้าสู่ระบบ", register_tab: "ลงทะเบียน", phone_label: "เบอร์โทรศัพท์", pass_label: "รหัสผ่าน", login_btn: "เข้าสู่ระบบ", register_btn: "ลงทะเบียน", logout_btn: "ออกจากระบบ", name_label: "ชื่อ",
-                order_sent_h3: "👾 ส่งคำสั่งซื้อแล้ว!", order_sent_p: "ชำระเงินสำเร็จแล้ว จะดำเนินการจัดส่งเร็วๆ นี้🎉", ok_btn: "ตกลง",
-                search_placeholder: "ค้นหา...", chat_reply: "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?" 
+                send_btn: "မှာယူမှု ပေးပို့",
+                // Add other translations as needed
             }
         };
+        let currentLang = 'my';
+        const currentTranslations = translations[currentLang];
 
-        let currentLang = localStorage.getItem('kshop_lang') || 'en';
-        
-        // --- FALLBACK SAMPLE PRODUCTS ---
-        // Used only if Supabase connection fails or returns no data
+        function setLanguage(lang) {
+            currentLang = lang;
+            // Simplified: You would need to update all UI elements here
+            document.getElementById('sendBtn').innerText = translations[lang].send_btn;
+        }
+
+        /* --- Sample Data (Fallback) --- */
         const allSampleProducts = [
-            {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women"},
-            {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women"},
-            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women"},
-            {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men"},
-            {name: "Sports Watch", price: 95000, image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", category: "accessories", gender: "men"},
-        ];
-        
-        // --- FALLBACK SAMPLE BANNERS ---
-        const sampleBanners = [
-            {image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"},
-            {image_url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800"},
-            {image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"}
+            { id: 's1', name: 'Sample Dress', price: 25000, image_url: 'https://via.placeholder.com/300x400?text=Sample+Dress', category: 'clothing', gender: 'women' },
+            { id: 's2', name: 'Sample Sneakers', price: 35000, image_url: 'https://via.placeholder.com/300x400?text=Sample+Sneakers', category: 'shoes', gender: 'women' },
+            { id: 's3', name: 'Sample Backpack', price: 45000, image_url: 'https://via.placeholder.com/300x400?text=Sample+Backpack', category: 'bag', gender: 'women' },
+            { id: 's4', name: 'Men T-Shirt', price: 15000, image_url: 'https://via.placeholder.com/300x400?text=Sample+Tee', category: 'clothing', gender: 'men' },
         ];
 
-        // --- WINDOW ONLOAD ---
-        window.onload = function() {
-            const langSelect = document.getElementById('langSelect');
-            const savedLang = localStorage.getItem('kshop_lang');
-            if (savedLang && currentTranslations[savedLang]) {
-                currentLang = savedLang;
-                langSelect.value = currentLang;
-                applyLanguage(currentLang);
-            } else if (langSelect.options.length > 0 && currentTranslations[currentLang]) {
-                langSelect.value = currentLang;
-                applyLanguage(currentLang);
-            }
-            
-            loadProducts('all', currentTranslations[currentLang].all, 'women'); 
-            updateUserUI();
-            loadBanners(); 
-            
-            if(localStorage.getItem('kshop_dark_mode') === 'on') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-        }
 
-        // --- LANGUAGE ---
-        function applyLanguage(lang) {
-            const t = currentTranslations[lang];
-            if (!t) return;
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (t[key]) el.innerText = t[key];
-            });
-            document.querySelector('#chatInput').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            document.querySelector('#searchInput').placeholder = t.search_placeholder || "Search...";
-            document.querySelector('#pageTitle').innerText = t.all; 
-        }
+        /* ======================================================= */
+        /* === CORE PRODUCT & BANNER LOADING FUNCTIONS (FIXED) === */
+        /* ======================================================= */
 
-        function toggleLanguage(lang) {
-            if (currentTranslations[lang]) {
-                currentLang = lang;
-                localStorage.setItem('kshop_lang', lang);
-                applyLanguage(lang);
-            }
-        }
-
-        // --- BANNERS (FIXED) ---
-        let slideIndex = 0;
-        
+        // 1. BANNER LOADING (FIXED)
         async function loadBanners() {
-            // Try fetching from Supabase
             const { data, error } = await supabase
                 .from('banners')
-                .select('image_url')
-                .order('order_index', { ascending: true }); 
+                .select('image_url, order_index')
+                .order('order_index', { ascending: true }); // Assumes order_index column exists
 
-            let finalBanners = [];
-
-            // Use Supabase data if available, otherwise use samples
-            if (!error && data && data.length > 0) {
-                finalBanners = data;
-            } else {
-                console.log("Using Sample Banners (Supabase empty or error)");
-                finalBanners = sampleBanners;
+            if (error) {
+                console.error("Banner Fetch Error:", error);
             }
 
+            // Fallback to sample data if fetch failed or empty
+            const bannerList = (data && data.length > 0) ? data : [
+                { image_url: 'https://via.placeholder.com/1000x300?text=Welcome+to+K+Shopping' },
+                { image_url: 'https://via.placeholder.com/1000x300?text=New+Arrivals+Every+Week' }
+            ];
+
+            renderBanners(bannerList);
+        }
+
+        function renderBanners(bannerList) {
             const wrapper = document.getElementById('sliderWrapper');
             const dotsContainer = document.getElementById('dotsContainer');
             wrapper.innerHTML = '';
             dotsContainer.innerHTML = '';
 
-            finalBanners.forEach((b, index) => {
-                wrapper.innerHTML += `<div class="slide"><img src="${b.image_url}" alt="Banner ${index + 1}"></div>`;
-                const activeClass = index === 0 ? ' active' : '';
-                dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
+            bannerList.forEach((b, index) => {
+                // Check for the image_url column
+                const imgLink = b.image_url; 
+                
+                if(imgLink) {
+                    wrapper.innerHTML += `<div class="slide"><img src="${imgLink}" alt="Banner ${index + 1}" onerror="this.src='https://via.placeholder.com/800x400?text=Image+Error'"></div>`;
+                    const activeClass = index === 0 ? ' active' : '';
+                    dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
+                }
             });
-            
-            if(finalBanners.length > 0) {
+
+            if(bannerList.length > 0) {
+                 slideIndex = 0;
                  startSlider();
             }
         }
         
-        function startSlider() {
-            showSlides();
-            setInterval(() => {
-                slideIndex++;
-                showSlides();
-            }, 3000); 
-        }
+        // Slider functions
         function showSlides() {
-            const slides = document.querySelectorAll('.slide');
+            const slides = document.querySelectorAll('#sliderWrapper .slide');
             const dots = document.querySelectorAll('.dot');
-            if (slides.length === 0) return; 
-            
-            if (slideIndex >= slides.length) slideIndex = 0;
-            if (slideIndex < 0) slideIndex = slides.length - 1;
-            
-            document.getElementById('sliderWrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
-            
-            dots.forEach(d => d.classList.remove('active'));
+            if (slides.length === 0) return;
+
+            if (slideIndex >= slides.length) { slideIndex = 0; }
+            if (slideIndex < 0) { slideIndex = slides.length - 1; }
+
+            document.getElementById('sliderWrapper').style.transform = `translateX(${-slideIndex * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
             dots[slideIndex].classList.add('active');
         }
-        function currentSlide(n) { slideIndex = n; showSlides(); }
 
-        function updateUserUI() {
-            if(currentUser) document.getElementById('userDot').style.display = 'block';
-            else document.getElementById('userDot').style.display = 'none';
-        }
-
-        // --- SETTINGS ---
-        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-        function toggleTheme(cb) { 
-            document.body.classList.toggle('dark-mode', cb.checked); 
-            localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off');
+        function currentSlide(n) {
+            slideIndex = n;
+            showSlides();
         }
         
-        // --- CHAT ---
-        function toggleChat() {
-            const box = document.getElementById('chatBox');
-            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-        }
-        function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const userMessage = input.value.trim();
-            if (userMessage === "") return;
-            const body = document.getElementById('chatBody');
-            
-            const userDiv = document.createElement('div');
-            userDiv.style.cssText = "background:var(--vibrant-blue); color:white; padding:8px; border-radius:5px; margin-bottom:10px; text-align:right; margin-left:auto; display:table;";
-            userDiv.innerText = userMessage;
-            body.appendChild(userDiv);
-            input.value = '';
-
-            const botReplyText = currentTranslations[currentLang].chat_reply || "Hello! How can I help you today?";
-            setTimeout(() => {
-                const replyDiv = document.createElement('div');
-                replyDiv.style.cssText = "background:var(--bg-color); color:var(--text-color); padding:8px; border-radius:5px; margin-bottom:10px; display:table; border:1px solid #ddd;";
-                replyDiv.innerText = botReplyText;
-                body.appendChild(replyDiv);
-                body.scrollTop = body.scrollHeight;
-            }, 1000); 
+        let slideInterval;
+        function startSlider() {
+            clearInterval(slideInterval);
+            showSlides();
+            slideInterval = setInterval(() => {
+                slideIndex++;
+                showSlides();
+            }, 5000); 
         }
 
-        // --- AUTH & HISTORY ---
-        function checkAuth() { if(currentUser) openHistory(); else document.getElementById('authModal').style.display = 'flex'; }
-        function showAuthForm(type) {
-            if(type === 'login') {
-                document.getElementById('tabLogin').style.borderBottom = '2px solid #2d2d2d';
-                document.getElementById('tabRegister').style.borderBottom = 'none';
-                document.getElementById('tabRegister').style.color = '#777';
-                document.getElementById('tabLogin').style.color = 'var(--text-color)';
-                document.getElementById('loginForm').style.display='block';
-                document.getElementById('registerForm').style.display='none';
-            } else {
-                document.getElementById('tabLogin').style.borderBottom = 'none';
-                document.getElementById('tabRegister').style.borderBottom = '2px solid #2d2d2d';
-                document.getElementById('tabLogin').style.color = '#777';
-                document.getElementById('tabRegister').style.color = 'var(--text-color)';
-                document.getElementById('loginForm').style.display='none';
-                document.getElementById('registerForm').style.display='block';
-            }
-        }
-        async function doLogin() {
-            const phone = document.getElementById('lPhone').value;
-            const pass = document.getElementById('lPass').value;
-            let { data } = await supabase.from('users').select('*').eq('phone', phone).eq('password', pass);
-            if(data && data.length > 0) {
-                currentUser = data[0];
-                localStorage.setItem('kshop_user_data', JSON.stringify(currentUser));
-                closeModal('authModal'); updateUserUI(); openHistory();
-            } else { alert("Invalid Login"); }
-        }
-        async function doRegister() {
-            const name = document.getElementById('rName').value;
-            const phone = document.getElementById('rPhone').value;
-            const pass = document.getElementById('rPass').value;
-            let { error } = await supabase.from('users').insert([{ name, phone, password: pass }]);
-            if(!error) { alert("Registered!"); showAuthForm('login'); }
-            else { alert("Error: " + error.message); }
-        }
-        function doLogout() { localStorage.removeItem('kshop_user_data'); currentUser=null; closeModal('historyModal'); updateUserUI(); }
-        async function openHistory() {
-            document.getElementById('historyModal').style.display='flex';
-            const con = document.getElementById('historyList');
-            con.innerHTML = '<p>Loading...</p>';
-            let { data } = await supabase.from('orders').select('*').eq('customer_phone', currentUser.phone).order('created_at', {ascending:false});
-            if(!data || !data.length) { con.innerHTML='<p>No orders yet.</p>'; return; }
-            let html = '';
-            data.forEach(o => {
-                let icon = '⏳';
-                if(o.status==='reject') icon='⛔'; if(o.status==='coming') icon='🟡'; if(o.status==='owned') icon='🟢';
-                html += `<div class="history-item"><div><b>${o.item_name}</b><br>${o.price}</div><div style="font-size:20px;">${icon}</div></div>`;
-            });
-            con.innerHTML = html;
-        }
-
-        // --- PRODUCTS (FIXED FOR CASE SENSITIVITY) ---
+        // 2. PRODUCT LOADING (CLEAN & FINAL VERSION)
         async function loadProducts(cat, title, gender = 'women') { 
+            // UI setup
             document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
             document.getElementById('pageTitle').innerText = title;
             document.getElementById('loading').style.display = 'block'; 
-            
-            // 1. TRY FETCHING FROM DB WITH .ilike (Case Insensitive)
+
+            // Supabase Query (Clean & Strict Match since DB is standardized)
             let q = supabase.from('products').select('*');
             
-            // Filter by gender (case insensitive)
+            // 1. Filter by gender (case insensitive)
             if(gender) {
                 q = q.ilike('gender', gender);
             }
 
-            // Filter by category (case insensitive) if not 'all'
+            // 2. Filter by category (case insensitive)
             if(cat !== 'all') { 
-                // NOTE: Using .ilike for category to match 'Clothing', 'clothing', 'CLOTHING'
-                q = q.ilike('category', cat);
+                q = q.ilike('category', cat); // Uses ILIKE for flexibility (e.g., 'clothing' matches 'Clothing')
             }
             
             let { data, error } = await q;
 
             document.getElementById('loading').style.display = 'none';
 
-            // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY or ERROR
+            // Fallback logic
             if (!data || data.length === 0 || error) {
-                console.log(`Using Sample Data or Fallback for ${gender} - ${cat}`);
+                console.error("Supabase Fetch Error:", error);
+                console.log("Using Sample Data as Fallback.");
                 data = allSampleProducts.filter(p => {
-                    const genderMatch = p.gender === gender;
-                    const categoryMatch = cat === 'all' || p.category === cat;
+                    const genderMatch = p.gender.toLowerCase() === gender.toLowerCase();
+                    const categoryMatch = cat === 'all' || p.category.toLowerCase() === cat.toLowerCase();
                     return genderMatch && categoryMatch;
                 });
             }
@@ -573,120 +476,400 @@
             currentProducts = data || [];
             
             if (currentProducts.length === 0) {
-                 document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found.</p>';
+                    document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found.</p>';
             } else {
-                 renderProducts(currentProducts, title);
+                    renderProducts(currentProducts, title);
             }
         }
 
-        function renderProducts(list, title) {
-            const con = document.getElementById('productsContainer');
-            con.innerHTML = '';
-            list.forEach((p, index) => {
-                let img = p.image_url || 'https://via.placeholder.com/300';
-                let price = Number(p.price).toLocaleString();
-                con.innerHTML += `
-                <div class="product-card">
-                    <img src="${img}" class="p-img">
-                    <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${price} Ks</div></div>
-                    <div class="cart-btn" onclick="buyItem(${index})"><i class="fas fa-plus"></i></div>
-                </div>`;
+        function renderProducts(products, title) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                container.innerHTML += `
+                    <div class="product-card" onclick="openProductDetail('${product.id}')">
+                        <img src="${product.image_url}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x400?text=Image+Not+Found'">
+                        <div class="p-name">${product.name}</div>
+                        <div class="p-price">${product.price.toLocaleString('en-US')} MMK</div>
+                        <button class="btn btn-primary" style="margin-top: 5px; font-size: 0.9em;" onclick="event.stopPropagation(); addToCart('${product.id}')">Add to Cart</button>
+                    </div>
+                `;
             });
         }
-
-        // --- CART & ORDER ---
-        function buyItem(idx) {
-            if(!currentUser) { checkAuth(); return; }
-            const p = currentProducts[idx];
-            document.getElementById('modal-name').innerText = p.name;
-            document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + " Ks";
-            document.getElementById('modal-img').src = p.image_url || '';
-            document.getElementById('checkoutModal').style.display = 'flex';
-            document.getElementById('addressInput').value = '';
-            document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
-            document.getElementById('noteInput').value = '';
-            document.getElementById('slipInput').value = '';
-            document.getElementById('sendBtn').disabled = true; 
+        
+        // This function is placeholder for now
+        function openProductDetail(productId) {
+            console.log("Viewing detail for product:", productId);
+            // In a real app, this would open a new page/modal with product details.
         }
 
-        function checkSlipFile() {
-            const file = document.getElementById('slipInput').files[0];
-            document.getElementById('sendBtn').disabled = !file;
+        /* ======================================================= */
+        /* === SHOPPING CART & ORDER FUNCTIONS === */
+        /* ======================================================= */
+
+        function addToCart(productId) {
+            const product = currentProducts.find(p => p.id === productId || p.id === parseInt(productId));
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
         }
 
-        async function sendOrder() {
-            const btn = document.getElementById('sendBtn');
-            const file = document.getElementById('slipInput').files[0];
-            const address = document.getElementById('addressInput').value;
-            const contactPhone = document.getElementById('contactPhoneInput').value;
-            const note = document.getElementById('noteInput').value;
+        function updateCartUI() {
+            const itemsContainer = document.getElementById('cartItems');
+            total = 0;
+            itemsContainer.innerHTML = '';
 
-            if (!address.trim() || !contactPhone.trim() || !file) {
-                alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
-                btn.disabled = false; return;
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                itemsContainer.innerHTML += `
+                    <div>
+                        <span>${item.name} x ${item.qty}</span>
+                        <span>${itemTotal.toLocaleString('en-US')} MMK</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartTotal').innerText = `Total: ${total.toLocaleString('en-US')} MMK`;
+            document.getElementById('checkoutTotal').innerText = `${total.toLocaleString('en-US')} MMK`;
+            document.getElementById('cartCount').innerText = cart.length > 0 ? `(${cart.length})` : '';
+            document.getElementById('checkoutBtn').disabled = cart.length === 0;
+
+            let itemListText = cart.map(item => `${item.name} (${item.qty})`).join(', ');
+            document.getElementById('checkoutItemsList').innerText = `Items: ${itemListText}`;
+
+        }
+
+        function clearCart() {
+            cart = [];
+            total = 0;
+            updateCartUI();
+            closeModal('cartModal');
+        }
+
+        async function sendOrder(btn) {
+            if (cart.length === 0) return;
+
+            // Gather data
+            const name = document.getElementById('checkoutName').value;
+            const phone = document.getElementById('checkoutPhone').value;
+            const address = document.getElementById('checkoutAddress').value;
+            const slipFile = document.getElementById('slipInput').files[0];
+
+            if (!name || !phone || !address || !slipFile) {
+                alert("Please fill in all fields and upload payment slip.");
+                return;
             }
 
-            btn.innerText="Sending..."; btn.disabled=true;
-            const pName = document.getElementById('modal-name').innerText;
-            const pPrice = document.getElementById('modal-price').innerText;
+            btn.innerText = "Sending...";
+            btn.disabled = true;
 
-            await supabase.from('orders').insert([{
-                customer_name: currentUser.name, customer_phone: contactPhone,
-                item_name: pName, price: pPrice, status: 'pending', address: address, note: note
-            }]);
-
-            const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pName}\n💰 ${pPrice}`;
-            const fd = new FormData();
-            fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
-            fd.append("photo", file); 
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
+            // 1. Upload Slip to Supabase Storage
+            let slipUrl = null;
+            const fileName = `${Date.now()}-${slipFile.name}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('slips') // You must create a 'slips' bucket
+                .upload(fileName, slipFile);
             
+            if (uploadError) {
+                console.error("Slip Upload Error:", uploadError);
+                alert("Payment slip upload failed. Please try again or contact support.");
+                btn.innerText = currentTranslations[currentLang].send_btn;
+                btn.disabled = false;
+                return;
+            }
+
+            slipUrl = `${SUPABASE_URL}/storage/v1/object/public/slips/${fileName}`;
+
+            // 2. Prepare Order Data
+            const orderDetails = cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                qty: item.qty,
+                price: item.price
+            }));
+            const orderText = `
+*--- NEW ORDER ---*
+*Customer:* ${name}
+*Phone:* ${phone}
+*Address:* ${address}
+*Total:* ${total.toLocaleString('en-US')} MMK
+*Items:*
+${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleString('en-US')} MMK)`).join('\n')}
+*Payment Slip:* ${slipUrl}
+`;
+
+            // 3. Send to Telegram
+            const telegramURL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(orderText)}&parse_mode=Markdown`;
+            const telegramResponse = await fetch(telegramURL);
+            
+            if (!telegramResponse.ok) {
+                console.error("Telegram Error:", await telegramResponse.text());
+                alert("Order sent failed (Telegram). Contact support.");
+                btn.innerText = currentTranslations[currentLang].send_btn;
+                btn.disabled = false;
+                return;
+            }
+
+            // 4. Save to Supabase 'orders' table
+            const { error: orderInsertError } = await supabase
+                .from('orders')
+                .insert([
+                    { 
+                        user_phone: phone, 
+                        items: orderDetails, 
+                        total_amount: total, 
+                        slip_url: slipUrl,
+                        status: 'pending', // Default status
+                        user_id: currentUser ? currentUser.id : null // Save user ID if logged in
+                    }
+                ]);
+
+            if (orderInsertError) {
+                console.error("DB Order Insert Error:", orderInsertError);
+            }
+
+            // 5. Success
+            clearCart();
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
+            
             btn.innerText=currentTranslations[currentLang].send_btn; 
             btn.disabled=false;
             document.getElementById('slipInput').value = ''; 
             document.getElementById('sendBtn').disabled = true;
         }
 
-        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
-        function toggleSearch() { 
-            const b=document.getElementById('searchBox'); 
-            b.style.display=b.style.display==='block'?'none':'block'; 
-            if(b.style.display === 'none') {
-                 document.getElementById('searchInput').value = '';
-                 searchProducts(); 
-            }
-        }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        
-        function searchProducts() { 
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const con = document.getElementById('productsContainer');
-            const productCards = con.querySelectorAll('.product-card');
-            if (searchTerm.length === 0) {
-                productCards.forEach(card => card.style.display = 'flex');
+        /* ======================================================= */
+        /* === AUTHENTICATION & PROFILE FUNCTIONS === */
+        /* ======================================================= */
+
+        async function loginUser() {
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('phone', phone)
+                .eq('password', password)
+                .single();
+
+            if (error || !data) {
+                alert("Login Failed: Incorrect Phone or Password.");
                 return;
             }
-            productCards.forEach(card => {
-                const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
-                if (productName.includes(searchTerm)) card.style.display = 'flex'; 
-                else card.style.display = 'none'; 
+
+            currentUser = data;
+            updateProfileView();
+            closeModal('loginModal');
+        }
+
+        async function registerUser() {
+            const name = document.getElementById('registerName').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+
+            // Check if phone already exists
+            const { data: existingUser } = await supabase.from('users').select('id').eq('phone', phone);
+            if (existingUser.length > 0) {
+                alert("Registration Failed: Phone number already registered.");
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('users')
+                .insert([{ name, phone, password }])
+                .select()
+                .single();
+
+            if (error) {
+                alert("Registration Failed. Please try again.");
+                console.error(error);
+                return;
+            }
+
+            currentUser = data;
+            updateProfileView();
+            closeModal('loginModal');
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            updateProfileView();
+            showLogin();
+        }
+
+        function updateProfileView() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const profileView = document.getElementById('profileView');
+            const loginHeader = document.getElementById('loginHeader');
+
+            if (currentUser) {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'none';
+                profileView.style.display = 'block';
+                document.getElementById('profileName').innerText = currentUser.name;
+                document.getElementById('profilePhone').innerText = currentUser.phone;
+                loginHeader.innerText = "My Profile";
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                profileView.style.display = 'none';
+                loginHeader.innerText = "Login";
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('loginHeader').innerText = "Register New Account";
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('loginHeader').innerText = "Login";
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        async function loadOrderHistory() {
+            const listContainer = document.getElementById('orderHistoryList');
+            const messageElement = document.getElementById('orderHistoryMessage');
+            listContainer.innerHTML = '';
+            messageElement.innerText = '';
+            
+            if (!currentUser) {
+                messageElement.innerText = "Please log in to view your order history.";
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error || data.length === 0) {
+                messageElement.innerText = "You have no past orders.";
+                return;
+            }
+
+            data.forEach(order => {
+                const itemNames = order.items.map(i => `${i.name} (${i.qty})`).join(', ');
+                listContainer.innerHTML += `
+                    <div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                        <p><strong>Order ID:</strong> ${order.id}</p>
+                        <p><strong>Status:</strong> <span style="color: ${order.status === 'pending' ? 'orange' : (order.status === 'owned' ? 'green' : 'blue')}">${order.status.toUpperCase()}</span></p>
+                        <p><strong>Total:</strong> ${order.total_amount.toLocaleString('en-US')} MMK</p>
+                        <p><strong>Items:</strong> ${itemNames}</p>
+                        <p style="font-size: 0.8em; color: #888;">${new Date(order.created_at).toLocaleString()}</p>
+                    </div>
+                `;
             });
         }
         
-        function switchTab(t) { 
-            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
-            if(t==='women'){ 
-                document.querySelectorAll('.tab')[0].classList.add('active'); 
-                document.getElementById('women-menu').classList.add('active'); 
+        /* ======================================================= */
+        /* === UI & STANDARD FUNCTIONS (INCLUDING FIXED SEARCH) === */
+        /* ======================================================= */
+
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
+        function closeAll() { 
+            document.getElementById('sideMenu').classList.remove('active'); 
+            document.querySelector('.overlay').classList.remove('active');
+            toggleSearch(false); // Close search box
+        }
+        function toggleSearch(force) { 
+            const box = document.getElementById('searchContainer');
+            if (force === false) {
+                 box.style.display = 'none';
+                 return;
             }
-            else { 
-                document.querySelectorAll('.tab')[1].classList.add('active'); 
-                document.getElementById('men-menu').classList.add('active'); 
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+        function toggleChat() { 
+            const box = document.getElementById('chatBox');
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function openModal(id) { 
+            document.getElementById(id).style.display='flex'; 
+            if (id === 'orderHistoryModal') loadOrderHistory();
+        }
+
+        // Search Function (FIXED)
+        function searchProducts() { 
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const con = document.getElementById('productsContainer');
+            // If the search is performed on the currently loaded products:
+            const productCards = con.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                // Get the product name from the card
+                const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
+                
+                // Show or hide based on whether the name contains the search term
+                if (productName.includes(searchTerm)) {
+                    card.style.display = 'flex'; // Use flex because the product-card CSS uses display:flex
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Tab switching and menu synchronization
+        function switchTab(tab, title) { 
+            // Update Tab active state
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.querySelector(`.tab-nav > div:nth-child(${tab === 'men' ? 2 : 1})`).classList.add('active');
+            
+            // Show/Hide Menu Section
+            document.getElementById('women-menu').style.display = (tab === 'women') ? 'block' : 'none';
+            document.getElementById('men-menu').style.display = (tab === 'men') ? 'block' : 'none';
+            
+            // Load all products for that gender
+            loadProducts('all', title, tab);
+        }
+
+        // Theme Toggle (Syncs Menu Icon)
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const iconMenu = document.getElementById('themeIconMenu');
+            const labelMenu = document.getElementById('themeLabelMenu');
+            
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                iconMenu.classList.remove('fa-moon');
+                iconMenu.classList.add('fa-sun');
+                labelMenu.innerText = "LIGHT";
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                iconMenu.classList.remove('fa-sun');
+                iconMenu.classList.add('fa-moon');
+                labelMenu.innerText = "DARK";
             }
         }
+        
+        // Initial Loads
+        window.onload = function() {
+            loadBanners();
+            loadProducts('all', 'All Products (Women)', 'women'); // Load default tab (Women/All)
+            updateCartUI(); // Initialize cart count
+            updateProfileView(); // Check if a user is logged in (session storage not implemented, so it defaults to logged out)
+            setLanguage('my'); // Set default language
+        };
+
     </script>
 </body>
 </html>
