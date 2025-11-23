@@ -47,16 +47,7 @@
         .menu-content { flex: 1; overflow-y: auto; }
         .menu-section { display: none; }
         .menu-section.active { display: block; }
-        /* NEW: Active Category Highlight Style */
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .menu-item.active-category {
-            background: var(--accent-color); /* Vibrant Pink Color */
-            color: var(--header-text) !important; /* White Text */
-            border-left: 5px solid var(--vibrant-blue); /* Left Border Highlight */
-        }
-        .menu-item.active-category span {
-            color: var(--header-text) !important; /* Ensure span text is white */
-        }
         .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
         /* --- SLIDER WITH DOTS & ROUNDED CORNERS (BIGGER SIZE) --- */
@@ -98,7 +89,7 @@
         .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
         .close-modal { float: right; font-size: 24px; cursor: pointer; }
         
-        /* Payment Styles (Dynamic) */
+        /* Payment Styles (REAL LOGOS) */
         .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; border: 1px solid #eee; }
         .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
 
@@ -147,21 +138,21 @@
         <div class="menu-content">
             <div id="women-menu" class="menu-section active">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
-                <div class="menu-item active-category" onclick="loadProducts('all', 'All Products', 'women', this)"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women', this)"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women', this)"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women', this)"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men', this)"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men', this)"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men', this)"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men', this)"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
         <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
-    </header>
+    </div>
 
     <header>
         <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
@@ -259,8 +250,14 @@
                 <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:var(--accent-color);"></div></div>
             </div>
             
-            <div id="paymentMethodsContainer">
-                </div>
+            <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div>
+            </div>
+            <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div>
+            </div>
             
             <div style="margin-top: 15px;">
                 <div class="input-group">
@@ -341,8 +338,8 @@
             {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women"},
             {name: "White Sneakers", price: 32000, image_url: "https://images.unsplash.com/photo-1552346154-21d32810cb99?w=500", category: "shoes", gender: "women"},
             {name: "Leather Boots", price: 65000, image_url: "https://images.unsplash.com/photo-1560769629-9fae24749f7e?w=500", category: "shoes", gender: "women"},
-            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", "gender": "women"},
-            {name: "Clutch Purse", price: 22000, image_url: "https://images.unsplash.com/photo-1558983942-887413f173c3?w=500", category: "bag", "gender": "women"},
+            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women"},
+            {name: "Clutch Purse", price: 22000, image_url: "https://images.unsplash.com/photo-1558983942-887413f173c3?w=500", category: "bag", gender: "women"},
             {name: "Slim Fit Shirt", price: 38000, image_url: "https://images.unsplash.com/photo-1545892520-22c710471b05?w=500", category: "clothing", gender: "men"},
             {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men"},
             {name: "Cargo Pants", price: 42000, image_url: "https://images.unsplash.com/photo-1541348233713-333065608d4b?w=500", category: "clothing", gender: "men"},
@@ -362,7 +359,7 @@
             }
             
             // Initial product and UI load
-            loadProducts('all', currentTranslations[currentLang].all, 'women', document.querySelector('#women-menu .menu-item:nth-child(2)')); 
+            loadProducts('all', currentTranslations[currentLang].all, 'women'); 
             updateUserUI();
             loadBanners(); 
             
@@ -388,10 +385,7 @@
 
             // Specific element updates (like placeholder or non-data-t elements)
             document.querySelector('.chat-input').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            document.querySelector('#pageTitle').innerText = t.all; 
-            
-            // Re-apply current send button text
-            document.getElementById('sendBtn').innerText = t.send_btn;
+            document.querySelector('#pageTitle').innerText = t.all; // Update main page title on language switch
         }
 
         function toggleLanguage(lang) {
@@ -464,67 +458,28 @@
             localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off');
         }
         
-        // --- CHAT LOGIC (Updated for Keyword Recognition) ---
-        function getBotResponse(userMsg) {
-            const msg = userMsg.toLowerCase();
-            let response = "";
-
-            // 1. PAYMENT / ငွေပေးချေမှုဆိုင်ရာ စစ်ဆေးခြင်း
-            if (msg.includes("ငွေ") || msg.includes("ပေးချေ") || msg.includes("ပိုက်ဆံ") || msg.includes("payment")) {
-                response = "💰 **ငွေပေးချေမှု အချက်အလက်များ:**\n\n" +
-                           "ကျွန်တော်တို့ ဆိုင်မှာ **KPay** နဲ့ **Wave Money** တို့နဲ့ ပေးချေနိုင်ပါတယ်ခင်ဗျာ။\n\n" +
-                           "1. **KPay/Wave ဖုန်းနံပါတ်:** 09752965423 (Ko Ko)\n" +
-                           "2. မှာယူမှုပြုပြီးရင် **Order Form** ပေါ်လာပါမယ်။\n" +
-                           "3. အဲဒီ Form မှာ **ငွေလွှဲပြေစာ (Payment Slip) ပုံ** ကို မဖြစ်မနေ ထည့်သွင်းပေးရပါမယ်။\n" +
-                           "4. Slip ထည့်ပြီးမှသာ Admin ထံသို့ ပို့တဲ့ခလုတ် အလုပ်လုပ်မှာ ဖြစ်ပါတယ်။";
-            } 
-            
-            // 2. ORDER / ပို့ဆောင်မှုနှင့် မှာယူမှုပုံစံ စစ်ဆေးခြင်း
-            else if (msg.includes("ပို့") || msg.includes("လိပ်စာ") || msg.includes("မှာယူ") || msg.includes("order form") || msg.includes("delivery")) {
-                response = "📦 **ပို့ဆောင်မှုနှင့် Order Form ဖြည့်စွက်ခြင်း:**\n\n" +
-                           "Order Form မှာ အဓိကအားဖြင့် အောက်ပါအချက် (၃) ချက်ကို ဖြည့်ပေးရပါမယ်:\n" +
-                           "1. **ပို့ဆောင်ရန်လိပ်စာ:** ပစ္စည်းရောက်ရှိမည့် လိပ်စာ အပြည့်အစုံ။\n" +
-                           "2. **ဆက်သွယ်ရန်ဖုန်း:** မှာယူသူရဲ့ လက်ရှိ ဆက်သွယ်ရန် ဖုန်းနံပါတ်။\n" +
-                           "3. **ငွေလွှဲပြေစာ (Slip):** ငွေပေးချေထားကြောင်း အထောက်အထား ဓာတ်ပုံ။\n\n" +
-                           "ဒီအချက်တွေ ဖြည့်ပြီး Send Button နှိပ်လိုက်တာနဲ့ Admin ဆီကို အော်ဒါရောက်ရှိမှာ ဖြစ်ပါတယ်ခင်ဗျာ။";
-            }
-            
-            // 3. Default Reply
-            else {
-                response = "မေးတာကို နားမလည်လိုက်ပါဘူးရှင့်။ ဘယ်လိုအကြောင်းအရာနဲ့ ပတ်သက်လို့ မေးချင်တာလဲ (ဥပမာ- **'ငွေပေးချေနည်း'**၊ **'ပို့ဆောင်မှု'** စသဖြင့်) ပိုပြီး ရှင်းလင်းစွာ ပြောပြပေးပါနော်။";
-            }
-
-            return response;
-        }
-
+        // --- CHAT ---
         function toggleChat() {
             const box = document.getElementById('chatBox');
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
-            const userMessage = input.value.trim();
-            if(!userMessage) return;
-
-            const body = document.getElementById('chatBody');
-            
-            // 1. Display User Message
-            const userDiv = document.createElement('div');
-            userDiv.style.cssText = "background:#007bff; color:white; padding:8px; border-radius:5px; margin-bottom:5px; text-align:right; margin-left:auto; display:table;";
-            userDiv.innerText = userMessage;
-            body.appendChild(userDiv);
-            input.value = '';
-
-            // 2. Get and Display Bot Response
-            const botReply = getBotResponse(userMessage);
-
-            setTimeout(() => {
-                const replyDiv = document.createElement('div');
-                replyDiv.style.cssText = "background:#eee; color:#333; padding:8px; border-radius:5px; margin-bottom:5px; display:table;";
-                replyDiv.innerHTML = botReply.replace(/\n/g, '<br>'); // Enable line breaks
-                body.appendChild(replyDiv);
-                body.scrollTop = body.scrollHeight;
-            }, 1000); // 1 second delay for bot typing effect
+            if(input.value.trim()) {
+                const body = document.getElementById('chatBody');
+                const div = document.createElement('div');
+                div.style.cssText = "background:#007bff; color:white; padding:8px; border-radius:5px; margin-bottom:5px; text-align:right; margin-left:auto; display:table;";
+                div.innerText = input.value;
+                body.appendChild(div);
+                input.value = '';
+                setTimeout(() => {
+                    const reply = document.createElement('div');
+                    reply.style.cssText = "background:#eee; color:#333; padding:8px; border-radius:5px; margin-bottom:5px; display:table;";
+                    reply.innerText = "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?"; // Default reply kept simple
+                    body.appendChild(reply);
+                    body.scrollTop = body.scrollHeight;
+                }, 1000);
+            }
         }
 
         // --- AUTH & HISTORY ---
@@ -584,61 +539,12 @@
             con.innerHTML = html;
         }
 
-        // --- NEW: Load Payment Methods Function (Dynamic) ---
-        async function loadPaymentMethods() {
-            const { data, error } = await supabase
-                .from('payment_methods')
-                .select('*')
-                .order('order_index', { ascending: true });
-
-            const container = document.getElementById('paymentMethodsContainer');
-            if (error || !data || data.length === 0) {
-                console.error("Error loading payment methods or table empty:", error);
-                // Fallback to old hardcoded list if database fails
-                container.innerHTML = `
-                <div class="pay-row">
-                    <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                    <div><b>KPay (Default)</b><br><small>09752965423 (Ko Ko)</small></div>
-                </div>
-                <div class="pay-row">
-                    <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                    <div><b>Wave Money (Default)</b><br><small>09752965423 (Ko Ko)</small></div>
-                </div>`;
-                return;
-            }
-
-            let html = '';
-            data.forEach(p => {
-                html += `
-                <div class="pay-row">
-                    <img src="${p.icon_url || 'https://via.placeholder.com/45'}" class="pay-icon"> 
-                    <div><b>${p.name}</b><br><small>${p.phone || 'N/A'} (${p.account_name || 'Ko Ko'})</small></div>
-                </div>`;
-            });
-
-            container.innerHTML = html;
-        }
-
-
         // --- PRODUCTS (LOAD FROM DB OR SAMPLES) ---
-        async function loadProducts(cat, title, gender = 'women', element = null) { 
+        async function loadProducts(cat, title, gender = 'women') { 
             document.getElementById('productsContainer').innerHTML='';
             document.getElementById('sideMenu').classList.remove('active');
             document.querySelector('.overlay').classList.remove('active');
-            
-            // 1. Active Category Highlight Logic
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active-category');
-            });
-            if (element) {
-                element.classList.add('active-category');
-            }
-            
-            // Get the translated title for the current category from the global map
-            const currentTitleKey = (cat === 'all') ? 'all' : cat;
-            const titleText = currentTranslations[currentLang][currentTitleKey] || title;
-
-            document.getElementById('pageTitle').innerText = titleText; // Display the title
+            document.getElementById('pageTitle').innerText = title;
             
             // 1. TRY FETCHING FROM DB
             let q = supabase.from('products').select('*').eq('gender', gender); 
@@ -650,6 +556,7 @@
             // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY
             if (!data || data.length === 0) {
                 console.log(`Using Sample Data for ${gender} - ${cat}`);
+                // Filter the extended sample list based on requested gender and category
                 data = allSampleProducts.filter(p => {
                     const genderMatch = p.gender === gender;
                     const categoryMatch = cat === 'all' || p.category === cat;
@@ -685,9 +592,6 @@
             document.getElementById('modal-img').src = p.image_url || '';
             document.getElementById('checkoutModal').style.display = 'flex';
             
-            // NEW: Load payment info dynamically
-            loadPaymentMethods();
-
             // Reset input fields and disable send button on open
             document.getElementById('addressInput').value = '';
             document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
@@ -734,6 +638,7 @@
             
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
+            // Set text back using current language
             btn.innerText=currentTranslations[currentLang].send_btn; 
             btn.disabled=false;
             document.getElementById('slipInput').value = ''; 
