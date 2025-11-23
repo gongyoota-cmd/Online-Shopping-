@@ -9,21 +9,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <style>
-        /* --- CSS VARIABLES (Theme Colors) --- */
+        /* --- CSS VARIABLES (RESTORED ORIGINAL THEME) --- */
         :root {
             --bg-color: #f9f9f9; 
             --text-color: #333;
-            --header-bg: #4a148c; /* Deep Purple */
+            --header-bg: #2d2d2d; /* Original Dark Grey */
             --header-text: #ffffff;
             --card-bg: #ffffff; 
-            --accent-color: #e91e63; /* Vibrant Pink/Magenta for CTA */
-            --vibrant-blue: #03a9f4; /* For Chat/Switches */
+            --accent-color: #ff6f00; /* Orange/Accent Color */
+            --vibrant-blue: #03a9f4; 
             --menu-bg: #ffffff;
             --border-color: #eeeeee;
             --footer-bg: #ffffff;
             --input-bg: #eeeeee;
         }
-        /* Dark Mode */
+        /* Dark Mode (Adjusted to original dark palette) */
         body.dark-mode {
             --bg-color: #121212; 
             --text-color: #e0e0e0;
@@ -81,7 +81,7 @@
         
         /* Search Box */
         #searchContainer { padding: 10px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); display: none; position: sticky; top: 50px; z-index: 999; }
-        #searchInput { width: calc(100% - 20px); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--input-bg); color: var(--text-color); }
+        #searchInput { width: calc(100% - 20px); padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
         
         /* Modals (Cart, Checkout, Success) */
         .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
@@ -95,7 +95,7 @@
         #cartTotal { font-weight: bold; font-size: 1.2em; margin-top: 10px; }
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: 0.3s; font-weight: bold; margin-top: 15px; }
         .btn-primary { background-color: var(--accent-color); color: white; }
-        .btn-primary:hover:not(:disabled) { background-color: #c2185b; }
+        .btn-primary:hover:not(:disabled) { background-color: #e65100; }
         .btn-secondary { background-color: #ccc; color: var(--text-color); }
         .input-group label { display: block; margin-top: 10px; font-weight: 600; }
         .input-group input, .input-group textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
@@ -108,7 +108,7 @@
         .chat-header { background-color: var(--vibrant-blue); color: white; padding: 10px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
         .chat-body { height: 300px; overflow-y: auto; padding: 10px; border-bottom: 1px solid var(--border-color); }
         .chat-input { display: flex; padding: 10px; }
-        .chat-input input { flex-grow: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px 0 0 4px; background-color: var(--input-bg); color: var(--text-color); }
+        .chat-input input { flex-grow: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px 0 0 4px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
         .chat-input button { background-color: var(--vibrant-blue); color: white; border: none; padding: 8px 12px; border-radius: 0 4px 4px 0; cursor: pointer; }
         
         /* Language Selector */
@@ -194,7 +194,7 @@
     <div id="chatBox">
         <div class="chat-header">Chat <span class="modal-close" onclick="toggleChat()">&times;</span></div>
         <div class="chat-body">
-            <p>Admin: Welcome! How can I help you?</p>
+            <p style="color: #666;">Admin: Welcome! How can I help you?</p>
         </div>
         <div class="chat-input">
             <input type="text" placeholder="Type your message...">
@@ -323,23 +323,21 @@
         const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; // e.g., '1234567890:AABBDD_etc_etc'
         const CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'; // e.g., '-1001234567890' (Make sure to include the minus sign if it's a group)
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // Note: Using window.supabase.createClient if running directly in browser
         
         let cart = [];
         let total = 0;
         let slideIndex = 0;
         let currentProducts = [];
-        let currentUser = null; // Stores logged in user data
+        let currentUser = null; 
 
         // Translation object (Simplified)
         const translations = {
             en: {
                 send_btn: "Send Order",
-                // Add other translations as needed
             },
             my: {
                 send_btn: "မှာယူမှု ပေးပို့",
-                // Add other translations as needed
             }
         };
         let currentLang = 'my';
@@ -347,8 +345,8 @@
 
         function setLanguage(lang) {
             currentLang = lang;
-            // Simplified: You would need to update all UI elements here
-            document.getElementById('sendBtn').innerText = translations[lang].send_btn;
+            const btn = document.getElementById('sendBtn');
+            if(btn) btn.innerText = translations[lang].send_btn;
         }
 
         /* --- Sample Data (Fallback) --- */
@@ -364,18 +362,17 @@
         /* === CORE PRODUCT & BANNER LOADING FUNCTIONS (FIXED) === */
         /* ======================================================= */
 
-        // 1. BANNER LOADING (FIXED)
+        // 1. BANNER LOADING (FINAL)
         async function loadBanners() {
             const { data, error } = await supabase
                 .from('banners')
                 .select('image_url, order_index')
-                .order('order_index', { ascending: true }); // Assumes order_index column exists
+                .order('order_index', { ascending: true });
 
             if (error) {
                 console.error("Banner Fetch Error:", error);
             }
 
-            // Fallback to sample data if fetch failed or empty
             const bannerList = (data && data.length > 0) ? data : [
                 { image_url: 'https://via.placeholder.com/1000x300?text=Welcome+to+K+Shopping' },
                 { image_url: 'https://via.placeholder.com/1000x300?text=New+Arrivals+Every+Week' }
@@ -391,9 +388,7 @@
             dotsContainer.innerHTML = '';
 
             bannerList.forEach((b, index) => {
-                // Check for the image_url column
                 const imgLink = b.image_url; 
-                
                 if(imgLink) {
                     wrapper.innerHTML += `<div class="slide"><img src="${imgLink}" alt="Banner ${index + 1}" onerror="this.src='https://via.placeholder.com/800x400?text=Image+Error'"></div>`;
                     const activeClass = index === 0 ? ' active' : '';
@@ -418,7 +413,7 @@
 
             document.getElementById('sliderWrapper').style.transform = `translateX(${-slideIndex * 100}%)`;
             dots.forEach(dot => dot.classList.remove('active'));
-            dots[slideIndex].classList.add('active');
+            if(dots[slideIndex]) dots[slideIndex].classList.add('active');
         }
 
         function currentSlide(n) {
@@ -455,7 +450,7 @@
 
             // 2. Filter by category (case insensitive)
             if(cat !== 'all') { 
-                q = q.ilike('category', cat); // Uses ILIKE for flexibility (e.g., 'clothing' matches 'Clothing')
+                q = q.ilike('category', cat);
             }
             
             let { data, error } = await q;
@@ -498,10 +493,8 @@
             });
         }
         
-        // This function is placeholder for now
         function openProductDetail(productId) {
             console.log("Viewing detail for product:", productId);
-            // In a real app, this would open a new page/modal with product details.
         }
 
         /* ======================================================= */
@@ -612,10 +605,7 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
             
             if (!telegramResponse.ok) {
                 console.error("Telegram Error:", await telegramResponse.text());
-                alert("Order sent failed (Telegram). Contact support.");
-                btn.innerText = currentTranslations[currentLang].send_btn;
-                btn.disabled = false;
-                return;
+                // Non-fatal error, continue to save to DB
             }
 
             // 4. Save to Supabase 'orders' table
@@ -627,8 +617,8 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
                         items: orderDetails, 
                         total_amount: total, 
                         slip_url: slipUrl,
-                        status: 'pending', // Default status
-                        user_id: currentUser ? currentUser.id : null // Save user ID if logged in
+                        status: 'pending', 
+                        user_id: currentUser ? currentUser.id : null
                     }
                 ]);
 
@@ -677,9 +667,8 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
             const phone = document.getElementById('registerPhone').value;
             const password = document.getElementById('registerPassword').value;
 
-            // Check if phone already exists
             const { data: existingUser } = await supabase.from('users').select('id').eq('phone', phone);
-            if (existingUser.length > 0) {
+            if (existingUser && existingUser.length > 0) {
                 alert("Registration Failed: Phone number already registered.");
                 return;
             }
@@ -692,7 +681,6 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
 
             if (error) {
                 alert("Registration Failed. Please try again.");
-                console.error(error);
                 return;
             }
 
@@ -808,16 +796,13 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
         function searchProducts() { 
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const con = document.getElementById('productsContainer');
-            // If the search is performed on the currently loaded products:
             const productCards = con.querySelectorAll('.product-card');
             
             productCards.forEach(card => {
-                // Get the product name from the card
                 const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
                 
-                // Show or hide based on whether the name contains the search term
                 if (productName.includes(searchTerm)) {
-                    card.style.display = 'flex'; // Use flex because the product-card CSS uses display:flex
+                    card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
                 }
@@ -826,19 +811,16 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
         
         // Tab switching and menu synchronization
         function switchTab(tab, title) { 
-            // Update Tab active state
             document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
             document.querySelector(`.tab-nav > div:nth-child(${tab === 'men' ? 2 : 1})`).classList.add('active');
             
-            // Show/Hide Menu Section
             document.getElementById('women-menu').style.display = (tab === 'women') ? 'block' : 'none';
             document.getElementById('men-menu').style.display = (tab === 'men') ? 'block' : 'none';
             
-            // Load all products for that gender
             loadProducts('all', title, tab);
         }
 
-        // Theme Toggle (Syncs Menu Icon)
+        // Theme Toggle
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -864,10 +846,10 @@ ${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleStr
         // Initial Loads
         window.onload = function() {
             loadBanners();
-            loadProducts('all', 'All Products (Women)', 'women'); // Load default tab (Women/All)
-            updateCartUI(); // Initialize cart count
-            updateProfileView(); // Check if a user is logged in (session storage not implemented, so it defaults to logged out)
-            setLanguage('my'); // Set default language
+            loadProducts('all', 'All Products (Women)', 'women');
+            updateCartUI(); 
+            updateProfileView();
+            setLanguage('my');
         };
 
     </script>
