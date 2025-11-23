@@ -61,14 +61,13 @@
         .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
         
         .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
-        /* Ensure dots are visible in both light/dark mode */
         .dot { background-color: rgba(255,255,255,0.5); height: 8px; width: 8px; margin: 0 4px; border-radius: 50%; display: inline-block; transition: background-color 0.3s; }
         .dot.active { background-color: var(--header-text); width: 20px; border-radius: 4px; }
 
         /* PRODUCTS AREA */
         .main-content { padding: 15px; padding-bottom: 80px; }
         .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
-        /* FIX 1: Changed from grid to flex for easier product hiding/showing for search */
+        /* FIX 1: Using flex-wrap for product cards for better control */
         .product-grid { 
             display: flex; 
             flex-wrap: wrap; 
@@ -412,9 +411,7 @@
             });
 
             // Specific element updates (like placeholder or non-data-t elements)
-            // Update chat input placeholder
             document.querySelector('#chatInput').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            // Update search placeholder
             const searchPlaceholder = t.search_placeholder || "Search...";
             document.querySelector('#searchInput').placeholder = searchPlaceholder;
             document.querySelector('#pageTitle').innerText = t.all; // Update main page title on language switch
@@ -497,7 +494,6 @@
             const box = document.getElementById('chatBox');
             box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
         }
-        // Updated Chat Reply Logic
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const userMessage = input.value.trim();
@@ -506,26 +502,22 @@
 
             const body = document.getElementById('chatBody');
             
-            // 1. User Message Display (Right-aligned, Vibrant Blue background)
             const userDiv = document.createElement('div');
             userDiv.style.cssText = "background:var(--vibrant-blue); color:white; padding:8px; border-radius:5px; margin-bottom:10px; text-align:right; margin-left:auto; display:table;";
             userDiv.innerText = userMessage;
             body.appendChild(userDiv);
             input.value = '';
 
-            // 2. Automated Reply Logic (Based on current language)
             const botReplyText = currentTranslations[currentLang].chat_reply || "Hello! How can I help you today?";
 
             setTimeout(() => {
                 const replyDiv = document.createElement('div');
-                // Use theme variables for the reply box
                 replyDiv.style.cssText = "background:var(--bg-color); color:var(--text-color); padding:8px; border-radius:5px; margin-bottom:10px; display:table; border:1px solid #ddd;";
                 replyDiv.innerText = botReplyText;
                 body.appendChild(replyDiv);
                 
-                // Scroll to the bottom
                 body.scrollTop = body.scrollHeight;
-            }, 1000); // Wait 1 second before replying
+            }, 1000); 
         }
 
         // --- AUTH & HISTORY ---
@@ -595,15 +587,27 @@
             
             // 1. TRY FETCHING FROM DB
             let q = supabase.from('products').select('*').eq('gender', gender); 
+            
+            // FIX 2: Check for specific categories (clothing, shoes, bag) OR the general 'Products' category
+            // This allows the item with category: "Products" to appear when 'all', 'clothing', 'shoes', or 'bag' is clicked
             if(cat !== 'all') { 
-                q = q.eq('category', cat);
+                // Create an array of categories to check against
+                const categoriesToCheck = [cat, 'Products'];
+                
+                // Use the 'in' operator to check if the category is one of the allowed values.
+                q = q.in('category', categoriesToCheck); 
             }
-            let { data } = await q;
+            
+            let { data, error } = await q;
 
             document.getElementById('loading').style.display = 'none'; // Hide loading
+            
+            if (error) {
+                console.error("Supabase Fetch Error:", error.message);
+            }
 
-            // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY
-            if (!data || data.length === 0) {
+            // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY or ERROR
+            if (!data || data.length === 0 || error) {
                 console.log(`Using Sample Data for ${gender} - ${cat}`);
                 // Filter the extended sample list based on requested gender and category
                 data = allSampleProducts.filter(p => {
@@ -614,14 +618,19 @@
             }
 
             currentProducts = data || [];
-            renderProducts(currentProducts, title);
+            
+            // 3. Render
+            if (currentProducts.length === 0) {
+                 document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found in this category or sample data used.</p>';
+            } else {
+                 renderProducts(currentProducts, title);
+            }
         }
 
         function renderProducts(list, title) {
             const con = document.getElementById('productsContainer');
             con.innerHTML = '';
             list.forEach((p, index) => {
-                // The image URL comes from Supabase, which the user provided an example for
                 let img = p.image_url || 'https://via.placeholder.com/300';
                 let price = Number(p.price).toLocaleString();
                 con.innerHTML += `
@@ -704,30 +713,24 @@
                  searchProducts(); // Clear search filter on close
             }
         }
-
         function closeModal(id) { document.getElementById(id).style.display='none'; }
         
-        // Search Products Logic
         function searchProducts() { 
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const con = document.getElementById('productsContainer');
             const productCards = con.querySelectorAll('.product-card');
 
             if (searchTerm.length === 0) {
-                // If search bar is empty, show all cards
                 productCards.forEach(card => card.style.display = 'flex');
                 return;
             }
 
             productCards.forEach(card => {
-                // Get the product name from the card's inner text.
                 const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
-                
-                // Check if the product name includes the search term.
                 if (productName.includes(searchTerm)) {
-                    card.style.display = 'flex'; // Display as flex
+                    card.style.display = 'flex'; 
                 } else {
-                    card.style.display = 'none'; // Hide the card
+                    card.style.display = 'none'; 
                 }
             });
         }
