@@ -1,4 +1,4 @@
-// --- CONFIG ---
+// --- CONFIG & GLOBAL VARS ---
 const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
 const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
@@ -7,6 +7,8 @@ const CHAT_ID = '-5098597126';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentProducts = [];
 let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
+
+// Variable to hold the currently selected product for the Details Modal
 let selectedProduct = null; 
 
 // --- TRANSLATION MAP ---
@@ -148,7 +150,6 @@ function applyLanguage(lang) {
     document.querySelector('#searchInput').placeholder = t.search_placeholder || "Search...";
     document.querySelector('#pageTitle').innerText = t.all; 
 }
-
 function toggleLanguage(lang) {
     if (currentTranslations[lang]) {
         currentLang = lang;
@@ -159,7 +160,6 @@ function toggleLanguage(lang) {
 
 // --- BANNER SLIDER FUNCTIONS ---
 let slideIndex = 0;
-
 async function loadBanners() {
     const { data, error } = await supabase
         .from('banners')
@@ -188,7 +188,6 @@ async function loadBanners() {
          startSlider();
     }
 }
-
 function startSlider() {
     showSlides();
     setInterval(() => {
@@ -372,10 +371,10 @@ function renderProducts(list, title) {
         let img = p.image_url || 'https://via.placeholder.com/300';
         let price = Number(p.price).toLocaleString();
         con.innerHTML += `
-        <div class="product-card">
+        <div class="product-card" onclick="openDetails(${index})">
             <img src="${img}" class="p-img">
             <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${price} Ks</div></div>
-            <div class="cart-btn" onclick="openDetails(${index})"><i class="fas fa-eye"></i></div> 
+            <div class="cart-btn" onclick="event.stopPropagation(); openDetails(${index})"><i class="fas fa-eye"></i></div> 
         </div>`;
     });
 }
@@ -395,7 +394,7 @@ function searchProducts() {
     });
 }
 
-// --- PRODUCT DETAILS & IMAGE UPDATE FUNCTIONS ---
+// --- PRODUCT DETAILS & IMAGE UPDATE FUNCTIONS (Fixes the issue) ---
 
 function updateDetailsImage(colorIndexString) {
     if (!selectedProduct || !selectedProduct.colors) return;
@@ -403,19 +402,26 @@ function updateDetailsImage(colorIndexString) {
     const colorIndex = parseInt(colorIndexString);
     const p = selectedProduct;
     
-    let imageUrl = 'https://via.placeholder.com/300';
+    let imageUrl = p.image_url || 'https://via.placeholder.com/300'; 
     if (p.colors[colorIndex] && p.colors[colorIndex].image_url) {
         imageUrl = p.colors[colorIndex].image_url;
     }
     
     document.getElementById('detail-img').src = imageUrl;
-    p.image_url = imageUrl; 
+    // Store the selected image URL for the checkout modal
+    selectedProduct.current_image_url = imageUrl; 
 }
 
 function openDetails(idx) {
     if(!currentProducts || !currentProducts[idx]) return;
     const p = currentProducts[idx];
     selectedProduct = p; 
+    
+    // If not logged in, show auth modal first
+    if(!currentUser) { 
+        checkAuth(); 
+        return; 
+    }
     
     document.getElementById('detail-name').innerText = p.name;
     document.getElementById('detail-price').innerText = Number(p.price).toLocaleString() + " Ks";
@@ -449,11 +455,7 @@ function openDetails(idx) {
 
 // --- CART & ORDER FUNCTIONS ---
 function openCheckoutFromDetails() {
-    if(!currentUser) { 
-        closeModal('detailsModal');
-        checkAuth(); 
-        return; 
-    }
+    // Check if a product is selected
     if(!selectedProduct) return;
     
     const p = selectedProduct;
@@ -469,7 +471,8 @@ function openCheckoutFromDetails() {
 
     document.getElementById('modal-name').innerText = `${p.name} (${orderNote})`;
     document.getElementById('modal-price').innerText = totalPrice.toLocaleString() + " Ks"; 
-    document.getElementById('modal-img').src = p.image_url || ''; 
+    // Use the stored current_image_url (which was updated by updateDetailsImage)
+    document.getElementById('modal-img').src = p.current_image_url || p.image_url || ''; 
     
     document.getElementById('noteInput').value = orderNote; 
     document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
