@@ -723,43 +723,54 @@
         }
         
         async function doRegister() {
-            const name = document.getElementById('rName').value.trim();
-            const phone = document.getElementById('rPhone').value.trim();
-            const pass = document.getElementById('rPass').value.trim();
-            const email = phone + AUTH_DOMAIN; // Use synthetic email
+    const name = document.getElementById('rName').value.trim();
+    const phone = document.getElementById('rPhone').value.trim();
+    const pass = document.getElementById('rPass').value.trim();
 
-            if (!name || !phone || !pass) {
-                 showSnackbar("Please fill in all fields.", 'error');
-                 return;
-            }
+    // ⬇️ အရေးကြီးဆုံး ပြင်ဆင်မှု စတင်
+    if (!name || !phone || !pass) {
+         showSnackbar("Please fill in all fields.", 'error');
+         return;
+    }
+    
+    // ဂဏန်းများသာ ချန်ပြီး ကျန်တာ အားလုံး ဖယ်ရှားလိုက်ပါ (e.g., +95-9 -> 959)
+    const cleanedPhone = phone.replace(/\D/g, ''); 
+    
+    if (cleanedPhone.length < 6) { // Basic check
+         showSnackbar("Invalid phone number format.", 'error');
+         return;
+    }
+    
+    // cleanedPhone ကိုသာ Email အတု ဖန်တီးရာတွင် အသုံးပြုပါ
+    const email = cleanedPhone + AUTH_DOMAIN; 
+    // ⬆️ အရေးကြီးဆုံး ပြင်ဆင်မှု ပြီးဆုံး
 
-            // 1. Supabase Auth Sign Up (Secure Hashing/Storage)
-            let { data: authData, error: authError } = await supabase.auth.signUp({ 
-                email, 
-                password: pass
-                // We don't need 'options: { data: { phone, name } }' as we are using a custom profile table ('users')
-            });
+    // 1. Supabase Auth Sign Up (Secure Hashing/Storage)
+    let { data: authData, error: authError } = await supabase.auth.signUp({ 
+        email, 
+        password: pass
+    });
 
-            if(authError) { 
-                showSnackbar("Registration Error: " + authError.message, 'error'); 
-                return;
-            }
-            
-            const userId = authData.user.id;
-            
-            // 2. Insert user profile into the custom 'users' table
-            let { error: profileError } = await supabase.from('users').insert([
-                { user_id: userId, name: name, phone: phone }
-            ]);
+    if(authError) { 
+        showSnackbar("Registration Error: " + authError.message, 'error'); 
+        return;
+    }
+    
+    const userId = authData.user.id;
+    
+    // 2. Insert user profile into the custom 'users' table
+    let { error: profileError } = await supabase.from('users').insert([
+        { user_id: userId, name: name, phone: cleanedPhone } // ⬅️ Profile ထဲမှာလည်း cleanedPhone ကိုပဲ ထည့်ပါ
+    ]);
 
-            if (profileError) {
-                 showSnackbar("Profile saving failed: " + profileError.message, 'error');
-                 // You might want to delete the user from auth here for cleanup
-                 return;
-            }
+    if (profileError) {
+         showSnackbar("Profile saving failed: " + profileError.message, 'error');
+         // အကောင့်ဖွင့်ပြီး Profile save မလုပ်နိုင်ရင် Auth က User ကို ပြန်ဖျက်ဖို့ လိုပေမယ့် ဒီတိုင်းထားလိုက်ပါ။
+         return;
+    }
 
-            showSnackbar("Registration successful! Please check your email for confirmation (if enabled).", 'success'); 
-            showAuthForm('login'); 
+    showSnackbar("Registration successful! You can now log in.", 'success'); 
+    showAuthForm('login'); 
         }
         
         async function doLogout() { 
