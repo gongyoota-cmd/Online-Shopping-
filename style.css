@@ -90,7 +90,16 @@ header { background: var(--header-bg); color: var(--header-text); padding: 15px 
 .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
 .input-group { margin-bottom: 15px; }
 .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-.input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+/* IMPORTANT: Added textarea and select to cover all input types in modals */
+.input-group input, .input-group textarea, .input-group select { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    box-sizing: border-box; 
+    background: var(--bg-color); 
+    color: var(--text-color); 
+}
 .order-btn { width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
 
 #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
