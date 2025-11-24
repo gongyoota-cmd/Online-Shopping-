@@ -118,7 +118,7 @@
         #langSelect { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; background: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- [NEW] SNACKBAR/TOAST STYLES --- */
+        /* SNACKBAR/TOAST STYLES */
         #snackbar {
             visibility: hidden; 
             min-width: 250px;
@@ -303,6 +303,10 @@
                 <div><b>KPay</b><br><small>09********* ( Mu )</small></div>
             </div>
             <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>KPay</b><br><small>09********* ( Mu )</small></div>
+            </div>
+            <div class="pay-row">
                 <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
                 <div><b>Wave Money</b><br><small>09********* ( Mu )</small></div>
             </div>
@@ -344,11 +348,15 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
         const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
         const CHAT_ID = '-5098597126'; 
+        
+        // Custom domain used for Supabase Auth (since the UI only has Phone)
+        const AUTH_DOMAIN = '@kshop.com'; 
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentProducts = [];
-        let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
-        let selectedProduct = null; // Stores the product currently in details modal
+        // currentUser now stores the profile data fetched from the 'users' table
+        let currentUser = null; 
+        let selectedProduct = null; 
 
         // --- TRANSLATION MAP (EN, MY, TH) ---
         const currentTranslations = {
@@ -462,7 +470,7 @@
         ];
 
         // --- WINDOW ONLOAD ---
-        window.onload = function() {
+        window.onload = async function() {
             const langSelect = document.getElementById('langSelect');
             const savedLang = localStorage.getItem('kshop_lang');
             if (savedLang && currentTranslations[savedLang]) {
@@ -474,6 +482,9 @@
                 applyLanguage(currentLang);
             }
             
+            // Check for existing Supabase session and load profile
+            await loadUserSession();
+            
             loadProducts('all', currentTranslations[currentLang].all, 'women'); 
             updateUserUI();
             loadBanners(); 
@@ -483,6 +494,33 @@
                 document.getElementById('darkModeToggle').checked = true;
             }
         }
+        
+        // --- AUTH: Session/Profile Loading ---
+        async function loadUserSession() {
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.error("Error fetching session:", sessionError);
+                return;
+            }
+            if (session) {
+                const userId = session.user.id;
+                // Fetch user profile from the custom 'users' table using the Supabase Auth UID
+                let { data: profile, error: profileError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+                    
+                if (profileError) {
+                    console.error("Error fetching profile:", profileError);
+                    // Could be a user who signed up but profile creation failed. Sign them out for cleanup.
+                    await supabase.auth.signOut();
+                    return;
+                }
+                currentUser = profile;
+            }
+        }
+
 
         // --- LANGUAGE ---
         function applyLanguage(lang) {
@@ -561,6 +599,7 @@
         function currentSlide(n) { slideIndex = n; showSlides(); }
 
         function updateUserUI() {
+            // Check for currentUser object loaded from the custom 'users' table
             if(currentUser) document.getElementById('userDot').style.display = 'block';
             else document.getElementById('userDot').style.display = 'none';
         }
@@ -599,7 +638,7 @@
             }, 1000); 
         }
 
-        // --- [NEW] SNACKBAR/TOAST FUNCTION ---
+        // --- SNACKBAR/TOAST FUNCTION ---
         function showSnackbar(message, type = 'default') {
             const x = document.getElementById("snackbar");
             x.innerText = message;
@@ -622,7 +661,7 @@
             }, 3000);
         }
 
-        // --- AUTH & HISTORY (MODIFIED) ---
+        // --- AUTH & HISTORY (SECURITY MODIFIED) ---
         function checkAuth() { if(currentUser) openHistory(); else document.getElementById('authModal').style.display = 'flex'; }
         function showAuthForm(type) {
             if(type === 'login') {
@@ -645,45 +684,105 @@
         async function doLogin() {
             const phone = document.getElementById('lPhone').value.trim();
             const pass = document.getElementById('lPass').value.trim();
+            const email = phone + AUTH_DOMAIN; // Use synthetic email
+
             if (!phone || !pass) {
                 showSnackbar("Please enter phone and password.", 'error');
                 return;
             }
-            let { data } = await supabase.from('users').select('*').eq('phone', phone).eq('password', pass);
-            if(data && data.length > 0) {
-                currentUser = data[0];
-                localStorage.setItem('kshop_user_data', JSON.stringify(currentUser));
-                closeModal('authModal'); updateUserUI(); openHistory();
-                showSnackbar("Login successful!", 'success'); // SUCCESS SNACKBAR
-            } else { 
-                showSnackbar("Invalid phone or password.", 'error'); // ERROR SNACKBAR
+            
+            // 1. Supabase Auth Sign In (Secure Login)
+            let { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password: pass });
+            
+            if (authError) {
+                const message = authError.message.includes('Invalid login credentials') ? "Invalid phone or password." : authError.message;
+                showSnackbar(message, 'error'); 
+                return;
             }
+            
+            const userId = authData.user.id;
+            
+            // 2. Fetch User Profile from custom table
+            let { data: profileData, error: profileError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('user_id', userId)
+                .single();
+
+            if (profileError || !profileData) {
+                showSnackbar("Profile not found. Please re-register or contact support.", 'error');
+                await supabase.auth.signOut(); // Clear auth session if profile missing
+                return;
+            }
+
+            currentUser = profileData;
+            closeModal('authModal'); 
+            updateUserUI(); 
+            openHistory();
+            showSnackbar("Login successful!", 'success'); 
         }
         
         async function doRegister() {
             const name = document.getElementById('rName').value.trim();
             const phone = document.getElementById('rPhone').value.trim();
             const pass = document.getElementById('rPass').value.trim();
+            const email = phone + AUTH_DOMAIN; // Use synthetic email
+
             if (!name || !phone || !pass) {
                  showSnackbar("Please fill in all fields.", 'error');
                  return;
             }
-            let { error } = await supabase.from('users').insert([{ name, phone, password: pass }]);
-            if(!error) { 
-                showSnackbar("Registration successful! Please login.", 'success'); // SUCCESS SNACKBAR
-                showAuthForm('login'); 
+
+            // 1. Supabase Auth Sign Up (Secure Hashing/Storage)
+            let { data: authData, error: authError } = await supabase.auth.signUp({ 
+                email, 
+                password: pass
+                // We don't need 'options: { data: { phone, name } }' as we are using a custom profile table ('users')
+            });
+
+            if(authError) { 
+                showSnackbar("Registration Error: " + authError.message, 'error'); 
+                return;
             }
-            else { 
-                showSnackbar("Registration Error: " + error.message, 'error'); // ERROR SNACKBAR
+            
+            const userId = authData.user.id;
+            
+            // 2. Insert user profile into the custom 'users' table
+            let { error: profileError } = await supabase.from('users').insert([
+                { user_id: userId, name: name, phone: phone }
+            ]);
+
+            if (profileError) {
+                 showSnackbar("Profile saving failed: " + profileError.message, 'error');
+                 // You might want to delete the user from auth here for cleanup
+                 return;
             }
+
+            showSnackbar("Registration successful! Please check your email for confirmation (if enabled).", 'success'); 
+            showAuthForm('login'); 
         }
         
-        function doLogout() { localStorage.removeItem('kshop_user_data'); currentUser=null; closeModal('historyModal'); updateUserUI(); }
+        async function doLogout() { 
+            await supabase.auth.signOut(); // Securely sign out
+            currentUser = null; 
+            closeModal('historyModal'); 
+            updateUserUI(); 
+            showSnackbar("Logged out successfully.", 'success');
+        }
+        
         async function openHistory() {
+            if(!currentUser) { return; }
             document.getElementById('historyModal').style.display='flex';
             const con = document.getElementById('historyList');
             con.innerHTML = '<p>Loading...</p>';
-            let { data } = await supabase.from('orders').select('*').eq('customer_phone', currentUser.phone).order('created_at', {ascending:false});
+            
+            // Fetch history using the secured customer_user_id (Supabase UID)
+            let { data } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('customer_user_id', currentUser.user_id) 
+                .order('created_at', {ascending:false});
+            
             if(!data || !data.length) { con.innerHTML='<p>No orders yet.</p>'; return; }
             let html = '';
             data.forEach(o => {
@@ -822,7 +921,7 @@
             const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
 
             if (quantity < 1) { 
-                showSnackbar("Quantity must be at least 1.", 'error'); // ERROR SNACKBAR
+                showSnackbar("Quantity must be at least 1.", 'error'); 
                 return; 
             }
 
@@ -858,24 +957,30 @@
             const file = document.getElementById('slipInput').files[0];
             const address = document.getElementById('addressInput').value.trim();
             const contactPhone = document.getElementById('contactPhoneInput').value.trim();
-            let note = document.getElementById('noteInput').value.trim(); // Note now includes size/color/qty
+            let note = document.getElementById('noteInput').value.trim(); 
 
             if (!address || !contactPhone || !file) {
-                showSnackbar("Please fill in all required fields (Address, Phone, Slip).", 'error'); // ERROR SNACKBAR
+                showSnackbar("Please fill in all required fields (Address, Phone, Slip).", 'error'); 
                 btn.disabled = false; return;
+            }
+            
+            if(!currentUser || !currentUser.user_id) {
+                showSnackbar("User is not logged in properly. Please re-login.", 'error'); 
+                return;
             }
 
             btn.innerText="Sending..."; btn.disabled=true;
             const pNameWithDetails = document.getElementById('modal-name').innerText;
             const pPrice = document.getElementById('modal-price').innerText;
 
+            // Save order with the secured user_id
             const { data: orderData, error: orderError } = await supabase.from('orders').insert([{
-                customer_name: currentUser.name, customer_phone: contactPhone,
+                customer_name: currentUser.name, customer_phone: contactPhone, customer_user_id: currentUser.user_id,
                 item_name: pNameWithDetails, price: pPrice, status: 'pending', address: address, note: note
             }]);
 
             if (orderError) {
-                showSnackbar("Database Error: Could not save order. " + orderError.message, 'error'); // ERROR SNACKBAR
+                showSnackbar("Database Error: Could not save order. " + orderError.message, 'error'); 
                 btn.innerText=currentTranslations[currentLang].send_btn; 
                 btn.disabled=false;
                 return;
@@ -891,7 +996,7 @@
                 closeModal('checkoutModal');
                 document.getElementById('successModal').style.display = 'flex';
             } catch (error) {
-                 showSnackbar("Order sent to database but failed to notify Admin.", 'error'); // ERROR SNACKBAR
+                 showSnackbar("Order sent to database but failed to notify Admin.", 'error'); 
             }
             
             btn.innerText=currentTranslations[currentLang].send_btn; 
