@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Lab</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Fashion Lab</title> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
-    
+
     <style>
-        /* COLOR THEME */
+        /* COLOR THEME (Keep the vibrant color scheme from the previous files) */
         :root {
             --bg-color: #f9f9f9; 
             --text-color: #333;
             --header-bg: #4a148c; /* Deep Purple */
             --header-text: #ffffff;
             --card-bg: #ffffff; 
-            --accent-color: #e91e63; /* Pink */
-            --vibrant-blue: #03a9f4; 
+            --accent-color: #e91e63; /* Vibrant Pink/Magenta for CTA */
+            --vibrant-blue: #03a9f4; /* For Chat/Switches */
+            --menu-bg: #ffffff;
+            --border-color: #eeeeee;
+            --input-bg: #eeeeee;
         }
         /* Dark Mode */
         body.dark-mode {
@@ -26,667 +27,1181 @@
             --header-bg: #000000; 
             --header-text: #ffffff;
             --card-bg: #1e1e1e;
+            --accent-color: #ff80ab; /* Lighter Pink for Dark Mode */
             --vibrant-blue: #4fc3f7;
+            --menu-bg: #1e1e1e;
+            --border-color: #333333;
+            --input-bg: #333333;
         }
 
-        body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color); transition: 0.3s; }
+        /* Base Styles */
+        body { 
+            font-family: 'Helvetica Neue', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
         
-        /* HEADER */
-        header { background: var(--header-bg); color: var(--header-text); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .nav-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; position: relative; }
-        .user-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: none; border: 1px solid white; }
+        /* Header & Navigation */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo { font-size: 1.5em; font-weight: bold; } /* Logo style */
+        .nav-icons { display: flex; gap: 15px; }
+        .nav-icons i { font-size: 1.2em; cursor: pointer; }
+        .cart-icon { position: relative; }
+        #cartCount {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
 
-        /* MENU & OVERLAY */
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 150; }
+        /* Search Box */
+        #searchContainer {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            display: none;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        /* Main Tabs (Women/Men) */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 48px; /* Below the header */
+            z-index: 90;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text-color);
+            border-bottom: 3px solid transparent;
+            transition: border-bottom 0.3s, color 0.3s;
+        }
+        .tab.active {
+            border-bottom-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 200;
+            top: 0;
+            left: 0;
+            background-color: var(--menu-bg);
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        .sidebar.active { width: 250px; }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 1.1em;
+            color: var(--text-color);
+            display: block;
+            transition: 0.3s;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar a:hover { background-color: var(--border-color); }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        .menu-section { padding: 10px 0; display: none; }
+        #women-menu { display: block; } /* Default active */
+        .menu-header { 
+            padding: 10px 15px; 
+            font-weight: bold; 
+            color: var(--accent-color); 
+            text-transform: uppercase;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 150;
+        }
         .overlay.active { display: block; }
-        .side-menu { height: 100%; width: 280px; position: fixed; top: 0; left: -280px; background: var(--card-bg); transition: left 0.3s; z-index: 200; display: flex; flex-direction: column; }
-        .side-menu.active { left: 0; }
-        .menu-tabs { display: flex; height: 50px; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; background: var(--card-bg); color: #777; }
-        .tab.active { border-bottom: 3px solid var(--accent-color); color: var(--text-color); background: var(--bg-color); }
-        .menu-content { flex: 1; overflow-y: auto; }
-        .menu-section { display: none; }
-        .menu-section.active { display: block; }
-        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .menu-footer { padding: 20px; text-align: center; background: var(--bg-color); font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
-        /* SLIDER */
-        .slider-container { position: relative; width: 95%; margin: 15px auto; overflow: hidden; border-radius: 15px; height: 200px; }
-        .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; height: 100%; }
-        .slide { min-width: 100%; height: 100%; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
-        .dots-container { text-align: center; margin-top: -25px; position: relative; z-index: 10; padding-bottom: 10px;}
-        .dot { background-color: rgba(255,255,255,0.5); height: 8px; width: 8px; margin: 0 4px; border-radius: 50%; display: inline-block; transition: background-color 0.3s; }
-        .dot.active { background-color: var(--header-text); width: 20px; border-radius: 4px; }
-
-        /* PRODUCTS GRID (FLEX FIX) */
-        .main-content { padding: 15px; padding-bottom: 80px; }
-        .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; }
-        
-        .product-grid { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 15px; 
+        /* Banner Slider */
+        .slider-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+            height: 200px; /* Fixed height for mobile */
         }
-        .product-card { 
-            background: var(--card-bg); 
-            border-radius: 8px; 
-            overflow: hidden; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-            width: calc(50% - 7.5px); /* Correct width for 2 columns */
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
         }
-        .p-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        .p-info { padding: 10px; padding-bottom: 50px; }
-        .p-name { font-size: 13px; height: 36px; overflow: hidden; margin-bottom: 5px; }
-        .p-price { font-weight: bold; font-size: 14px; color: var(--text-color); }
-        .cart-btn { position: absolute; bottom: 10px; right: 10px; background: var(--accent-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .dots-container {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 4px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+            cursor: pointer;
+        }
+        .dot.active { background-color: var(--accent-color); }
 
-        /* CHAT & MODALS */
-        .support-btn { position: fixed; bottom: 20px; right: 20px; background: var(--vibrant-blue); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 200; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .chat-box { display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; background: var(--card-bg); border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 200; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
-        .chat-header { background: var(--vibrant-blue); color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
-        .chat-input-area { display: flex; border-top: 1px solid #ddd; }
-        .chat-input { flex: 1; padding: 10px; border: none; outline: none; background: var(--card-bg); color: var(--text-color); }
-        .chat-send { padding: 0 15px; background: var(--card-bg); border: none; color: var(--vibrant-blue); cursor: pointer; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 10px; padding: 20px; max-height: 90vh; overflow-y: auto; color: var(--text-color); }
-        .close-modal { float: right; font-size: 24px; cursor: pointer; }
+        /* Product Grid */
+        #pageTitle {
+            font-size: 1.3em;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #productsContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 10px 5px;
+        }
+        .product-card {
+            width: 45%;
+            margin: 5px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            text-align: center;
+            padding-bottom: 10px;
+            cursor: pointer;
+            position: relative; /* Crucial for gallery indicator */
+        }
+        .product-card img {
+            width: 100%;
+            height: 180px; /* Fixed image height */
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+        .p-name { font-weight: 600; padding: 0 5px; font-size: 0.9em; }
+        .p-price { color: var(--accent-color); font-weight: bold; margin-top: 5px; font-size: 1em; }
         
-        .pay-row { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; background: #f4f4f4; border-radius: 5px; color: #333; border: 1px solid #eee; }
-        .pay-icon { width: 45px; height: 45px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
-        .order-btn { width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        
-        #searchBox { display: none; background: var(--card-bg); padding: 10px; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #ddd; }
-        #searchInput { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); }
+        /* Buttons & Inputs */
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover:not(:disabled) { background-color: #c2185b; }
+        .btn-secondary { background-color: var(--vibrant-blue); }
+        .btn-secondary:hover { background-color: #0288d1; }
+        .btn:disabled { background-color: #cccccc; cursor: not-allowed; }
+        input[type="text"], input[type="password"], input[type="file"], textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
 
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--vibrant-blue); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        #langSelect { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; background: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
-        .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 300;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        #cartTotal, #checkoutTotal { font-size: 1.2em; font-weight: bold; margin-top: 10px; color: var(--accent-color); }
+        
+        /* Footer/Chat */
+        .footer-chat-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--vibrant-blue);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+        }
+        #chatBox {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 90%;
+            max-width: 300px;
+            height: 350px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 99;
+            overflow: hidden;
+        }
+        .chat-header { 
+            background-color: var(--vibrant-blue); 
+            color: white; 
+            padding: 10px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between;
+        }
+        .chat-content { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .chat-input { padding: 10px; border-top: 1px solid var(--border-color); }
+        .chat-input button { width: 100%; }
+
+        /* Order History */
+        #orderHistoryList { margin-top: 15px; }
+
+        /* Loading Spinner */
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 350;
+            display: none;
+            padding: 15px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 8px;
+        }
+
+        /* --- NEW: Gallery Indicator & Detail Modal Styles --- */
+        .gallery-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(74, 20, 140, 0.8); /* Deep Purple Translucent */
+            color: white;
+            padding: 5px 8px;
+            border-radius: 50%;
+            font-size: 0.9em;
+            cursor: pointer;
+            z-index: 50; 
+        }
+
+        /* Detail Modal Gallery Style */
+        #detailImageGallery {
+            height: 350px; 
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .detail-slide {
+            min-width: 100%;
+            height: 350px;
+        }
+        .detail-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .detail-dots-container {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        
     </style>
 </head>
-<body id="body">
+<body>
 
-    <div class="overlay" onclick="toggleMenu()"></div>
-    
-    <div class="side-menu" id="sideMenu">
-        <div class="menu-tabs">
-            <div class="tab active" onclick="switchTab('women')">WOMEN</div>
-            <div class="tab" onclick="switchTab('men')">MEN</div>
-        </div>
-        <div class="menu-content">
-            <div id="women-menu" class="menu-section active">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
+    <div class="header">
+        <i class="fas fa-bars" onclick="toggleMenu()"></i>
+        <div class="logo">Fashion Lab</div> <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()"></i>
+            <div class="cart-icon" onclick="openModal('cartModal')">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cartCount"></span>
             </div>
-            <div id="men-menu" class="menu-section">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
-            </div>
+            <i class="fas fa-user-circle" onclick="openModal('loginModal')"></i>
+            <i class="fas fa-moon" id="themeIcon" onclick="toggleTheme()"></i>
         </div>
-        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
     </div>
 
-    <header>
-        <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab</div>
-        <div class="nav-icons">
-            <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
-            <i class="fas fa-cog" onclick="openSettings()"></i>
-        </div>
-    </header>
-    <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+    </div>
 
-    <div class="main-content">
+    <div class="tab-nav">
+        <div class="tab active" onclick="switchTab('women', 'All Products (Women)')">Women</div>
+        <div class="tab" onclick="switchTab('men', 'All Products (Men)')">Men</div>
+    </div>
+
+    <div id="sideMenu" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        
+        <div id="women-menu" class="menu-section">
+            <div class="menu-header">Women's Categories</div>
+            <a href="#" onclick="loadProducts('all', 'All Products (Women)', 'women')">All Products</a>
+            <a href="#" onclick="loadProducts('clothing', 'Clothing (Women)', 'women')">Clothing</a>
+            <a href="#" onclick="loadProducts('shoes', 'Shoes (Women)', 'women')">Shoes</a>
+            <a href="#" onclick="loadProducts('bag', 'Bags (Women)', 'women')">Bags</a>
+            <a href="#" onclick="loadProducts('accessories', 'Accessories (Women)', 'women')">Accessories</a>
+        </div>
+        
+        <div id="men-menu" class="menu-section" style="display:none;">
+            <div class="menu-header">Men's Categories</div>
+            <a href="#" onclick="loadProducts('all', 'All Products (Men)', 'men')">All Products</a>
+            <a href="#" onclick="loadProducts('clothing', 'Clothing (Men)', 'men')">Clothing</a>
+            <a href="#" onclick="loadProducts('shoes', 'Shoes (Men)', 'men')">Shoes</a>
+            <a href="#" onclick="loadProducts('accessories', 'Accessories (Men)', 'men')">Accessories</a>
+        </div>
+        
+        <div class="menu-header" style="margin-top: 15px;">Other</div>
+        <a href="#" onclick="openModal('loginModal')"><i class="fas fa-user-circle"></i> Login / Register</a>
+        <a href="#" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIconMenu"></i> <span id="themeLabelMenu">DARK</span> Mode
+        </a>
+    </div>
+
+    <div class="overlay" onclick="closeAll()"></div>
+
+    <div class="container" onclick="closeAll()">
         <div class="slider-container">
             <div class="slider-wrapper" id="sliderWrapper">
-                <div class="slide"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" alt="Banner 1"></div>
-            </div>
-            <div class="dots-container" id="dotsContainer"></div>
+                </div>
+            <div class="dots-container" id="dotsContainer">
+                </div>
         </div>
 
-        <div class="section-title" id="pageTitle">All Products</div>
-        <div id="loading" style="text-align:center; padding:20px; display:none;">Loading...</div>
-        <div class="product-grid" id="productsContainer"></div>
+        <div id="pageTitle">All Products (Women)</div>
+        <div id="productsContainer">
+            </div>
+
+        <div id="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     </div>
 
-    <div class="support-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
-    <div class="chat-box" id="chatBox">
-        <div class="chat-header" data-t="chat_title">Support Chat</div>
-        <div class="chat-body" id="chatBody">
-            <div style="background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; margin-bottom:5px;">မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Type message...">
-            <button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
-        </div>
+    <div class="footer-chat-btn" onclick="toggleChat()">
+        <i class="fab fa-telegram-plane"></i>
     </div>
 
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
-            <h3 data-t="settings_title">Settings</h3>
-            <div class="setting-row">
-                <span data-t="dark_mode">Dark Mode</span>
-                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)" id="darkModeToggle"><span class="slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span data-t="language_title">Language</span>
-                <select id="langSelect" onchange="toggleLanguage(this.value)">
-                    <option value="en">English (EN)</option>
-                    <option value="my">မြန်မာ (MY)</option>
-                    <option value="th">ไทย (TH)</option>
-                </select>
-            </div>
+    <div id="chatBox">
+        <div class="chat-header">
+            Telegram Support Chat
+            <span class="modal-close" style="color:white; margin-top: -5px;" onclick="toggleChat()">&times;</span>
+        </div>
+        <div class="chat-content">
+            <p style="text-align: center; color: #888;">Chat feature is linked to Telegram.</p>
+            <p>Please contact us directly for support:</p>
+            <a href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" class="btn btn-secondary" style="width: 100%;">Chat on Telegram</a>
         </div>
     </div>
 
-    <div class="modal" id="authModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('authModal')">&times;</span>
-            <h3 style="text-align:center;">Welcome</h3>
-            <div style="display:flex; margin-bottom:20px; border-bottom:1px solid #ddd;">
-                <div style="flex:1; text-align:center; padding:10px; font-weight:bold; border-bottom:2px solid #2d2d2d; cursor:pointer;" id="tabLogin" onclick="showAuthForm('login')" data-t="login_tab">Login</div>
-                <div style="flex:1; text-align:center; padding:10px; color:#777; cursor:pointer;" id="tabRegister" onclick="showAuthForm('register')" data-t="register_tab">Register</div>
+
+    <div id="cartModal" class="modal" onclick="closeModal('cartModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Shopping Cart</h2>
+                <span class="modal-close" onclick="closeModal('cartModal')">&times;</span>
             </div>
+            <div id="cartItems">
+                </div>
+            <div id="cartTotal">Total: 0 MMK</div>
+            <button id="checkoutBtn" class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="openModal('checkoutModal')" disabled>Checkout</button>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 10px; background-color: #f44336;" onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+
+    <div id="productDetailModal" class="modal" onclick="closeModal('productDetailModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="detailProductName">Product Name</h2>
+                <span class="modal-close" onclick="closeModal('productDetailModal')">&times;</span>
+            </div>
+            <div id="detailImageGallery" class="slider-container" style="margin-bottom: 15px; height: 350px;">
+                <div class="slider-wrapper" id="detailSliderWrapper"></div>
+                <div class="dots-container" id="detailDotsContainer"></div>
+            </div>
+            <p id="detailProductPrice" style="font-size: 1.4em; font-weight: bold; color: var(--accent-color);"></p>
+            <p id="detailProductDescription" style="color: var(--text-color); margin-bottom: 20px;">Product description goes here...</p>
+            <button class="btn btn-primary" id="detailAddToCartBtn" style="width: 100%;">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="modal" onclick="closeModal('checkoutModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Checkout</h2>
+                <span class="modal-close" onclick="closeModal('checkoutModal')">&times;</span>
+            </div>
+
+            <p id="checkoutItemsList" style="margin-bottom: 10px;"></p>
+            <div id="checkoutTotal" style="margin-bottom: 20px;">Total: 0 MMK</div>
+
+            <input type="text" id="checkoutName" placeholder="Your Name" required>
+            <input type="text" id="checkoutPhone" placeholder="Phone Number" required>
+            <textarea id="checkoutAddress" placeholder="Delivery Address" required></textarea>
+            
+            <p style="margin: 10px 0; font-weight: bold;">Upload Payment Slip:</p>
+            <input type="file" id="slipInput" accept="image/*" required>
+
+            <button id="sendBtn" class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="sendOrder(this)">မှာယူမှု ပေးပို့</button>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal" onclick="closeModal('loginModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="loginHeader">Login</h2>
+                <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+            </div>
+            
             <div id="loginForm">
-                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="lPhone"></div>
-                <div class="input-group"><label data-t="pass_label">Password</label><input type="password" id="lPass"></div>
-                <button class="order-btn" onclick="doLogin()" data-t="login_btn">Login</button>
+                <input type="text" id="loginPhone" placeholder="Phone Number" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button class="btn btn-primary" style="width: 100%;" onclick="loginUser()">Login</button>
+                <p style="text-align: center; margin-top: 10px;">
+                    <a href="#" onclick="showRegister()">Don't have an account? Register</a>
+                </p>
             </div>
+
             <div id="registerForm" style="display:none;">
-                <div class="input-group"><label data-t="name_label">Name</label><input type="text" id="rName"></div>
-                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="rPhone"></div>
-                <div class="input-group"><label data-t="pass_label">Password</label><input type="password" id="rPass"></div>
-                <button class="order-btn" onclick="doRegister()" data-t="register_btn">Register</button>
+                <input type="text" id="registerName" placeholder="Name" required>
+                <input type="text" id="registerPhone" placeholder="Phone Number" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button class="btn btn-primary" style="width: 100%;" onclick="registerUser()">Register</button>
+                <p style="text-align: center; margin-top: 10px;">
+                    <a href="#" onclick="showLogin()">Already have an account? Login</a>
+                </p>
+            </div>
+
+            <div id="profileView" style="display:none;">
+                <p>Hello, <strong id="profileName"></strong>!</p>
+                <p>Phone: <span id="profilePhone"></span></p>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;" onclick="openModal('orderHistoryModal')">Order History</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 10px; background-color: #f44336;" onclick="logoutUser()">Logout</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="historyModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('historyModal')">&times;</span>
-            <h3 data-t="history_title">My Orders</h3>
-            <div id="historyList"><p style="text-align:center;">Loading...</p></div>
-            <button class="order-btn" onclick="doLogout()" style="background:#d32f2f; margin-top:20px;" data-t="logout_btn">Logout</button>
+    <div id="orderHistoryModal" class="modal" onclick="closeModal('orderHistoryModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Order History</h2>
+                <span class="modal-close" onclick="closeModal('orderHistoryModal')">&times;</span>
+            </div>
+            <p id="orderHistoryMessage" style="text-align: center; color: #888;"></p>
+            <div id="orderHistoryList">
+                </div>
         </div>
     </div>
 
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('checkoutModal')">&times;</span>
-            <h3 data-t="order_form">Order Form</h3>
-            <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
-                <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
-                <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:var(--accent-color);"></div></div>
-            </div>
-            
-            <div class="pay-row">
-                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                <div><b>KPay</b><br><small>09752965423 (Ko Ko)</small></div>
-            </div>
-            <div class="pay-row">
-                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
-                <div><b>Wave Money</b><br><small>09752965423 (Ko Ko)</small></div>
-            </div>
-            
-            <div style="margin-top: 15px;">
-                <div class="input-group">
-                    <label data-t="address_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
-                    <textarea id="addressInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color);"></textarea>
-                </div>
-                <div class="input-group">
-                    <label data-t="contact_label">Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
-                    <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
-                </div>
-                <div class="input-group">
-                    <label data-t="note_label">Note (အကြောင်းအရာ)</label>
-                    <input type="text" id="noteInput" placeholder="Note">
-                </div>
-            </div>
-
-            <div class="input-group"><label data-t="slip_label">Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
-            <button class="order-btn" id="sendBtn" onclick="sendOrder()" disabled data-t="send_btn">Admin ထံသို့ ပို့မည်</button>
-        </div>
-    </div>
-
-    <div class="modal" id="successModal">
-        <div class="modal-content" style="text-align:center;">
-            <i class="fas fa-check-circle" style="font-size:50px; color:#4CAF50; margin-bottom:10px;"></i>
-            <h3 data-t="order_sent_h3">👾 Order sent!</h3>
-            <p data-t="order_sent_p">Payment successful, delivery will be made soon.🎉</p>
-            <button class="order-btn" onclick="closeModal('successModal')" data-t="ok_btn">OK</button>
+    <div id="successModal" class="modal" onclick="closeModal('successModal')">
+        <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;">
+            <i class="fas fa-check-circle" style="color: var(--accent-color); font-size: 3em; margin-bottom: 15px;"></i>
+            <h2>Order Placed Successfully!</h2>
+            <p>Your order has been sent. We will contact you soon.</p>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="closeModal('successModal')">Continue Shopping</button>
         </div>
     </div>
 
     <script>
-        // CONFIG
-        const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; 
-        const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
-        const CHAT_ID = '-5098597126'; 
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentProducts = [];
-        let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
-
-        // --- TRANSLATION MAP (EN, MY, TH) ---
-        const currentTranslations = {
-            en: {
-                shop_cat: "WOMEN'S FASHION", all: "All Products", clothing: "Clothing", shoes: "Shoes", bag: "Bags",
-                men_cat: "MEN'S FASHION", accessories: "Accessories",
-                order_form: "Order Form", address_label: "Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)", contact_label: "Contact Phone (ဆက်သွယ်ရန်ဖုန်း)", note_label: "Note (အကြောင်းအရာ)",
-                slip_label: "Payment Slip (ပြေစာ)", send_btn: "Send to Admin", chat_title: "Support Chat", history_title: "My Orders",
-                settings_title: "Settings", dark_mode: "Dark Mode", language_title: "Language", login_tab: "Login", register_tab: "Register", phone_label: "Phone", pass_label: "Password", login_btn: "Login", register_btn: "Register", logout_btn: "Logout", name_label: "Name",
-                order_sent_h3: "👾 Order sent!", order_sent_p: "Payment successful, delivery will be made soon.🎉", ok_btn: "OK",
-                search_placeholder: "Search...", chat_reply: "Hello! How can I help you today?" 
-            },
-            my: {
-                shop_cat: "အမျိုးသမီးဖက်ရှင်", all: "ပစ္စည်းအားလုံး", clothing: "အဝတ်အထည်", shoes: "ဖိနပ်", bag: "အိတ်",
-                men_cat: "အမျိုးသားဖက်ရှင်", accessories: "အသုံးအဆောင်",
-                order_form: "မှာယူမှုပုံစံ", address_label: "ပို့ဆောင်ရန်လိပ်စာ", contact_label: "ဆက်သွယ်ရန်ဖုန်း", note_label: "အကြောင်းအရာ",
-                slip_label: "ငွေလွှဲပြေစာ", send_btn: "Admin ထံသို့ ပို့မည်", chat_title: "အကူအညီချတ်", history_title: "မှာယူမှုမှတ်တမ်း",
-                settings_title: "ဆက်တင်များ", dark_mode: "ညမုဒ်", language_title: "ဘာသာစကား", login_tab: "ဝင်ရန်", register_tab: "အကောင့်ဖွင့်ရန်", phone_label: "ဖုန်းနံပါတ်", pass_label: "စကားဝှက်", login_btn: "ဝင်မည်", register_btn: "မှတ်ပုံတင်မည်", logout_btn: "ထွက်မည်", name_label: "နာမည်",
-                order_sent_h3: "👾 မှာယူမှု အောင်မြင်! ", order_sent_p: "ငွေပေးချေမှုအောင်မြင်ပါပြီ၊ မကြာမီ ပို့ဆောင်ပေးပါမည်။🎉", ok_btn: "အိုကေ",
-                search_placeholder: "ရှာဖွေပါ...", chat_reply: "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?" 
-            },
-            th: {
-                shop_cat: "แฟชั่นสตรี", all: "สินค้าทั้งหมด", clothing: "เสื้อผ้า", shoes: "รองเท้า", bag: "กระเป๋า",
-                men_cat: "แฟชั่นบุรุษ", accessories: "เครื่องประดับ",
-                order_form: "แบบฟอร์มคำสั่งซื้อ", address_label: "ที่อยู่จัดส่ง", contact_label: "เบอร์ติดต่อ", note_label: "หมายเหตุ",
-                slip_label: "สลิปการชำระเงิน", send_btn: "ส่งถึงแอดมิน", chat_title: "แชทสนับสนุน", history_title: "คำสั่งซื้อของฉัน",
-                settings_title: "การตั้งค่า", dark_mode: "โหมดกลางคืน", language_title: "ภาษา", login_tab: "เข้าสู่ระบบ", register_tab: "ลงทะเบียน", phone_label: "เบอร์โทรศัพท์", pass_label: "รหัสผ่าน", login_btn: "เข้าสู่ระบบ", register_btn: "ลงทะเบียน", logout_btn: "ออกจากระบบ", name_label: "ชื่อ",
-                order_sent_h3: "👾 ส่งคำสั่งซื้อแล้ว!", order_sent_p: "ชำระเงินสำเร็จแล้ว จะดำเนินการจัดส่งเร็วๆ นี้🎉", ok_btn: "ตกลง",
-                search_placeholder: "ค้นหา...", chat_reply: "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?" 
-            }
-        };
-
-        let currentLang = localStorage.getItem('kshop_lang') || 'en';
+        /* ======================================================= */
+        /* === CONFIGURATION & INITIALIZATION (MUST BE UPDATED)=== */
+        /* ======================================================= */
         
-        // --- FALLBACK SAMPLE PRODUCTS ---
-        // Used only if Supabase connection fails or returns no data
-        const allSampleProducts = [
-            {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women"},
-            {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women"},
-            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women"},
-            {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men"},
-            {name: "Sports Watch", price: 95000, image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", category: "accessories", gender: "men"},
-        ];
+        // ⚠️ Supabase Credentials - CHANGE THESE
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE'; 
         
-        // --- FALLBACK SAMPLE BANNERS ---
-        const sampleBanners = [
-            {image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"},
-            {image_url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800"},
-            {image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"}
-        ];
+        // ⚠️ Telegram Bot Credentials - CHANGE THESE
+        const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; 
+        const CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'; 
 
-        // --- WINDOW ONLOAD ---
-        window.onload = function() {
-            const langSelect = document.getElementById('langSelect');
-            const savedLang = localStorage.getItem('kshop_lang');
-            if (savedLang && currentTranslations[savedLang]) {
-                currentLang = savedLang;
-                langSelect.value = currentLang;
-                applyLanguage(currentLang);
-            } else if (langSelect.options.length > 0 && currentTranslations[currentLang]) {
-                langSelect.value = currentLang;
-                applyLanguage(currentLang);
-            }
-            
-            loadProducts('all', currentTranslations[currentLang].all, 'women'); 
-            updateUserUI();
-            loadBanners(); 
-            
-            if(localStorage.getItem('kshop_dark_mode') === 'on') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-        }
-
-        // --- LANGUAGE ---
-        function applyLanguage(lang) {
-            const t = currentTranslations[lang];
-            if (!t) return;
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (t[key]) el.innerText = t[key];
-            });
-            document.querySelector('#chatInput').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-            document.querySelector('#searchInput').placeholder = t.search_placeholder || "Search...";
-            document.querySelector('#pageTitle').innerText = t.all; 
-        }
-
-        function toggleLanguage(lang) {
-            if (currentTranslations[lang]) {
-                currentLang = lang;
-                localStorage.setItem('kshop_lang', lang);
-                applyLanguage(lang);
-            }
-        }
-
-        // --- BANNERS (FIXED) ---
+        // Initialize Supabase Client
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
+        
+        let cart = [];
+        let total = 0;
         let slideIndex = 0;
-        
+        let detailSlideIndex = 0; // New index for detail modal gallery
+        let currentProducts = [];
+        let currentUser = null; 
+
+        // Translation object 
+        const translations = {
+            my: { send_btn: "မှာယူမှု ပေးပို့", }
+        };
+        let currentLang = 'my';
+        const currentTranslations = translations[currentLang];
+
+        // --- Sample Data (Ensures the gallery feature can be tested immediately) ---
+        const allSampleProducts = [
+            { id: 1, name: 'Sample Dress (Multi-Pic)', price: 25000, images: ['https://via.placeholder.com/300x400?text=Dress+Image+1', 'https://via.placeholder.com/300x400?text=Dress+Image+2', 'https://via.placeholder.com/300x400?text=Dress+Image+3'], category: 'clothing', gender: 'women', description: 'This is a beautiful sample dress. It has multiple images so the gallery icon will appear.' },
+            { id: 2, name: 'Sample Sneakers (Single-Pic)', price: 35000, images: ['https://via.placeholder.com/300x400?text=Sneakers'], category: 'shoes', gender: 'women', description: 'Comfortable walking shoes. Gallery icon will NOT appear.' },
+            { id: 3, name: 'Sample Bag (Two-Pic)', price: 45000, images: ['https://via.placeholder.com/300x400?text=Bag+Front', 'https://via.placeholder.com/300x400?text=Bag+Back'], category: 'bag', gender: 'women', description: 'Stylish handbag for daily use. Gallery icon WILL appear.' }
+        ];
+
+
+        /* ======================================================= */
+        /* === CORE PRODUCT & BANNER LOADING FUNCTIONS (GALLERY) === */
+        /* ======================================================= */
+
         async function loadBanners() {
-            // Try fetching from Supabase
             const { data, error } = await supabase
                 .from('banners')
-                .select('image_url')
-                .order('order_index', { ascending: true }); 
+                .select('image_url, order_index')
+                .order('order_index', { ascending: true });
 
-            let finalBanners = [];
+            const bannerList = (data && data.length > 0) ? data : [
+                { image_url: 'https://via.placeholder.com/1000x300?text=Welcome+to+Fashion+Lab' },
+                { image_url: 'https://via.placeholder.com/1000x300?text=New+Arrivals+Every+Week' }
+            ];
+            renderBanners(bannerList);
+        }
 
-            // Use Supabase data if available, otherwise use samples
-            if (!error && data && data.length > 0) {
-                finalBanners = data;
-            } else {
-                console.log("Using Sample Banners (Supabase empty or error)");
-                finalBanners = sampleBanners;
-            }
-
-            const wrapper = document.getElementById('sliderWrapper');
+        function renderBanners(bannerList) {
+             const wrapper = document.getElementById('sliderWrapper');
             const dotsContainer = document.getElementById('dotsContainer');
             wrapper.innerHTML = '';
             dotsContainer.innerHTML = '';
 
-            finalBanners.forEach((b, index) => {
-                wrapper.innerHTML += `<div class="slide"><img src="${b.image_url}" alt="Banner ${index + 1}"></div>`;
-                const activeClass = index === 0 ? ' active' : '';
-                dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
+            bannerList.forEach((b, index) => {
+                const imgLink = b.image_url; 
+                if(imgLink) {
+                    wrapper.innerHTML += `<div class="slide"><img src="${imgLink}" alt="Banner ${index + 1}" onerror="this.src='https://via.placeholder.com/800x400?text=Image+Error'"></div>`;
+                    const activeClass = index === 0 ? ' active' : '';
+                    dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
+                }
             });
-            
-            if(finalBanners.length > 0) {
+
+            if(bannerList.length > 0) {
+                 slideIndex = 0;
                  startSlider();
             }
         }
         
+        function showSlides() {
+            const slides = document.querySelectorAll('#sliderWrapper .slide');
+            const dots = document.querySelectorAll('.dot');
+            if (slides.length === 0) return;
+
+            if (slideIndex >= slides.length) { slideIndex = 0; }
+            if (slideIndex < 0) { slideIndex = slides.length - 1; }
+
+            document.getElementById('sliderWrapper').style.transform = `translateX(${-slideIndex * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            if(dots[slideIndex]) dots[slideIndex].classList.add('active');
+        }
+
+        function currentSlide(n) { slideIndex = n; showSlides(); }
+        
+        let slideInterval;
         function startSlider() {
+            clearInterval(slideInterval);
             showSlides();
-            setInterval(() => {
+            slideInterval = setInterval(() => {
                 slideIndex++;
                 showSlides();
-            }, 3000); 
-        }
-        function showSlides() {
-            const slides = document.querySelectorAll('.slide');
-            const dots = document.querySelectorAll('.dot');
-            if (slides.length === 0) return; 
-            
-            if (slideIndex >= slides.length) slideIndex = 0;
-            if (slideIndex < 0) slideIndex = slides.length - 1;
-            
-            document.getElementById('sliderWrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
-            
-            dots.forEach(d => d.classList.remove('active'));
-            dots[slideIndex].classList.add('active');
-        }
-        function currentSlide(n) { slideIndex = n; showSlides(); }
-
-        function updateUserUI() {
-            if(currentUser) document.getElementById('userDot').style.display = 'block';
-            else document.getElementById('userDot').style.display = 'none';
+            }, 5000); 
         }
 
-        // --- SETTINGS ---
-        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-        function toggleTheme(cb) { 
-            document.body.classList.toggle('dark-mode', cb.checked); 
-            localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off');
-        }
-        
-        // --- CHAT ---
-        function toggleChat() {
-            const box = document.getElementById('chatBox');
-            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-        }
-        function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const userMessage = input.value.trim();
-            if (userMessage === "") return;
-            const body = document.getElementById('chatBody');
-            
-            const userDiv = document.createElement('div');
-            userDiv.style.cssText = "background:var(--vibrant-blue); color:white; padding:8px; border-radius:5px; margin-bottom:10px; text-align:right; margin-left:auto; display:table;";
-            userDiv.innerText = userMessage;
-            body.appendChild(userDiv);
-            input.value = '';
-
-            const botReplyText = currentTranslations[currentLang].chat_reply || "Hello! How can I help you today?";
-            setTimeout(() => {
-                const replyDiv = document.createElement('div');
-                replyDiv.style.cssText = "background:var(--bg-color); color:var(--text-color); padding:8px; border-radius:5px; margin-bottom:10px; display:table; border:1px solid #ddd;";
-                replyDiv.innerText = botReplyText;
-                body.appendChild(replyDiv);
-                body.scrollTop = body.scrollHeight;
-            }, 1000); 
-        }
-
-        // --- AUTH & HISTORY ---
-        function checkAuth() { if(currentUser) openHistory(); else document.getElementById('authModal').style.display = 'flex'; }
-        function showAuthForm(type) {
-            if(type === 'login') {
-                document.getElementById('tabLogin').style.borderBottom = '2px solid #2d2d2d';
-                document.getElementById('tabRegister').style.borderBottom = 'none';
-                document.getElementById('tabRegister').style.color = '#777';
-                document.getElementById('tabLogin').style.color = 'var(--text-color)';
-                document.getElementById('loginForm').style.display='block';
-                document.getElementById('registerForm').style.display='none';
-            } else {
-                document.getElementById('tabLogin').style.borderBottom = 'none';
-                document.getElementById('tabRegister').style.borderBottom = '2px solid #2d2d2d';
-                document.getElementById('tabLogin').style.color = '#777';
-                document.getElementById('tabRegister').style.color = 'var(--text-color)';
-                document.getElementById('loginForm').style.display='none';
-                document.getElementById('registerForm').style.display='block';
-            }
-        }
-        async function doLogin() {
-            const phone = document.getElementById('lPhone').value;
-            const pass = document.getElementById('lPass').value;
-            let { data } = await supabase.from('users').select('*').eq('phone', phone).eq('password', pass);
-            if(data && data.length > 0) {
-                currentUser = data[0];
-                localStorage.setItem('kshop_user_data', JSON.stringify(currentUser));
-                closeModal('authModal'); updateUserUI(); openHistory();
-            } else { alert("Invalid Login"); }
-        }
-        async function doRegister() {
-            const name = document.getElementById('rName').value;
-            const phone = document.getElementById('rPhone').value;
-            const pass = document.getElementById('rPass').value;
-            let { error } = await supabase.from('users').insert([{ name, phone, password: pass }]);
-            if(!error) { alert("Registered!"); showAuthForm('login'); }
-            else { alert("Error: " + error.message); }
-        }
-        function doLogout() { localStorage.removeItem('kshop_user_data'); currentUser=null; closeModal('historyModal'); updateUserUI(); }
-        async function openHistory() {
-            document.getElementById('historyModal').style.display='flex';
-            const con = document.getElementById('historyList');
-            con.innerHTML = '<p>Loading...</p>';
-            let { data } = await supabase.from('orders').select('*').eq('customer_phone', currentUser.phone).order('created_at', {ascending:false});
-            if(!data || !data.length) { con.innerHTML='<p>No orders yet.</p>'; return; }
-            let html = '';
-            data.forEach(o => {
-                let icon = '⏳';
-                if(o.status==='reject') icon='⛔'; if(o.status==='coming') icon='🟡'; if(o.status==='owned') icon='🟢';
-                html += `<div class="history-item"><div><b>${o.item_name}</b><br>${o.price}</div><div style="font-size:20px;">${icon}</div></div>`;
-            });
-            con.innerHTML = html;
-        }
-
-        // --- PRODUCTS (FIXED FOR CASE SENSITIVITY) ---
+        // PRODUCT LOADING (UPDATED to fetch 'images' and handle array conversion)
         async function loadProducts(cat, title, gender = 'women') { 
             document.getElementById('productsContainer').innerHTML='';
-            document.getElementById('sideMenu').classList.remove('active');
-            document.querySelector('.overlay').classList.remove('active');
+            closeAll();
             document.getElementById('pageTitle').innerText = title;
             document.getElementById('loading').style.display = 'block'; 
-            
-            // 1. TRY FETCHING FROM DB WITH .ilike (Case Insensitive)
+
             let q = supabase.from('products').select('*');
             
-            // Filter by gender (case insensitive)
-            if(gender) {
-                q = q.ilike('gender', gender);
-            }
-
-            // Filter by category (case insensitive) if not 'all'
-            if(cat !== 'all') { 
-                // NOTE: Using .ilike for category to match 'Clothing', 'clothing', 'CLOTHING'
-                q = q.ilike('category', cat);
-            }
+            if(gender) { q = q.ilike('gender', gender); }
+            if(cat !== 'all') { q = q.ilike('category', cat); }
             
             let { data, error } = await q;
 
             document.getElementById('loading').style.display = 'none';
 
-            // 2. FALLBACK TO EXTENDED SAMPLE DATA IF DB EMPTY or ERROR
             if (!data || data.length === 0 || error) {
-                console.log(`Using Sample Data or Fallback for ${gender} - ${cat}`);
-                data = allSampleProducts.filter(p => {
-                    const genderMatch = p.gender === gender;
-                    const categoryMatch = cat === 'all' || p.category === cat;
-                    return genderMatch && categoryMatch;
-                });
+                console.error("Supabase Fetch Error:", error);
+                data = allSampleProducts.filter(p => p.gender.toLowerCase() === gender.toLowerCase() && (cat === 'all' || p.category.toLowerCase() === cat.toLowerCase()));
             }
+            
+            // Map data to ensure 'images' is an array
+            currentProducts = (data || []).map(p => ({
+                ...p,
+                images: Array.isArray(p.images) ? p.images : (p.image_url ? [p.image_url] : []) 
+            }));
 
-            currentProducts = data || [];
             
             if (currentProducts.length === 0) {
-                 document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found.</p>';
+                    document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found.</p>';
             } else {
-                 renderProducts(currentProducts, title);
+                    renderProducts(currentProducts, title);
             }
         }
 
-        function renderProducts(list, title) {
-            const con = document.getElementById('productsContainer');
-            con.innerHTML = '';
-            list.forEach((p, index) => {
-                let img = p.image_url || 'https://via.placeholder.com/300';
-                let price = Number(p.price).toLocaleString();
-                con.innerHTML += `
-                <div class="product-card">
-                    <img src="${img}" class="p-img">
-                    <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${price} Ks</div></div>
-                    <div class="cart-btn" onclick="buyItem(${index})"><i class="fas fa-plus"></i></div>
-                </div>`;
+        // PRODUCT RENDERING (ADDED GALLERY ICON LOGIC)
+        function renderProducts(products, title) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const mainImage = product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x400?text=No+Image';
+                
+                // 1. Check for two or more images to show the indicator
+                const galleryIcon = product.images.length >= 2 ? 
+                    `<div class="gallery-indicator" onclick="event.stopPropagation(); openProductDetail(${product.id})">
+                        <i class="fas fa-images"></i> ${product.images.length}
+                    </div>` : '';
+                
+                // Card click opens detail view
+                container.innerHTML += `
+                    <div class="product-card" onclick="openProductDetail(${product.id})">
+                        ${galleryIcon} 
+                        <img src="${mainImage}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x400?text=Image+Not+Found'">
+                        <div class="p-name">${product.name}</div>
+                        <div class="p-price">${product.price.toLocaleString('en-US')} MMK</div>
+                        <button class="btn btn-primary" style="margin-top: 5px; font-size: 0.9em;" onclick="event.stopPropagation(); addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                `;
             });
         }
+        
+        // NEW PRODUCT DETAIL FUNCTION (Handles the Gallery Modal)
+        function openProductDetail(productId) {
+            const product = currentProducts.find(p => p.id === productId || p.id === parseInt(productId));
+            if (!product) return;
 
-        // --- CART & ORDER ---
-        function buyItem(idx) {
-            if(!currentUser) { checkAuth(); return; }
-            const p = currentProducts[idx];
-            document.getElementById('modal-name').innerText = p.name;
-            document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + " Ks";
-            document.getElementById('modal-img').src = p.image_url || '';
-            document.getElementById('checkoutModal').style.display = 'flex';
-            document.getElementById('addressInput').value = '';
-            document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
-            document.getElementById('noteInput').value = '';
-            document.getElementById('slipInput').value = '';
-            document.getElementById('sendBtn').disabled = true; 
+            const galleryContainer = document.getElementById('detailImageGallery');
+            galleryContainer.innerHTML = '';
+            
+            const wrapper = document.createElement('div');
+            wrapper.id = 'detailSliderWrapper';
+            wrapper.className = 'slider-wrapper';
+            
+            const dotsContainer = document.createElement('div');
+            dotsContainer.id = 'detailDotsContainer';
+            dotsContainer.className = 'detail-dots-container';
+
+            // Render Images and Dots
+            product.images.forEach((url, index) => {
+                wrapper.innerHTML += `<div class="detail-slide"><img src="${url}" alt="${product.name} Image ${index + 1}" onerror="this.src='https://via.placeholder.com/300x400?text=Image+Error'"></div>`;
+                 dotsContainer.innerHTML += `<span class="dot ${index === 0 ? 'active' : ''}" onclick="currentDetailSlide(${index})"></span>`;
+            });
+            
+            galleryContainer.appendChild(wrapper);
+            galleryContainer.appendChild(dotsContainer);
+
+            // Populate Text Details
+            document.getElementById('detailProductName').innerText = product.name;
+            document.getElementById('detailProductPrice').innerText = `${product.price.toLocaleString('en-US')} MMK`;
+            document.getElementById('detailProductDescription').innerText = product.description || "No description provided.";
+            // Set Add to Cart function with product ID
+            document.getElementById('detailAddToCartBtn').onclick = (e) => { 
+                e.stopPropagation(); 
+                addToCartFromDetail(product.id); 
+            }; 
+
+            // Show Modal and Start Gallery Slider
+            openModal('productDetailModal');
+            detailSlideIndex = 0;
+            showDetailSlides(product.images.length);
         }
 
-        function checkSlipFile() {
-            const file = document.getElementById('slipInput').files[0];
-            document.getElementById('sendBtn').disabled = !file;
+        function showDetailSlides(totalSlides) {
+            const slides = document.querySelectorAll('#detailSliderWrapper .detail-slide');
+            const dots = document.querySelectorAll('#detailDotsContainer .dot');
+            if (slides.length === 0) return;
+
+            if (detailSlideIndex >= totalSlides) { detailSlideIndex = 0; }
+            if (detailSlideIndex < 0) { detailSlideIndex = totalSlides - 1; }
+
+            document.getElementById('detailSliderWrapper').style.transform = `translateX(${-detailSlideIndex * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            if(dots[detailSlideIndex]) dots[detailSlideIndex].classList.add('active');
         }
 
-        async function sendOrder() {
-            const btn = document.getElementById('sendBtn');
-            const file = document.getElementById('slipInput').files[0];
-            const address = document.getElementById('addressInput').value;
-            const contactPhone = document.getElementById('contactPhoneInput').value;
-            const note = document.getElementById('noteInput').value;
+        function currentDetailSlide(n) {
+            detailSlideIndex = n;
+            showDetailSlides(document.querySelectorAll('#detailSliderWrapper .detail-slide').length);
+        }
+        
+        function addToCartFromDetail(productId) {
+            addToCart(productId);
+            closeModal('productDetailModal');
+        }
 
-            if (!address.trim() || !contactPhone.trim() || !file) {
-                alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
-                btn.disabled = false; return;
+
+        /* ======================================================= */
+        /* === SHOPPING CART & ORDER FUNCTIONS === */
+        /* ======================================================= */
+
+        function addToCart(productId) {
+            const product = currentProducts.find(p => p.id === productId || p.id === parseInt(productId));
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const itemsContainer = document.getElementById('cartItems');
+            total = 0;
+            itemsContainer.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                itemsContainer.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name} x ${item.qty}</span>
+                        <span>${itemTotal.toLocaleString('en-US')} MMK</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartTotal').innerText = `Total: ${total.toLocaleString('en-US')} MMK`;
+            document.getElementById('checkoutTotal').innerText = `${total.toLocaleString('en-US')} MMK`;
+            document.getElementById('cartCount').innerText = cart.length > 0 ? `(${cart.length})` : '';
+            document.getElementById('checkoutBtn').disabled = cart.length === 0;
+
+            let itemListText = cart.map(item => `${item.name} (${item.qty})`).join(', ');
+            document.getElementById('checkoutItemsList').innerText = `Items: ${itemListText}`;
+
+        }
+        
+        function clearCart() {
+            cart = [];
+            total = 0;
+            updateCartUI();
+            closeModal('cartModal');
+        }
+
+        async function sendOrder(btn) {
+             if (cart.length === 0) return;
+
+            // Gather data
+            const name = document.getElementById('checkoutName').value;
+            const phone = document.getElementById('checkoutPhone').value;
+            const address = document.getElementById('checkoutAddress').value;
+            const slipFile = document.getElementById('slipInput').files[0];
+
+            if (!name || !phone || !address || !slipFile) {
+                alert("Please fill in all fields and upload payment slip.");
+                return;
             }
 
-            btn.innerText="Sending..."; btn.disabled=true;
-            const pName = document.getElementById('modal-name').innerText;
-            const pPrice = document.getElementById('modal-price').innerText;
+            btn.innerText = "Sending...";
+            btn.disabled = true;
 
-            await supabase.from('orders').insert([{
-                customer_name: currentUser.name, customer_phone: contactPhone,
-                item_name: pName, price: pPrice, status: 'pending', address: address, note: note
-            }]);
-
-            const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pName}\n💰 ${pPrice}`;
-            const fd = new FormData();
-            fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
-            fd.append("photo", file); 
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
+            // 1. Upload Slip to Supabase Storage
+            let slipUrl = null;
+            const fileName = `${Date.now()}-${slipFile.name}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('slips') 
+                .upload(fileName, slipFile);
             
+            if (uploadError) {
+                console.error("Slip Upload Error:", uploadError);
+                alert("Payment slip upload failed. Please try again or contact support.");
+                btn.innerText = currentTranslations.send_btn;
+                btn.disabled = false;
+                return;
+            }
+
+            // Construct Public URL
+            slipUrl = `${SUPABASE_URL}/storage/v1/object/public/slips/${fileName}`;
+
+            // 2. Prepare Order Data
+            const orderDetails = cart.map(item => ({
+                id: item.id, name: item.name, qty: item.qty, price: item.price
+            }));
+            const orderText = `
+*--- NEW ORDER (Fashion Lab) ---*
+*Customer:* ${name}
+*Phone:* ${phone}
+*Address:* ${address}
+*Total:* ${total.toLocaleString('en-US')} MMK
+*Items:*
+${orderDetails.map(d => `- ${d.name} x ${d.qty} (${(d.qty * d.price).toLocaleString('en-US')} MMK)`).join('\n')}
+*Payment Slip:* ${slipUrl}
+`;
+
+            // 3. Send to Telegram
+            const telegramURL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(orderText)}&parse_mode=Markdown`;
+            await fetch(telegramURL);
+            
+            // 4. Save to Supabase 'orders' table
+            const { error: orderInsertError } = await supabase
+                .from('orders') 
+                .insert([
+                    { 
+                        user_phone: phone, 
+                        items: orderDetails, 
+                        total_amount: total, 
+                        slip_url: slipUrl,
+                        status: 'pending', 
+                        user_id: currentUser ? currentUser.id : null
+                    }
+                ]);
+
+            if (orderInsertError) {
+                console.error("DB Order Insert Error:", orderInsertError);
+            }
+
+            // 5. Success
+            clearCart();
             closeModal('checkoutModal');
             document.getElementById('successModal').style.display = 'flex';
-            btn.innerText=currentTranslations[currentLang].send_btn; 
+            
+            btn.innerText=currentTranslations.send_btn; 
             btn.disabled=false;
             document.getElementById('slipInput').value = ''; 
             document.getElementById('sendBtn').disabled = true;
         }
 
-        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
-        function toggleSearch() { 
-            const b=document.getElementById('searchBox'); 
-            b.style.display=b.style.display==='block'?'none':'block'; 
-            if(b.style.display === 'none') {
-                 document.getElementById('searchInput').value = '';
-                 searchProducts(); 
+
+        /* ======================================================= */
+        /* === AUTHENTICATION & UI FUNCTIONS === */
+        /* ======================================================= */
+        
+        async function loginUser() {
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const { data, error } = await supabase
+                .from('users') 
+                .select('*')
+                .eq('phone', phone)
+                .eq('password', password)
+                .single();
+
+            if (error || !data) {
+                alert("Login Failed: Incorrect Phone or Password.");
+                return;
+            }
+
+            currentUser = data;
+            updateProfileView();
+            closeModal('loginModal');
+        }
+
+        async function registerUser() {
+            const name = document.getElementById('registerName').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+
+            const { data: existingUser } = await supabase.from('users').select('id').eq('phone', phone);
+            if (existingUser && existingUser.length > 0) {
+                alert("Registration Failed: Phone number already registered.");
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('users')
+                .insert([{ name, phone, password }])
+                .select()
+                .single();
+
+            if (error) {
+                alert("Registration Failed. Please try again.");
+                return;
+            }
+
+            currentUser = data;
+            updateProfileView();
+            closeModal('loginModal');
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            updateProfileView();
+            showLogin();
+        }
+
+        function updateProfileView() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const profileView = document.getElementById('profileView');
+            const loginHeader = document.getElementById('loginHeader');
+
+            if (currentUser) {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'none';
+                profileView.style.display = 'block';
+                document.getElementById('profileName').innerText = currentUser.name;
+                document.getElementById('profilePhone').innerText = currentUser.phone;
+                loginHeader.innerText = "My Profile";
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                profileView.style.display = 'none';
+                loginHeader.innerText = "Login";
             }
         }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+        function showRegister() {
+            document.getElementById('loginHeader').innerText = "Register New Account";
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('loginForm').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('loginHeader').innerText = "Login";
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        async function loadOrderHistory() {
+            const listContainer = document.getElementById('orderHistoryList');
+            const messageElement = document.getElementById('orderHistoryMessage');
+            listContainer.innerHTML = '';
+            messageElement.innerText = '';
+            
+            if (!currentUser) {
+                messageElement.innerText = "Please log in to view your order history.";
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error || data.length === 0) {
+                messageElement.innerText = "You have no past orders.";
+                return;
+            }
+
+            data.forEach(order => {
+                const itemNames = order.items.map(i => `${i.name} (${i.qty})`).join(', ');
+                listContainer.innerHTML += `
+                    <div style="border: 1px solid var(--border-color); padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                        <p><strong>Order ID:</strong> ${order.id}</p>
+                        <p><strong>Status:</strong> <span style="color: ${order.status === 'pending' ? 'orange' : (order.status === 'owned' ? 'green' : 'blue')}">${order.status.toUpperCase()}</span></p>
+                        <p><strong>Total:</strong> ${order.total_amount.toLocaleString('en-US')} MMK</p>
+                        <p><strong>Items:</strong> ${itemNames}</p>
+                        <p style="font-size: 0.8em; color: #888;">${new Date(order.created_at).toLocaleString()}</p>
+                    </div>
+                `;
+            });
+        }
         
+        
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
+        function closeAll() { 
+            document.getElementById('sideMenu').classList.remove('active'); 
+            document.querySelector('.overlay').classList.remove('active');
+            toggleSearch(false); 
+        }
+        function toggleSearch(force) { 
+            const box = document.getElementById('searchContainer');
+            if (force === false) {
+                 box.style.display = 'none';
+                 return;
+            }
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+            if (box.style.display === "block") {
+                document.getElementById('searchInput').focus();
+            }
+        }
+        function toggleChat() { 
+            const box = document.getElementById('chatBox');
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+        function closeModal(id) { 
+            document.getElementById(id).style.display='none'; 
+            // Clear detail modal content on close
+            if(id === 'productDetailModal') {
+                const wrapper = document.getElementById('detailSliderWrapper');
+                const dots = document.getElementById('detailDotsContainer');
+                if(wrapper) wrapper.innerHTML = '';
+                if(dots) dots.innerHTML = '';
+            }
+        }
+        function openModal(id) { 
+            document.getElementById(id).style.display='flex'; 
+            if (id === 'orderHistoryModal') loadOrderHistory();
+        }
+
+        // Search Function 
         function searchProducts() { 
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const con = document.getElementById('productsContainer');
             const productCards = con.querySelectorAll('.product-card');
-            if (searchTerm.length === 0) {
-                productCards.forEach(card => card.style.display = 'flex');
-                return;
-            }
+            
+            // Search logic works on currently loaded DOM elements (cards)
             productCards.forEach(card => {
                 const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
-                if (productName.includes(searchTerm)) card.style.display = 'flex'; 
-                else card.style.display = 'none'; 
+                
+                if (productName.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         }
         
-        function switchTab(t) { 
+        // Tab switching and menu synchronization
+        function switchTab(tab, title) { 
             document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
-            if(t==='women'){ 
-                document.querySelectorAll('.tab')[0].classList.add('active'); 
-                document.getElementById('women-menu').classList.add('active'); 
-            }
-            else { 
-                document.querySelectorAll('.tab')[1].classList.add('active'); 
-                document.getElementById('men-menu').classList.add('active'); 
+            // Select the correct tab (assuming 0=women, 1=men)
+            const tabDivs = document.querySelectorAll('.tab-nav > div');
+            if (tab === 'women' && tabDivs[0]) tabDivs[0].classList.add('active');
+            if (tab === 'men' && tabDivs[1]) tabDivs[1].classList.add('active');
+            
+            document.getElementById('women-menu').style.display = (tab === 'women') ? 'block' : 'none';
+            document.getElementById('men-menu').style.display = (tab === 'men') ? 'block' : 'none';
+            
+            loadProducts('all', title, tab);
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const iconMenu = document.getElementById('themeIconMenu');
+            const labelMenu = document.getElementById('themeLabelMenu');
+            
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                iconMenu.classList.remove('fa-moon');
+                iconMenu.classList.add('fa-sun');
+                labelMenu.innerText = "LIGHT";
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                iconMenu.classList.remove('fa-sun');
+                iconMenu.classList.add('fa-moon');
+                labelMenu.innerText = "DARK";
             }
         }
+        
+        // Initial Loads
+        window.onload = function() {
+            loadBanners();
+            loadProducts('all', 'All Products (Women)', 'women');
+            updateCartUI(); 
+            updateProfileView();
+        };
+
     </script>
+
 </body>
 </html>
