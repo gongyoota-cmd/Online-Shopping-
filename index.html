@@ -117,6 +117,32 @@
         input:checked + .slider:before { transform: translateX(20px); }
         #langSelect { padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; background: var(--bg-color); color: var(--text-color); font-size: 14px; cursor: pointer; }
         .history-item { background: var(--bg-color); padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- [NEW] SNACKBAR/TOAST STYLES --- */
+        #snackbar {
+            visibility: hidden; 
+            min-width: 250px;
+            margin-left: -125px; /* Center the snackbar */
+            background-color: #333; 
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 10000; /* High z-index to be on top of modals */
+            left: 50%;
+            bottom: 30px; 
+            font-size: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            transition: visibility 0s, opacity 0.5s linear;
+            opacity: 0;
+        }
+        #snackbar.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        #snackbar.error { background-color: #d32f2f; } /* Red for error */
+        #snackbar.success { background-color: #4CAF50; } /* Green for success */
     </style>
 </head>
 <body id="body">
@@ -310,6 +336,8 @@
         </div>
     </div>
 
+    <div id="snackbar"></div>
+
     <script>
         // CONFIG
         const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; 
@@ -320,7 +348,7 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentProducts = [];
         let currentUser = JSON.parse(localStorage.getItem('kshop_user_data'));
-        let selectedProduct = null; // [NEW] Stores the product currently in details modal
+        let selectedProduct = null; // Stores the product currently in details modal
 
         // --- TRANSLATION MAP (EN, MY, TH) ---
         const currentTranslations = {
@@ -355,23 +383,75 @@
 
         let currentLang = localStorage.getItem('kshop_lang') || 'en';
         
-        // --- FALLBACK SAMPLE PRODUCTS (Added sizes/colors/description) ---
+        // --- FALLBACK SAMPLE PRODUCTS (MODIFIED for image switching) ---
         const allSampleProducts = [
-            {name: "Summer Floral Dress", price: 25000, image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", category: "clothing", gender: "women", 
+            // Sample 1: Summer Floral Dress (Has multiple colors/images)
+            {
+                name: "Summer Floral Dress", 
+                price: 25000, 
+                image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", // Default image
+                category: "clothing", 
+                gender: "women", 
                 description: "Lightweight cotton floral dress perfect for summer outings.", 
-                sizes: ["S", "M", "L", "XL"], colors: ["Red", "Blue", "Yellow"]},
-            {name: "Red Stiletto Heels", price: 45000, image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", category: "shoes", gender: "women", 
+                sizes: ["S", "M", "L", "XL"], 
+                colors: [
+                    { name: "Red", image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" }, 
+                    { name: "Blue", image_url: "https://images.unsplash.com/photo-1594633312681-425c220f54b7?w=500" }, 
+                    { name: "Yellow", image_url: "https://images.unsplash.com/photo-1574519525492-23c28a8d119e?w=500" } 
+                ]
+            },
+            // Sample 2: Red Stiletto Heels 
+            {
+                name: "Red Stiletto Heels", 
+                price: 45000, 
+                image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", 
+                category: "shoes", 
+                gender: "women", 
                 description: "Elegant red heels for any formal occasion. Heel height: 4 inches.",
-                sizes: ["36", "37", "38", "39"], colors: ["Red", "Black"]},
-            {name: "Tote Shoulder Bag", price: 55000, image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", category: "bag", gender: "women",
+                sizes: ["36", "37", "38", "39"], 
+                colors: [
+                    { name: "Red", image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500" },
+                    { name: "Black", image_url: "https://images.unsplash.com/photo-1563297007-0bf0299ac7b5?w=500" }
+                ]
+            },
+            // Sample 3: Tote Shoulder Bag
+            {
+                name: "Tote Shoulder Bag", 
+                price: 55000, 
+                image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", 
+                category: "bag", 
+                gender: "women",
                 description: "Spacious tote bag for daily essentials.", 
-                sizes: ["One Size"], colors: ["Brown", "Beige", "Black"]}, 
-            {name: "Denim Jacket", price: 75000, image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", category: "clothing", gender: "men",
+                sizes: ["One Size"], 
+                colors: [ 
+                    { name: "Brown", image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500" },
+                    { name: "Beige", image_url: "https://images.unsplash.com/photo-1534005199650-ef8a15e12812?w=500" },
+                    { name: "Black", image_url: "https://images.unsplash.com/photo-1585800588663-b8a2e20b5e28?w=500" }
+                ] 
+            }, 
+            {
+                name: "Denim Jacket", 
+                price: 75000, 
+                image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", 
+                category: "clothing", 
+                gender: "men", 
                 description: "Classic blue denim jacket, regular fit.", 
-                sizes: ["M", "L", "XL"], colors: ["Blue"]},
-            {name: "Sports Watch", price: 95000, image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", category: "accessories", gender: "men",
+                sizes: ["M", "L", "XL"], 
+                colors: [{ name: "Blue", image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500" }]
+            },
+            {
+                name: "Sports Watch", 
+                price: 95000, 
+                image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", 
+                category: "accessories", 
+                gender: "men", 
                 description: "Waterproof digital sports watch with stopwatch.", 
-                sizes: ["Adjustable"], colors: ["Black", "Silver"]},
+                sizes: ["Adjustable"], 
+                colors: [
+                    { name: "Black", image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500" },
+                    { name: "Silver", image_url: "https://images.unsplash.com/photo-1523275335684-c464a972620e?w=500" }
+                ]
+            }
         ];
         
         // --- FALLBACK SAMPLE BANNERS ---
@@ -519,7 +599,30 @@
             }, 1000); 
         }
 
-        // --- AUTH & HISTORY ---
+        // --- [NEW] SNACKBAR/TOAST FUNCTION ---
+        function showSnackbar(message, type = 'default') {
+            const x = document.getElementById("snackbar");
+            x.innerText = message;
+            
+            x.className = 'show'; // Start with show class
+            
+            // Apply color based on type
+            x.classList.remove('error', 'success');
+            if (type === 'error') {
+                x.classList.add('error');
+            } else if (type === 'success') {
+                x.classList.add('success');
+            }
+
+            // After 3 seconds, hide the snackbar and reset class
+            setTimeout(function(){ 
+                x.classList.remove('show'); 
+                // Delay removing color class until animation is mostly done
+                setTimeout(() => { x.className = ''; }, 500); 
+            }, 3000);
+        }
+
+        // --- AUTH & HISTORY (MODIFIED) ---
         function checkAuth() { if(currentUser) openHistory(); else document.getElementById('authModal').style.display = 'flex'; }
         function showAuthForm(type) {
             if(type === 'login') {
@@ -538,24 +641,43 @@
                 document.getElementById('registerForm').style.display='block';
             }
         }
+        
         async function doLogin() {
-            const phone = document.getElementById('lPhone').value;
-            const pass = document.getElementById('lPass').value;
+            const phone = document.getElementById('lPhone').value.trim();
+            const pass = document.getElementById('lPass').value.trim();
+            if (!phone || !pass) {
+                showSnackbar("Please enter phone and password.", 'error');
+                return;
+            }
             let { data } = await supabase.from('users').select('*').eq('phone', phone).eq('password', pass);
             if(data && data.length > 0) {
                 currentUser = data[0];
                 localStorage.setItem('kshop_user_data', JSON.stringify(currentUser));
                 closeModal('authModal'); updateUserUI(); openHistory();
-            } else { alert("Invalid Login"); }
+                showSnackbar("Login successful!", 'success'); // SUCCESS SNACKBAR
+            } else { 
+                showSnackbar("Invalid phone or password.", 'error'); // ERROR SNACKBAR
+            }
         }
+        
         async function doRegister() {
-            const name = document.getElementById('rName').value;
-            const phone = document.getElementById('rPhone').value;
-            const pass = document.getElementById('rPass').value;
+            const name = document.getElementById('rName').value.trim();
+            const phone = document.getElementById('rPhone').value.trim();
+            const pass = document.getElementById('rPass').value.trim();
+            if (!name || !phone || !pass) {
+                 showSnackbar("Please fill in all fields.", 'error');
+                 return;
+            }
             let { error } = await supabase.from('users').insert([{ name, phone, password: pass }]);
-            if(!error) { alert("Registered!"); showAuthForm('login'); }
-            else { alert("Error: " + error.message); }
+            if(!error) { 
+                showSnackbar("Registration successful! Please login.", 'success'); // SUCCESS SNACKBAR
+                showAuthForm('login'); 
+            }
+            else { 
+                showSnackbar("Registration Error: " + error.message, 'error'); // ERROR SNACKBAR
+            }
         }
+        
         function doLogout() { localStorage.removeItem('kshop_user_data'); currentUser=null; closeModal('historyModal'); updateUserUI(); }
         async function openHistory() {
             document.getElementById('historyModal').style.display='flex';
@@ -618,7 +740,7 @@
                 let img = p.image_url || 'https://via.placeholder.com/300';
                 let price = Number(p.price).toLocaleString();
                 con.innerHTML += `
-                <div class="product-card">
+                <div class="product-card" onclick="openDetails(${index})">
                     <img src="${img}" class="p-img">
                     <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${price} Ks</div></div>
                     <div class="cart-btn" onclick="openDetails(${index})"><i class="fas fa-eye"></i></div>
@@ -626,7 +748,23 @@
             });
         }
         
-        // --- [NEW] PRODUCT DETAILS ---
+        // --- PRODUCT DETAILS & IMAGE UPDATE FUNCTIONS ---
+        function updateDetailsImage(colorIndexString) {
+            if (!selectedProduct || !selectedProduct.colors || selectedProduct.colors.length === 0) return;
+
+            const colorIndex = parseInt(colorIndexString);
+            const p = selectedProduct;
+            
+            let imageUrl = p.image_url || 'https://via.placeholder.com/300'; 
+            if (p.colors[colorIndex] && p.colors[colorIndex].image_url) {
+                imageUrl = p.colors[colorIndex].image_url;
+            }
+            
+            document.getElementById('detail-img').src = imageUrl;
+            // Store the selected image URL for the checkout modal
+            selectedProduct.current_image_url = imageUrl; 
+        }
+
         function openDetails(idx) {
             if(!currentProducts || !currentProducts[idx]) return;
             const p = currentProducts[idx];
@@ -634,27 +772,34 @@
             
             document.getElementById('detail-name').innerText = p.name;
             document.getElementById('detail-price').innerText = Number(p.price).toLocaleString() + " Ks";
-            document.getElementById('detail-img').src = p.image_url || 'https://via.placeholder.com/300';
             document.getElementById('detail-description').innerText = p.description || "No description available.";
             
             // Populate Size Options
             const sizeSelect = document.getElementById('sizeSelect');
             sizeSelect.innerHTML = '';
-            const sizes = p.sizes || ["One Size"]; // Default for items without explicit size array
+            const sizes = p.sizes || ["One Size"]; 
             sizes.forEach(size => {
                 sizeSelect.innerHTML += `<option value="${size}">${size}</option>`;
             });
 
-            // Populate Color Options
+            // Populate Color Options (Key part for image switching)
             const colorSelect = document.getElementById('colorSelect');
             colorSelect.innerHTML = '';
-            const colors = p.colors || ["N/A"]; // Default for items without explicit color array
-            colors.forEach(color => {
-                colorSelect.innerHTML += `<option value="${color}">${color}</option>`;
+            // Handle product having a proper colors array or defaulting to N/A
+            const colors = p.colors && p.colors.length > 0 ? p.colors : [{ name: "N/A", image_url: p.image_url || 'https://via.placeholder.com/300' }]; 
+
+            colors.forEach((color, index) => {
+                // Use index as the value to link to the colors array
+                colorSelect.innerHTML += `<option value="${index}">${color.name}</option>`; 
             });
 
+            // Set the onchange handler (This is what triggers the image change)
+            colorSelect.setAttribute('onchange', 'updateDetailsImage(this.value)');
             document.getElementById('quantityInput').value = 1; // Reset quantity
+
             document.getElementById('detailsModal').style.display = 'flex';
+            // Load the first color's image by default, or the default image
+            updateDetailsImage(0); 
         }
 
 
@@ -669,18 +814,27 @@
             
             const p = selectedProduct;
             const size = document.getElementById('sizeSelect').value;
-            const color = document.getElementById('colorSelect').value;
+            const colorIndex = document.getElementById('colorSelect').value; // Get the index value
+            
+            // Safely get the color name using the index
+            const colorName = p.colors && p.colors[colorIndex] ? p.colors[colorIndex].name : 'N/A';
+            
             const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
 
-            if (quantity < 1) { alert("Quantity must be at least 1."); return; }
+            if (quantity < 1) { 
+                showSnackbar("Quantity must be at least 1.", 'error'); // ERROR SNACKBAR
+                return; 
+            }
 
-            const orderNote = `Size: ${size}, Color: ${color}, Qty: ${quantity}`;
+            const orderNote = `Size: ${size}, Color: ${colorName}, Qty: ${quantity}`;
             const totalPrice = Number(p.price) * quantity;
 
             // Set data for the Checkout Modal
             document.getElementById('modal-name').innerText = `${p.name} (${orderNote})`;
             document.getElementById('modal-price').innerText = totalPrice.toLocaleString() + " Ks"; 
-            document.getElementById('modal-img').src = p.image_url || '';
+            
+            // Use the currently selected image URL (stored by updateDetailsImage)
+            document.getElementById('modal-img').src = p.current_image_url || p.image_url || '';
             
             // Set the consolidated note and contact phone
             document.getElementById('noteInput').value = orderNote; 
@@ -702,12 +856,12 @@
         async function sendOrder() {
             const btn = document.getElementById('sendBtn');
             const file = document.getElementById('slipInput').files[0];
-            const address = document.getElementById('addressInput').value;
-            const contactPhone = document.getElementById('contactPhoneInput').value;
-            let note = document.getElementById('noteInput').value; // Note now includes size/color/qty
+            const address = document.getElementById('addressInput').value.trim();
+            const contactPhone = document.getElementById('contactPhoneInput').value.trim();
+            let note = document.getElementById('noteInput').value.trim(); // Note now includes size/color/qty
 
-            if (!address.trim() || !contactPhone.trim() || !file) {
-                alert("Please fill in Delivery Address, Contact Phone, and upload the Payment Slip.");
+            if (!address || !contactPhone || !file) {
+                showSnackbar("Please fill in all required fields (Address, Phone, Slip).", 'error'); // ERROR SNACKBAR
                 btn.disabled = false; return;
             }
 
@@ -715,10 +869,17 @@
             const pNameWithDetails = document.getElementById('modal-name').innerText;
             const pPrice = document.getElementById('modal-price').innerText;
 
-            await supabase.from('orders').insert([{
+            const { data: orderData, error: orderError } = await supabase.from('orders').insert([{
                 customer_name: currentUser.name, customer_phone: contactPhone,
                 item_name: pNameWithDetails, price: pPrice, status: 'pending', address: address, note: note
             }]);
+
+            if (orderError) {
+                showSnackbar("Database Error: Could not save order. " + orderError.message, 'error'); // ERROR SNACKBAR
+                btn.innerText=currentTranslations[currentLang].send_btn; 
+                btn.disabled=false;
+                return;
+            }
 
             const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pNameWithDetails}\n💰 ${pPrice}`;
             const fd = new FormData();
@@ -730,7 +891,7 @@
                 closeModal('checkoutModal');
                 document.getElementById('successModal').style.display = 'flex';
             } catch (error) {
-                 alert("Order sent to database but failed to send image to Telegram. Check console for error.");
+                 showSnackbar("Order sent to database but failed to notify Admin.", 'error'); // ERROR SNACKBAR
             }
             
             btn.innerText=currentTranslations[currentLang].send_btn; 
