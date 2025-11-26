@@ -18,7 +18,6 @@
             --card-bg: #ffffff; 
             --accent-color: #e91e63; /* Pink */
             --vibrant-blue: #03a9f4; 
-            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         /* Dark Mode */
         body.dark-mode {
@@ -28,592 +27,1017 @@
             --header-text: #ffffff;
             --card-bg: #1e1e1e;
             --vibrant-blue: #4fc3f7;
-            --shadow-light: 0 4px 6px rgba(255, 255, 255, 0.1);
         }
 
-        body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: var(--header-bg); color: var(--header-text); box-shadow: var(--shadow-light); position: sticky; top: 0; z-index: 100; }
+        body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); }
+        .header { background-color: var(--header-bg); color: var(--header-text); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
         .header h1 { font-size: 1.5em; margin: 0; }
-        .icon-btn { background: none; border: none; color: var(--header-text); font-size: 1.2em; margin-left: 15px; cursor: pointer; }
+        .header-actions button { background: none; border: none; color: var(--header-text); font-size: 1.2em; margin-left: 15px; cursor: pointer; }
+
+        .search-bar { padding: 10px 15px; background-color: var(--card-bg); border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        .search-bar input { flex-grow: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; background-color: var(--bg-color); color: var(--text-color); }
         
-        /* Navigation Tabs */
-        .tabs { display: flex; justify-content: center; background-color: var(--card-bg); border-bottom: 1px solid #eee; }
-        .tab { padding: 10px 20px; cursor: pointer; color: var(--text-color); border-bottom: 3px solid transparent; transition: border-color 0.3s, color 0.3s; }
-        .tab.active { border-color: var(--accent-color); color: var(--accent-color); font-weight: bold; }
+        .tab-navigation { display: flex; justify-content: center; background-color: var(--card-bg); border-bottom: 1px solid #eee; }
+        .tab { padding: 10px 20px; cursor: pointer; color: #777; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); font-weight: bold; }
 
-        /* Main Content */
-        .container { padding: 15px; }
-        #productsContainer { display: flex; flex-wrap: wrap; gap: 15px; }
-        .product-card { background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow-light); overflow: hidden; width: calc(50% - 7.5px); display: flex; flex-direction: column; cursor: pointer; }
-        .product-card img { width: 100%; height: 200px; object-fit: cover; }
-        .p-info { padding: 10px; }
-        .p-name { font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
-        .p-price { color: var(--accent-color); font-size: 1em; }
-
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-        .modal-content { background-color: var(--card-bg); margin: 15% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 400px; box-shadow: var(--shadow-light); position: relative; }
-        .close-btn { color: var(--text-color); float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-btn:hover, .close-btn:focus { color: var(--accent-color); text-decoration: none; cursor: pointer; }
-
-        /* Form & Button Styles */
-        input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 10px; margin: 8px 0 15px 0; display: inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); }
-        .btn { background-color: var(--accent-color); color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 1em; transition: background-color 0.3s; }
-        .btn:hover:not(:disabled) { background-color: #c2185b; }
-        .btn:disabled { background-color: #cccccc; cursor: not-allowed; }
+        /* Side Menu */
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: var(--card-bg); overflow-x: hidden; transition: 0.5s; padding-top: 60px; box-shadow: 2px 0 5px rgba(0,0,0,0.5); }
+        .side-menu a { padding: 15px 25px; text-decoration: none; font-size: 1.1em; color: var(--text-color); display: block; transition: 0.3s; border-bottom: 1px solid #eee; }
+        .side-menu a:hover { background-color: #f1f1f1; }
+        .side-menu .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; }
         
+        .menu-tabs { display: flex; border-bottom: 1px solid #eee; }
+        .menu-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; border-bottom: 3px solid transparent; }
+        .menu-tab.active { border-bottom-color: var(--accent-color); color: var(--accent-color); font-weight: bold; }
+        .menu-section { display: none; padding: 15px; }
+        .menu-section.active { display: block; }
+        .menu-section a { padding: 10px 0; border-bottom: none; }
+
+
+        /* Product Grid */
+        .banner-slider { margin-top: 10px; overflow: hidden; height: 180px; position: relative; }
+        .banner-slide { width: 100%; height: 180px; background-size: cover; background-position: center; display: none; }
+        .banner-slide.active { display: block; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+        .product-card { background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; text-align: center; cursor: pointer; }
+        .p-image { width: 100%; height: 150px; object-fit: cover; }
+        .p-info { padding: 10px 5px; }
+        .p-name { font-size: 0.9em; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { font-weight: bold; color: var(--accent-color); font-size: 1em; }
+
+        /* Modals (General) */
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
+        .modal-content { background-color: var(--card-bg); padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal h2 { margin-top: 0; color: var(--accent-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* Input/Button Styles */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); }
+        .order-btn { background-color: var(--accent-color); color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1em; margin-top: 10px; transition: background-color 0.3s; }
+        .order-btn:hover:not(:disabled) { background-color: #c2185b; }
+        .order-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+
         /* Product Details Modal */
-        #detailsImage { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-        .detail-row label { font-weight: bold; }
-        .detail-row select, .detail-row input { flex-grow: 1; margin-left: 10px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; background-color: var(--bg-color); color: var(--text-color); }
+        #detailsModal .p-detail-image { width: 100%; height: 250px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+        #detailsModal h3 { margin: 5px 0; }
+        .size-selector button { padding: 8px 12px; border: 1px solid #ccc; background-color: var(--bg-color); margin-right: 5px; cursor: pointer; border-radius: 4px; }
+        .size-selector button.selected { background-color: var(--vibrant-blue); color: white; border-color: var(--vibrant-blue); }
+        .color-selector { display: flex; margin-bottom: 15px; }
+        .color-option { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--text-color); margin-right: 10px; cursor: pointer; opacity: 0.7; transition: opacity 0.3s; }
+        .color-option.selected { border-color: var(--accent-color); border-width: 4px; opacity: 1; }
+        .quantity-group { display: flex; align-items: center; margin-bottom: 15px; }
+        .quantity-group button { width: 30px; height: 30px; background-color: var(--header-bg); color: white; border: none; border-radius: 5px; font-size: 1.2em; cursor: pointer; }
+        .quantity-group input { width: 50px; text-align: center; margin: 0 10px; border: 1px solid #ccc; background-color: var(--bg-color); color: var(--text-color); }
 
-        /* Snackbar/Toast */
-        #snackbar { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 2px; padding: 16px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 17px; }
-        #snackbar.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        #snackbar.error { background-color: #d32f2f; }
-        #snackbar.success { background-color: #388e3c; }
-
-        @-webkit-keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
-        @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
-        @-webkit-keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
-        @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+        /* History Modal */
+        .history-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item p { margin: 3px 0; font-size: 0.9em; }
+        .status-badge { padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; }
+        .status-pending { background-color: #ffcc80; color: #e65100; }
+        .status-completed { background-color: #a5d6a7; color: #1b5e20; }
+        .status-cancelled { background-color: #ef9a9a; color: #b71c1c; }
         
-        /* Language Toggle */
-        #lang-select { padding: 5px; border-radius: 4px; background-color: var(--card-bg); color: var(--text-color); border: 1px solid #ccc; }
+        /* Snackbar */
+        #snackbar { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 2px; padding: 16px; position: fixed; z-index: 4000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 17px; }
+        #snackbar.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
     </style>
 </head>
 <body>
 
     <div class="header">
+        <button onclick="openNav()"><i class="fas fa-bars"></i></button>
         <h1>Fashion Lab</h1>
-        <div>
-            <button id="authBtn" class="icon-btn" onclick="openModal('loginModal')">
-                <i class="fas fa-user"></i>
-            </button>
-            <button id="cartBtn" class="icon-btn" onclick="openModal('cartModal')">
-                <i class="fas fa-shopping-cart"></i> (<span id="cartCount">0</span>)
-            </button>
-            <button class="icon-btn" onclick="toggleDarkMode()">
-                <i id="theme-icon" class="fas fa-moon"></i>
-            </button>
-            <select id="lang-select" onchange="setLanguage(this.value)">
-                <option value="my">MM</option>
-                <option value="en">EN</option>
-                <option value="th">TH</option>
-            </select>
+        <div class="header-actions">
+            <button onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+            <button onclick="checkAuth()"><i class="fas fa-user"></i></button>
+            <button onclick="openModal('checkoutModal')"><i class="fas fa-shopping-cart"></i></button>
         </div>
     </div>
 
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('women')">Women</div>
-        <div class="tab" onclick="switchTab('men')">Men</div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" onkeyup="searchProducts()" data-t="search_placeholder" placeholder="Search Products...">
     </div>
 
-    <div class="container">
-        <div class="menu-section active" id="women-menu">
-            <h2>Women's Collection</h2>
-        </div>
-        <div class="menu-section" id="men-menu">
-            <h2>Men's Collection</h2>
-        </div>
-        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+    <div class="tab-navigation">
+        <div class="tab active" onclick="switchTab('women')" data-t="tab_women">Women</div>
+        <div class="tab" onclick="switchTab('men')" data-t="tab_men">Men</div>
+    </div>
+
+    <div class="banner-slider" id="bannerSlider">
+        <div class="banner-slide active" style="background-image: url('https://source.unsplash.com/800x500/?fashion,model');"></div>
+        <div class="banner-slide" style="background-image: url('https://source.unsplash.com/800x500/?clothing,style');"></div>
+    </div>
+    
+    <div class="product-grid" id="productsContainer">
+        <div class="loading-text" data-t="loading_products">Loading Products...</div>
+    </div>
+
+    <div id="sideMenu" class="side-menu">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         
-        <div id="productsContainer">
+        <div class="menu-tabs">
+            <div class="menu-tab active" onclick="switchMenuSection('women-menu')" data-t="tab_women">Women</div>
+            <div class="menu-tab" onclick="switchMenuSection('men-menu')" data-t="tab_men">Men</div>
+        </div>
+
+        <div id="women-menu" class="menu-section active">
+            <a href="#" onclick="filterProducts('women','All')">All Women</a>
+            <a href="#" onclick="filterProducts('women','Tops')">Tops</a>
+            <a href="#" onclick="filterProducts('women','Dresses')">Dresses</a>
+            <a href="#" onclick="filterProducts('women','Accessories')">Accessories</a>
+        </div>
+        <div id="men-menu" class="menu-section">
+            <a href="#" onclick="filterProducts('men','All')">All Men</a>
+            <a href="#" onclick="filterProducts('men','Shirts')">Shirts</a>
+            <a href="#" onclick="filterProducts('men','Pants')">Pants</a>
+            <a href="#" onclick="filterProducts('men','Shoes')">Shoes</a>
+        </div>
+
+        <div style="border-top: 1px solid #eee; margin-top: 15px; padding-top: 10px;">
+            <a href="#" onclick="toggleLang('en')">English (EN)</a>
+            <a href="#" onclick="toggleLang('my')">မြန်မာ (MY)</a>
+            <a href="#" onclick="toggleLang('th')">ไทย (TH)</a>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('authModal')">&times;</span>
+            <h2 data-t="login_title">Login / Register (OTP)</h2>
+
+            <div id="authForm">
+                <div class="input-group">
+                    <label data-t="phone_label">Phone (e.g., +959xxxx)</label>
+                    <input type="tel" id="lPhone" placeholder="+959xxxxxxxxx">
+                </div>
+
+                <div class="input-group" id="loginOtpGroup" style="display:none;">
+                    <label data-t="otp_label">OTP Code (6 Digits)</label>
+                    <input type="text" id="lOtp" inputmode="numeric" pattern="\d*">
+                </div>
+
+                <button class="order-btn" id="sendOtpBtn" onclick="sendOtpCode()" data-t="send_otp_btn">Send OTP</button>
+                
+                <button class="order-btn" id="verifyOtpBtn" onclick="doVerifyOtp()" style="display:none;" data-t="verify_otp_btn">Verify & Login</button>
             </div>
-    </div>
-
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
-            <h3 id="authTitle">Login / Register</h3>
             
-            <label for="phoneInput"><span id="phoneLabel">Phone Number</span> (<span id="countryCode">+95</span>)</label>
-            <input type="text" id="phoneInput" placeholder="eg: 9xxxxxxxxx" value="">
-
-            <button id="sendOtpBtn" class="btn" onclick="sendOtp()">Send OTP</button>
-            <p style="text-align: center; font-size: 0.8em; margin-top: 15px;"><span id="authInfo">A 6-digit OTP code will be sent via SMS.</span></p>
+            <p id="authStatus"></p>
         </div>
     </div>
-
-    <div id="otpModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('otpModal')">&times;</span>
-            <h3>OTP Verification</h3>
-            <p id="otpInfo">Enter the 6-digit code sent to your phone.</p>
-            
-            <label for="otpCodeInput">OTP Code</label>
-            <input type="number" id="otpCodeInput" placeholder="eg: 123456" maxlength="6">
-
-            <button id="verifyOtpBtn" class="btn" onclick="verifyOtp()">Verify Code</button>
-            <button class="btn" onclick="sendOtp(true)" style="background-color: #555; margin-top: 10px;" id="resendOtpBtn">Resend OTP</button>
-        </div>
-    </div>
-
+    
     <div id="detailsModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('detailsModal')">&times;</span>
-            <img id="detailsImage" src="" alt="Product Image">
-            <h3 id="detailsName">Product Name</h3>
-            <p id="detailsPrice" style="color: var(--accent-color); font-size: 1.2em; font-weight: bold;"></p>
+            <span class="close" onclick="closeModal('detailsModal')">&times;</span>
+            <img class="p-detail-image" id="detailImage" src="">
+            <h3 id="detailName">Product Name</h3>
+            <p id="detailPrice" class="p-price">100,000 Ks</p>
+            <p id="detailDescription">Description...</p>
+
+            <div class="input-group">
+                <label data-t="size_label">Size</label>
+                <div class="size-selector" id="detailSize"></div>
+            </div>
+
+            <div class="input-group">
+                <label data-t="color_label">Color</label>
+                <div class="color-selector" id="detailColor"></div>
+            </div>
+
+            <div class="quantity-group">
+                <button onclick="changeQuantity(-1)">-</button>
+                <input type="number" id="detailQuantity" value="1" min="1">
+                <button onclick="changeQuantity(1)">+</button>
+            </div>
             
-            <div class="detail-row">
-                <label for="detailsColor">Color:</label>
-                <select id="detailsColor" onchange="updateDetailsImage()"></select>
-            </div>
-            <div class="detail-row">
-                <label for="detailsSize">Size:</label>
-                <select id="detailsSize"></select>
-            </div>
-            <div class="detail-row">
-                <label for="detailsQty">Quantity:</label>
-                <input type="number" id="detailsQty" value="1" min="1" max="10">
-            </div>
-            
-            <button id="addToCartBtn" class="btn" onclick="addToCart()">Add to Cart</button>
+            <button class="order-btn" onclick="addToCartFromDetails()" data-t="add_to_cart">Add to Cart</button>
         </div>
     </div>
-    
-    <div id="cartModal" class="modal">
+
+    <div id="checkoutModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('cartModal')">&times;</span>
-            <h3>Shopping Cart</h3>
-            <div id="cartItemsContainer">
+            <span class="close" onclick="closeModal('checkoutModal')">&times;</span>
+            <h2 data-t="cart_title">Shopping Cart</h2>
+            <div id="cartItems">
                 </div>
-            <p style="font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px;">Total: <span id="cartTotal">0</span> MMK</p>
-            
-            <h4>Shipping Information</h4>
-            <label for="customerName">Name:</label>
-            <input type="text" id="customerName">
-            <label for="customerAddress">Address:</label>
-            <input type="text" id="customerAddress">
-            
-            <button id="checkoutBtn" class="btn" onclick="sendOrder()">Place Order</button>
+            <p><strong><span data-t="total_price_label">Total Price:</span> <span id="cartTotalPrice">0 Ks</span></strong></p>
+
+            <div id="checkoutForm" style="margin-top: 20px;">
+                <h3 data-t="checkout_info">Shipping Information</h3>
+                <div class="input-group">
+                    <label data-t="name_label">Name</label>
+                    <input type="text" id="cName">
+                </div>
+                <div class="input-group">
+                    <label data-t="phone_label">Phone</label>
+                    <input type="tel" id="cPhone">
+                </div>
+                <div class="input-group">
+                    <label data-t="address_label">Address</label>
+                    <textarea id="cAddress"></textarea>
+                </div>
+                
+                <h3 data-t="payment_method">Payment Method</h3>
+                <div class="input-group">
+                    <select id="cPaymentMethod">
+                        <option value="kpay">KPay</option>
+                        <option value="wavepay">WavePay</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="cod" data-t="payment_cod">Cash on Delivery (COD)</option>
+                    </select>
+                </div>
+
+                <div id="paymentSlipGroup" class="input-group" style="display:none;">
+                    <label data-t="payment_slip_label">Upload Payment Slip</label>
+                    <input type="file" id="cPaymentSlip" accept="image/*">
+                </div>
+
+                <button class="order-btn" onclick="doCheckout()" data-t="place_order_btn">Place Order</button>
+            </div>
         </div>
     </div>
-    
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('historyModal')">&times;</span>
+            <h2 data-t="history_title">Order History</h2>
+            <div id="historyList">
+                <p data-t="no_history">No orders found.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="snackbar"></div>
 
+
     <script>
-        // =================================================================
-        // 1. GLOBAL CONFIG & INITIALIZATION
-        // =================================================================
-
-        // !!! CHANGE THESE TO YOUR ACTUAL KEYS !!!
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your actual URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
+        
+        // !!! SECURITY WARNING: Do not expose BOT_TOKEN on the client side in a production environment.
+        // Use a Supabase Edge Function or Backend for this. For demonstration purposes only.
         const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; 
-        const CHAT_ID = 'YOUR_ADMIN_CHAT_ID'; // Admin's Telegram Chat ID
+        const CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID'; 
+        // --- END CONFIGURATION ---
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        let currentProducts = [];
-        let currentUser = null;
+        let currentUser = null; 
+        let currentProducts = []; 
+        let currentLang = 'my';
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
-        let currentLanguage = localStorage.getItem('lang') || 'my';
-        
-        const translations = {
-            my: {
-                // Shared
-                required_phone: "ဖုန်းနံပါတ် ဖြည့်ပါ။",
-                sending_otp: "OTP ပို့နေသည်...",
-                otp_sent: "OTP ကုဒ်ကို ပို့ပြီးပါပြီ။",
-                required_otp_phone: "ဖုန်းနံပါတ်နှင့် OTP ကုဒ် ဖြည့်ပါ။",
-                verifying: "အတည်ပြုနေသည်...",
-                verify: "အတည်ပြုမည်",
-                login_success: "အောင်မြင်စွာ ဝင်ရောက်ပြီးပါပြီ။",
-                // Auth Modal
-                phoneLabel: "ဖုန်းနံပါတ်",
-                authTitle: "အကောင့်ဝင်/အကောင့်ဖွင့်",
-                authInfo: "၆-လုံးပါ OTP ကုဒ်ကို SMS ဖြင့် ပို့ပေးပါမည်။",
-                // Checkout
-                place_order: "မှာယူမည်",
-                sending_order: "မှာယူမှုကို ပို့နေသည်...",
-                order_success: "မှာယူမှု အောင်မြင်ပါသည်။ ကျေးဇူးတင်ပါတယ်။",
-                order_fail: "မှာယူရာတွင် အမှားအယွင်းရှိပါသည်။"
-            },
+        let selectedProduct = null;
+        let bannerIndex = 0;
+        let currentAuthPhone = ''; // To store the phone number globally after sending OTP
+
+        // --- TRANSLATIONS ---
+        const currentTranslations = {
             en: {
-                required_phone: "Please enter phone number.",
-                sending_otp: "Sending OTP...",
-                otp_sent: "OTP code has been sent.",
-                required_otp_phone: "Please enter phone and OTP code.",
-                verifying: "Verifying...",
-                verify: "Verify Code",
-                login_success: "Logged in successfully.",
-                phoneLabel: "Phone Number",
-                authTitle: "Login / Register",
-                authInfo: "A 6-digit OTP code will be sent via SMS.",
-                place_order: "Place Order",
-                sending_order: "Sending Order...",
-                order_success: "Order placed successfully! Thank you.",
-                order_fail: "Order failed. Please try again."
+                search_placeholder: "Search Products...",
+                tab_women: "Women", tab_men: "Men",
+                loading_products: "Loading Products...",
+                login_title: "Login / Register (OTP)",
+                phone_label: "Phone (e.g., +959xxxx)",
+                otp_label: "OTP Code (6 Digits)",
+                send_otp_btn: "Send OTP",
+                verify_otp_btn: "Verify & Login",
+                size_label: "Size", color_label: "Color", add_to_cart: "Add to Cart",
+                cart_title: "Shopping Cart", total_price_label: "Total Price:",
+                checkout_info: "Shipping Information", name_label: "Name", address_label: "Address",
+                payment_method: "Payment Method", payment_cod: "Cash on Delivery (COD)",
+                payment_slip_label: "Upload Payment Slip", place_order_btn: "Place Order",
+                history_title: "Order History", no_history: "No orders found.",
+                status_pending: "Pending", status_completed: "Completed", status_cancelled: "Cancelled"
+            },
+            my: {
+                search_placeholder: "ပစ္စည်းရှာရန်...",
+                tab_women: "အမျိုးသမီး", tab_men: "အမျိုးသား",
+                loading_products: "ပစ္စည်းများတင်နေသည်...",
+                login_title: "ဝင်ရန် / မှတ်ပုံတင်ရန် (OTP)",
+                phone_label: "ဖုန်းနံပါတ် (ဥပမာ +၉၅၉xxxx)",
+                otp_label: "OTP ကုဒ် (၆ လုံး)",
+                send_otp_btn: "OTP ပို့မည်",
+                verify_otp_btn: "အတည်ပြုပြီး ဝင်မည်",
+                size_label: "အရွယ်အစား", color_label: "အရောင်", add_to_cart: "လှည်းထဲထည့်မည်",
+                cart_title: "ပစ္စည်းဝယ်ယူရန်လှည်း", total_price_label: "စုစုပေါင်းတန်ဖိုး:",
+                checkout_info: "ပို့ဆောင်ရေးအချက်အလက်", name_label: "အမည်", address_label: "လိပ်စာ",
+                payment_method: "ငွေပေးချေမှုနည်းလမ်း", payment_cod: "ပစ္စည်းရောက်မှငွေချေ (COD)",
+                payment_slip_label: "ငွေလွှဲပြေစာတင်ရန်", place_order_btn: "မှာယူမည်",
+                history_title: "မှာယူမှုမှတ်တမ်း", no_history: "မှာယူမှုမှတ်တမ်းမရှိပါ။",
+                status_pending: "စောင့်ဆိုင်းဆဲ", status_completed: "ပြီးမြောက်", status_cancelled: "ဖျက်သိမ်း"
             },
             th: {
-                required_phone: "โปรดใส่เบอร์โทรศัพท์",
-                sending_otp: "กำลังส่งรหัส OTP...",
-                otp_sent: "ส่งรหัส OTP เรียบร้อยแล้ว",
-                required_otp_phone: "โปรดใส่เบอร์โทรศัพท์และรหัส OTP",
-                verifying: "กำลังตรวจสอบ...",
-                verify: "ยืนยันรหัส",
-                login_success: "เข้าสู่ระบบสำเร็จแล้ว",
-                phoneLabel: "หมายเลขโทรศัพท์",
-                authTitle: "เข้าสู่ระบบ / ลงทะเบียน",
-                authInfo: "รหัส OTP 6 หลัก จะถูกส่งผ่าน SMS.",
-                place_order: "สั่งซื้อสินค้า",
-                sending_order: "กำลังส่งคำสั่งซื้อ...",
-                order_success: "สั่งซื้อสำเร็จแล้ว! ขอบคุณครับ/ค่ะ",
-                order_fail: "การสั่งซื้อล้มเหลว"
+                search_placeholder: "ค้นหาสินค้า...",
+                tab_women: "ผู้หญิง", tab_men: "ผู้ชาย",
+                loading_products: "กำลังโหลดสินค้า...",
+                login_title: "เข้าสู่ระบบ / ลงทะเบียน (OTP)",
+                phone_label: "โทรศัพท์ (เช่น +66xxxx)",
+                otp_label: "รหัส OTP (6 หลัก)",
+                send_otp_btn: "ส่ง OTP",
+                verify_otp_btn: "ยืนยันและเข้าสู่ระบบ",
+                size_label: "ขนาด", color_label: "สี", add_to_cart: "เพิ่มลงในรถเข็น",
+                cart_title: "ตะกร้าสินค้า", total_price_label: "ราคารวม:",
+                checkout_info: "ข้อมูลการจัดส่ง", name_label: "ชื่อ", address_label: "ที่อยู่",
+                payment_method: "วิธีการชำระเงิน", payment_cod: "เก็บเงินปลายทาง (COD)",
+                payment_slip_label: "อัพโหลดสลิป", place_order_btn: "สั่งซื้อ",
+                history_title: "ประวัติการสั่งซื้อ", no_history: "ไม่พบประวัติการสั่งซื้อ",
+                status_pending: "รอดำเนินการ", status_completed: "เสร็จสมบูรณ์", status_cancelled: "ยกเลิกแล้ว"
             }
         };
-        let currentTranslations = translations[currentLanguage];
 
-        // =================================================================
-        // 2. AUTHENTICATION FUNCTIONS (NATIVE PHONE OTP)
-        // =================================================================
-        
-        // Helper to format phone number to +95 format (Assuming Myanmar context)
-        function formatPhone(phone) {
-            let cleanedPhone = phone.replace(/[^\d]/g, ''); 
-            if (cleanedPhone.length >= 8 && !cleanedPhone.startsWith('95')) {
-                 if (cleanedPhone.startsWith('9') && cleanedPhone.length > 8) {
-                    cleanedPhone = '95' + cleanedPhone; // e.g., 9421234567 -> 959421234567
-                 } else if (cleanedPhone.startsWith('09')) {
-                     cleanedPhone = '95' + cleanedPhone.substring(1); // e.g., 09421234567 -> 959421234567
-                 }
-            }
-            if (!cleanedPhone.startsWith('+')) {
-                cleanedPhone = '+' + cleanedPhone;
-            }
-            // Supabase needs the full international format
-            return cleanedPhone; 
+        // --- GENERAL UI/UX FUNCTIONS ---
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
         }
 
-        // 2.1 Send OTP Code (Register/Login)
-        async function sendOtp(resend = false) {
-            const phoneInput = document.getElementById('phoneInput');
-            const phone = phoneInput.value.trim();
-            const btn = document.getElementById('sendOtpBtn');
+        function toggleLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            applyTranslations();
+        }
 
-            if (!phone) {
-                showSnackbar(currentTranslations.required_phone, 'error');
-                return;
+        function applyTranslations() {
+            const t = currentTranslations[currentLang];
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                if (t[key]) {
+                    if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+                        el.setAttribute('placeholder', t[key]);
+                    } else {
+                        el.innerText = t[key];
+                    }
+                }
+            });
+            // Update status badge translations in history
+            updateHistoryList();
+            updateCartUI(); // Update COD translation in cart
+        }
+
+        function showSnackbar(message, type = 'info') {
+            const x = document.getElementById("snackbar");
+            x.innerText = message;
+            x.className = "show";
+            x.style.backgroundColor = type === 'error' ? '#d32f2f' : type === 'success' ? '#388e3c' : '#333';
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function openNav() { document.getElementById("sideMenu").style.width = "75%"; }
+        function closeNav() { document.getElementById("sideMenu").style.width = "0"; }
+
+        function switchMenuSection(id) {
+            document.querySelectorAll('.menu-tab').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.menu-section').forEach(e => e.classList.remove('active'));
+            document.querySelector(`.menu-tab[onclick*='${id}']`).classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+
+        function switchTab(t) { 
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
+            if(t==='women'){ 
+                document.querySelectorAll('.tab')[0].classList.add('active'); 
+                filterProducts('women','All');
+            }
+            else { 
+                document.querySelectorAll('.tab')[1].classList.add('active'); 
+                filterProducts('men','All');
+            }
+        }
+
+        // --- DATA FUNCTIONS ---
+
+        async function loadProducts(gender = 'women', category = 'All') {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = `<div class="loading-text">${currentTranslations[currentLang].loading_products}</div>`;
+
+            let query = supabase.from('products').select('*').eq('gender', gender);
+            if (category !== 'All') {
+                query = query.eq('category', category);
             }
             
-            const formattedPhone = formatPhone(phone);
-
-            if (!resend) {
-                btn.disabled = true;
-                btn.innerText = currentTranslations.sending_otp; 
-            } else {
-                 document.getElementById('resendOtpBtn').disabled = true;
-            }
-
-
-            try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    phone: formattedPhone
-                });
-
-                if (error) throw error;
-
-                showSnackbar(currentTranslations.otp_sent, 'success'); 
-                
-                // Open OTP modal and save the phone number for verification
-                openModal('otpModal'); 
-                document.getElementById('otpModal').dataset.phone = formattedPhone;
-                document.getElementById('otpInfo').innerText = `Enter the 6-digit code sent to ${formattedPhone}.`;
-
-            } catch (error) {
-                console.error('Error sending OTP:', error.message);
-                showSnackbar(error.message, 'error');
-            } finally {
-                if (!resend) {
-                    btn.disabled = false;
-                    btn.innerText = 'Send OTP'; // Revert back to original text
-                } else {
-                    // Re-enable resend button after a cool-down period (e.g., 60s)
-                    setTimeout(() => { document.getElementById('resendOtpBtn').disabled = false; }, 60000); 
-                }
-            }
-        }
-
-        // 2.2 Verify OTP Code
-        async function verifyOtp() {
-            const otpInput = document.getElementById('otpCodeInput');
-            const otp = otpInput.value.trim();
+            const { data, error } = await query;
             
-            const phone = document.getElementById('otpModal').dataset.phone; 
-            const btn = document.getElementById('verifyOtpBtn');
-
-            if (!otp || !phone) {
-                showSnackbar(currentTranslations.required_otp_phone, 'error');
+            if (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = `<p style="text-align:center; color:red;">Error loading products. ${error.message}</p>`;
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerText = currentTranslations.verifying; 
-
-            try {
-                const { data, error } = await supabase.auth.verifyOtp({
-                    phone: phone,
-                    token: otp,
-                    type: 'sms' 
-                });
-
-                if (error) throw error;
-                if (!data.user) throw new Error("Verification successful but user data is missing.");
-                
-                // 1. Success, close modals
-                closeModal('otpModal');
-                closeModal('loginModal');
-
-                // 2. Save user data and update UI
-                currentUser = data.user;
-                await fetchOrCreateUserProfile(currentUser);
-                updateLoginUI(currentUser); 
-                
-                showSnackbar(currentTranslations.login_success, 'success'); 
-
-            } catch (error) {
-                console.error('Error verifying OTP:', error.message);
-                showSnackbar(error.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = currentTranslations.verify; 
-            }
-        }
-        
-        // 2.3 Handle Profile creation/fetching after successful Auth
-        async function fetchOrCreateUserProfile(user) {
-             const { data: profile, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (error && error.code === 'PGRST116') { // RLS-related error (User not found)
-                // User not found, create profile (Register logic)
-                const { error: insertError } = await supabase
-                    .from('users')
-                    .insert([{ 
-                        id: user.id, 
-                        phone: user.phone, 
-                        created_at: new Date().toISOString() 
-                    }]);
-                if (insertError) {
-                    console.error("Error creating user profile:", insertError);
-                    showSnackbar("Profile creation failed.", 'error');
-                }
-            } else if (error) {
-                console.error("Error fetching profile:", error);
-                showSnackbar("Error fetching user data.", 'error');
-            }
-        }
-
-        // 2.4 Logout Function (Unchanged)
-        async function doLogout() {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-                console.error('Logout error:', error);
-                showSnackbar('Logout failed.', 'error');
-            } else {
-                currentUser = null;
-                updateLoginUI(null);
-                showSnackbar('Logged out successfully.', 'success');
-            }
-        }
-        
-        // 2.5 Update UI (Unchanged, but adapted for phone auth)
-        function updateLoginUI(user) {
-            const authBtn = document.getElementById('authBtn');
-            const cartBtn = document.getElementById('cartBtn');
-
-            if (user) {
-                authBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i>`;
-                authBtn.onclick = doLogout;
-                cartBtn.style.display = 'inline-block';
-            } else {
-                authBtn.innerHTML = `<i class="fas fa-user"></i>`;
-                authBtn.onclick = () => openModal('loginModal');
-                cartBtn.style.display = 'none'; // Hide cart if not logged in
-            }
-        }
-
-        // =================================================================
-        // 3. PRODUCT & ORDER FUNCTIONS (Mostly Unchanged)
-        // =================================================================
-
-        // 3.1 Fetch Products (Unchanged)
-        async function fetchProducts() {
-            const { data, error } = await supabase.from('products').select('*');
-            if (error) {
-                console.error('Error fetching products:', error);
-                showSnackbar('Failed to load products.', 'error');
-                return;
-            }
             currentProducts = data;
             renderProducts(currentProducts);
         }
 
-        // 3.2 Send Order (Telegram integration - USE CAUTION)
-        async function sendOrder() {
-            if (!currentUser || cart.length === 0) return;
-
-            const name = document.getElementById('customerName').value.trim();
-            const address = document.getElementById('customerAddress').value.trim();
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        function renderProducts(products) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = ''; 
             
-            if (!name || !address) {
-                showSnackbar("Please fill in Name and Address.", 'error');
+            if (products.length === 0) {
+                container.innerHTML = `<p style="text-align:center;">No products found for this category.</p>`;
                 return;
             }
 
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerText = currentTranslations.sending_order;
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.setAttribute('onclick', `openDetailsModal(${p.id})`);
+                card.innerHTML = `
+                    <img class="p-image" src="${p.image_url || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                    <div class="p-info">
+                        <p class="p-name">${p.name}</p>
+                        <p class="p-price">${Number(p.price).toLocaleString()} Ks</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterProducts(gender, category) {
+            loadProducts(gender, category);
+            closeNav();
+        }
+
+        function searchProducts() { 
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const con = document.getElementById('productsContainer');
+            const productCards = con.querySelectorAll('.product-card');
+            if (searchTerm.length === 0) {
+                productCards.forEach(card => card.style.display = 'flex');
+                return;
+            }
+            productCards.forEach(card => {
+                const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
+                if (productName.includes(searchTerm)) card.style.display = 'flex'; 
+                else card.style.display = 'none'; 
+            });
+        }
+
+        function rotateBanner() {
+            const slides = document.querySelectorAll('.banner-slide');
+            slides.forEach(s => s.classList.remove('active'));
+            bannerIndex = (bannerIndex + 1) % slides.length;
+            slides[bannerIndex].classList.add('active');
+        }
+
+        // --- AUTH/USER FUNCTIONS (OTP SYSTEM) ---
+
+        function updateUserUI() {
+            const userIcon = document.querySelector('.header-actions button:nth-child(2) i');
+            if (currentUser) {
+                userIcon.classList.remove('fa-user');
+                userIcon.classList.add('fa-sign-out-alt');
+                userIcon.setAttribute('onclick', 'doLogout()');
+                document.getElementById('cName').value = currentUser.name || '';
+                document.getElementById('cPhone').value = currentUser.phone || '';
+                document.getElementById('cAddress').value = currentUser.address || '';
+            } else {
+                userIcon.classList.add('fa-user');
+                userIcon.classList.remove('fa-sign-out-alt');
+                userIcon.setAttribute('onclick', 'checkAuth()');
+                document.getElementById('cName').value = '';
+                document.getElementById('cPhone').value = '';
+                document.getElementById('cAddress').value = '';
+            }
+        }
+
+        async function checkAuth() { 
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Fetch user profile from 'users' table
+                const { data: profile, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') {
+                    console.error("Error fetching profile:", error);
+                    showSnackbar("Failed to load profile.", 'error');
+                    await supabase.auth.signOut(); // Force sign out if serious error
+                    currentUser = null;
+                } else if (profile) {
+                    currentUser = profile;
+                    updateUserUI();
+                    openHistory(); // Show history immediately after login/check
+                    return;
+                }
+                // If user object exists but profile is missing (should be handled in doVerifyOtp, but as a fallback)
+            }
+            
+            currentUser = null;
+            updateUserUI();
+            
+            // Open auth modal and reset its state to Send OTP
+            openModal('authModal');
+            document.getElementById('sendOtpBtn').style.display = 'block';
+            document.getElementById('lPhone').disabled = false;
+            document.getElementById('loginOtpGroup').style.display = 'none';
+            document.getElementById('verifyOtpBtn').style.display = 'none';
+            document.getElementById('lOtp').value = '';
+            document.getElementById('lPhone').value = '';
+            document.getElementById('sendOtpBtn').innerText = currentTranslations[currentLang].send_otp_btn;
+            document.getElementById('verifyOtpBtn').innerText = currentTranslations[currentLang].verify_otp_btn;
+            document.getElementById('sendOtpBtn').disabled = false;
+            document.getElementById('verifyOtpBtn').disabled = false;
+        }
+
+
+        // Function 1: Request OTP Code (Shared for Login and Register)
+        async function sendOtpCode() {
+            const phoneInput = document.getElementById('lPhone');
+            const phone = phoneInput.value.trim();
+            // Basic cleaning/formatting: ensure it starts with +95
+            const cleanedPhone = phone.startsWith('+') ? phone : '+95' + phone.replace(/[^\d+]/g, ''); 
+            
+            if (!cleanedPhone || cleanedPhone.length < 10) {
+                showSnackbar(currentTranslations[currentLang].phone_label + " format is incorrect.", 'error');
+                return;
+            }
+            
+            currentAuthPhone = cleanedPhone; // Save phone number for verification step
+            
+            const btn = document.getElementById('sendOtpBtn');
+            btn.innerText = "Sending..."; btn.disabled = true;
+
+            // Supabase sign in with OTP (sends the SMS)
+            const { error } = await supabase.auth.signInWithOtp({ 
+                phone: currentAuthPhone
+            });
+
+            if (error) {
+                showSnackbar("Error sending code: " + error.message, 'error');
+                btn.innerText = currentTranslations[currentLang].send_otp_btn; btn.disabled = false;
+                return;
+            }
+
+            // Successfully sent OTP
+            showSnackbar("OTP code sent successfully!", 'success');
+            
+            // Toggle UI to show OTP input and Verify button
+            btn.style.display = 'none';
+            phoneInput.disabled = true; 
+            document.getElementById('loginOtpGroup').style.display = 'block';
+            document.getElementById('verifyOtpBtn').style.display = 'block';
+            document.getElementById('verifyOtpBtn').disabled = false;
+        }
+
+        // Function 2: Verify OTP Code and Finalize Login
+        async function doVerifyOtp() {
+            const otp = document.getElementById('lOtp').value.trim();
+            
+            if (!otp || otp.length !== 6) {
+                showSnackbar(currentTranslations[currentLang].otp_label + " must be 6 digits.", 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('verifyOtpBtn');
+            btn.innerText = "Verifying..."; btn.disabled = true;
+
+            // Supabase verify OTP
+            let { data: authData, error: authError } = await supabase.auth.verifyOtp({
+                phone: currentAuthPhone,
+                token: otp,
+                type: 'sms'
+            });
+
+            if (authError) {
+                showSnackbar("OTP verification failed: " + authError.message, 'error');
+                btn.innerText = currentTranslations[currentLang].verify_otp_btn; btn.disabled = false;
+                return;
+            }
+            
+            const userId = authData.user.id;
+
+            // --- USER PROFILE CREATION/CHECK ---
+            let { data: profile, error: profileError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('user_id', userId)
+                .single();
+
+            if (profileError && profileError.code === 'PGRST116') { // Profile not found (New User)
+                // Create a basic profile for the new user
+                const defaultName = currentTranslations[currentLang].name_label + "_" + userId.substring(0, 4);
+                let { error: createError } = await supabase.from('users').insert([
+                    { user_id: userId, name: defaultName, phone: currentAuthPhone, address: "" }
+                ]).select().single(); // select().single() to return the created profile
+
+                if (createError) {
+                     console.error("Profile creation failed:", createError);
+                     showSnackbar("Login failed: Profile setup error.", 'error');
+                     await supabase.auth.signOut(); 
+                     return;
+                }
+                currentUser = createError; // The profile data itself
+            } else if (profile) {
+                currentUser = profile; // Existing user
+            } else if (profileError) {
+                 showSnackbar("Profile check error: " + profileError.message, 'error');
+                 return;
+            }
+            // --- END PROFILE CHECK ---
+
+            closeModal('authModal');
+            updateUserUI();
+            openHistory();
+            showSnackbar("Login successful!", 'success');
+            
+            // Reset UI state
+            document.getElementById('sendOtpBtn').style.display = 'block';
+            document.getElementById('lPhone').disabled = false;
+            document.getElementById('loginOtpGroup').style.display = 'none';
+            document.getElementById('verifyOtpBtn').style.display = 'none';
+            document.getElementById('lOtp').value = '';
+            btn.innerText = currentTranslations[currentLang].verify_otp_btn; btn.disabled = false;
+        }
+
+
+        async function doLogout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                showSnackbar("Logout failed: " + error.message, 'error');
+            } else {
+                currentUser = null;
+                updateUserUI();
+                showSnackbar("Logout successful!", 'success');
+            }
+        }
+
+        // --- PRODUCT DETAILS / CART FUNCTIONS ---
+
+        function openDetailsModal(id) {
+            selectedProduct = currentProducts.find(p => p.id === id);
+            if (!selectedProduct) return;
+
+            document.getElementById('detailImage').src = selectedProduct.image_url || 'https://via.placeholder.com/250';
+            document.getElementById('detailName').innerText = selectedProduct.name;
+            document.getElementById('detailPrice').innerText = `${Number(selectedProduct.price).toLocaleString()} Ks`;
+            document.getElementById('detailDescription').innerText = selectedProduct.description || 'No description available.';
+
+            // Handle Sizes
+            const sizeCon = document.getElementById('detailSize');
+            sizeCon.innerHTML = '';
+            const sizes = selectedProduct.sizes ? selectedProduct.sizes.split(',') : ['Free'];
+            sizes.forEach(size => {
+                const btn = document.createElement('button');
+                btn.innerText = size.trim();
+                btn.onclick = () => {
+                    sizeCon.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                sizeCon.appendChild(btn);
+            });
+            if(sizeCon.firstChild) sizeCon.firstChild.classList.add('selected');
+
+            // Handle Colors
+            const colorCon = document.getElementById('detailColor');
+            colorCon.innerHTML = '';
+            const colors = selectedProduct.colors ? selectedProduct.colors.split(',') : ['#000000'];
+            colors.forEach(color => {
+                const span = document.createElement('span');
+                span.className = 'color-option';
+                span.style.backgroundColor = color.trim();
+                span.onclick = () => {
+                    colorCon.querySelectorAll('.color-option').forEach(s => s.classList.remove('selected'));
+                    span.classList.add('selected');
+                };
+                colorCon.appendChild(span);
+            });
+            if(colorCon.firstChild) colorCon.firstChild.classList.add('selected');
+
+            document.getElementById('detailQuantity').value = 1;
+            openModal('detailsModal');
+        }
+
+        function changeQuantity(val) {
+            const input = document.getElementById('detailQuantity');
+            let current = parseInt(input.value);
+            current += val;
+            if (current < 1) current = 1;
+            input.value = current;
+        }
+
+        function addToCartFromDetails() {
+            const selectedSize = document.querySelector('#detailSize .selected')?.innerText;
+            const selectedColor = document.querySelector('#detailColor .selected')?.style.backgroundColor;
+            const quantity = parseInt(document.getElementById('detailQuantity').value);
+
+            if (!selectedProduct || !selectedSize || !selectedColor || quantity < 1) {
+                showSnackbar("Please select size/color and quantity.", 'error');
+                return;
+            }
+
+            const item = {
+                id: selectedProduct.id,
+                name: selectedProduct.name,
+                price: selectedProduct.price,
+                image: selectedProduct.image_url,
+                size: selectedSize,
+                color: selectedColor,
+                quantity: quantity
+            };
+
+            // Check if item already exists (same id, size, color)
+            const existingIndex = cart.findIndex(c => 
+                c.id === item.id && c.size === item.size && c.color === item.color
+            );
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += quantity;
+            } else {
+                cart.push(item);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            closeModal('detailsModal');
+            updateCartUI();
+            showSnackbar("Added to cart!", 'success');
+        }
+
+        function updateCartUI() {
+            const cartItemsCon = document.getElementById('cartItems');
+            const cartTotalPriceEl = document.getElementById('cartTotalPrice');
+            cartItemsCon.innerHTML = '';
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                cartItemsCon.innerHTML = `<p data-t="no_items_in_cart">Your cart is empty.</p>`;
+                cartTotalPriceEl.innerText = `0 Ks`;
+                applyTranslations(); // Re-apply translation to empty cart message
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                totalPrice += item.price * item.quantity;
+                const itemEl = document.createElement('div');
+                itemEl.className = 'history-item';
+                itemEl.innerHTML = `
+                    <div>
+                        <p><strong>${item.name}</strong> (${item.size}, <span style="color:${item.color}">${item.color}</span>)</p>
+                        <p>${item.quantity} x ${Number(item.price).toLocaleString()} Ks</p>
+                    </div>
+                    <div>
+                        <button onclick="removeFromCart(${index})" style="background-color: transparent; color: var(--accent-color); border: none; font-size: 1.2em; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                cartItemsCon.appendChild(itemEl);
+            });
+
+            cartTotalPriceEl.innerText = `${Number(totalPrice).toLocaleString()} Ks`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            showSnackbar("Item removed.", 'info');
+        }
+
+        // --- CHECKOUT & ORDER FUNCTIONS ---
+
+        // Toggle payment slip input visibility
+        document.getElementById('cPaymentMethod').addEventListener('change', function() {
+            const isCOD = this.value === 'cod';
+            document.getElementById('paymentSlipGroup').style.display = isCOD ? 'none' : 'block';
+        });
+
+        async function doCheckout() {
+            if (!currentUser) {
+                showSnackbar("Please login first to place an order.", 'error');
+                closeModal('checkoutModal');
+                checkAuth();
+                return;
+            }
+            if (cart.length === 0) {
+                showSnackbar("Your cart is empty.", 'error');
+                return;
+            }
+
+            const name = document.getElementById('cName').value.trim();
+            const phone = document.getElementById('cPhone').value.trim();
+            const address = document.getElementById('cAddress').value.trim();
+            const paymentMethod = document.getElementById('cPaymentMethod').value;
+            const slipFile = document.getElementById('cPaymentSlip').files[0];
+
+            if (!name || !phone || !address) {
+                showSnackbar("Please fill in your name, phone, and address.", 'error');
+                return;
+            }
+            if (paymentMethod !== 'cod' && !slipFile) {
+                showSnackbar("Please upload the payment slip or choose COD.", 'error');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let slipUrl = '';
+
+            const orderBtn = document.querySelector('#checkoutModal .order-btn');
+            orderBtn.innerText = "Processing...";
+            orderBtn.disabled = true;
 
             try {
-                // 1. Save Order to Database
-                const { data: orderData, error: orderError } = await supabase
+                // 1. Upload Payment Slip (if not COD)
+                if (paymentMethod !== 'cod' && slipFile) {
+                    const filePath = `${currentUser.user_id}/${Date.now()}_${slipFile.name}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('slips')
+                        .upload(filePath, slipFile);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    // Get public URL
+                    const { data: publicUrlData } = supabase.storage
+                        .from('slips')
+                        .getPublicUrl(filePath);
+
+                    slipUrl = publicUrlData.publicUrl;
+                }
+
+                // 2. Insert Order to Supabase
+                const orderData = {
+                    user_id: currentUser.user_id,
+                    user_name: name,
+                    phone: phone,
+                    address: address,
+                    items: cart, // Storing cart as JSONB
+                    total_amount: total,
+                    payment_method: paymentMethod,
+                    payment_slip_url: slipUrl,
+                    status: 'pending'
+                };
+                
+                const { data: orderResult, error: insertError } = await supabase
                     .from('orders')
-                    .insert([{ 
-                        user_id: currentUser.id,
-                        customer_name: name,
-                        shipping_address: address,
-                        total_amount: total,
-                        items: cart 
-                    }])
+                    .insert([orderData])
                     .select()
                     .single();
 
-                if (orderError) throw orderError;
+                if (insertError) throw insertError;
                 
-                // 2. Send Telegram Notification (SECURITY RISK - SEE NOTES)
-                const message = encodeURIComponent(
-                    `*NEW ORDER ALERT (Order #${orderData.id})*\n` +
-                    `--------------------------------------\n` +
-                    `👤 *Customer*: ${name} (Phone: ${currentUser.phone})\n` +
-                    `📍 *Address*: ${address}\n` +
-                    `💰 *Total*: ${total.toLocaleString()} MMK\n` +
-                    `🛒 *Items*:\n` +
-                    cart.map(i => `  - ${i.name} (${i.color}, ${i.size}) x ${i.quantity}`).join('\n')
-                );
+                // 3. Send Notification to Telegram Admin
+                await sendTelegramNotification(orderResult, slipUrl, currentTranslations[currentLang]);
 
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`);
-
-                // 3. Success
+                // 4. Finalize
                 cart = [];
                 localStorage.removeItem('cart');
                 updateCartUI();
-                closeModal('cartModal');
-                showSnackbar(currentTranslations.order_success, 'success');
+                closeModal('checkoutModal');
+                showSnackbar("Order placed successfully! Check History for updates.", 'success');
+                openHistory(); // Show history after successful order
 
             } catch (error) {
-                console.error('Order sending failed:', error);
-                showSnackbar(currentTranslations.order_fail, 'error');
+                console.error("Checkout Error:", error);
+                showSnackbar("Order failed: " + (error.message || 'Server error.'), 'error');
             } finally {
-                checkoutBtn.disabled = false;
-                checkoutBtn.innerText = currentTranslations.place_order;
+                orderBtn.innerText = currentTranslations[currentLang].place_order_btn;
+                orderBtn.disabled = false;
             }
         }
-        
-        // =================================================================
-        // 4. UI/HELPER FUNCTIONS (Mostly Unchanged)
-        // =================================================================
 
-        // 4.1 Snackbar (Unchanged)
-        let snackbarTimeout;
-        function showSnackbar(message, type = 'info') {
-            const snackbar = document.getElementById('snackbar');
-            clearTimeout(snackbarTimeout);
+        async function sendTelegramNotification(order, slipUrl, t) {
+            let message = `*NEW ORDER - #${order.id}*\n\n`;
+            message += `*Customer:* ${order.user_name}\n`;
+            message += `*Phone:* ${order.phone}\n`;
+            message += `*Address:* ${order.address}\n`;
+            message += `*Total:* ${Number(order.total_amount).toLocaleString()} Ks\n`;
+            message += `*Payment:* ${order.payment_method}\n\n`;
+            message += `*Items:*\n`;
+            order.items.forEach(item => {
+                message += `- ${item.name} (${item.size}) x ${item.quantity} (${Number(item.price*item.quantity).toLocaleString()} Ks)\n`;
+            });
             
-            snackbar.innerText = message;
-            snackbar.className = `show ${type}`; 
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            try {
+                // Send text message
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
 
-            snackbarTimeout = setTimeout(() => { snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+                // Send photo if slip exists
+                if (slipUrl) {
+                    const photoUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
+                    await fetch(photoUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            photo: slipUrl,
+                            caption: `Payment Slip for Order #${order.id}`
+                        })
+                    });
+                }
+            } catch (err) {
+                console.error("Telegram Notification Failed:", err);
+            }
         }
 
-        // 4.2 Modal Handlers (Unchanged)
-        function openModal(id) { document.getElementById(id).style.display='block'; }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        
-        // 4.3 Language Setting (Unchanged)
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('lang', lang);
-            currentTranslations = translations[lang];
-            // Reload content/text here
-            document.getElementById('lang-select').value = lang;
-            document.getElementById('phoneLabel').innerText = currentTranslations.phoneLabel;
-            document.getElementById('authTitle').innerText = currentTranslations.authTitle;
-            document.getElementById('authInfo').innerText = currentTranslations.authInfo;
-            document.getElementById('sendOtpBtn').innerText = 'Send OTP'; // Default text after change
-            document.getElementById('checkoutBtn').innerText = currentTranslations.place_order;
-            document.getElementById('verifyOtpBtn').innerText = currentTranslations.verify;
-        }
+        // --- HISTORY FUNCTIONS ---
 
-        // 4.4 Dark Mode (Unchanged)
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            document.getElementById('theme-icon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        async function openHistory() {
+            if (!currentUser) {
+                showSnackbar("Please login to view your order history.", 'error');
+                return;
+            }
+
+            openModal('historyModal');
+            updateHistoryList();
         }
         
-        // 4.5 Other UI functions (renderProducts, openDetails, addToCart, updateCartUI, searchProducts, switchTab) 
-        // -> (These functions are assumed to be present and unchanged from your original code, 
-        //     or they need to be fully implemented based on your original structure)
-        
-        // Example Placeholder for renderProducts (You need to use your actual logic here)
-        function renderProducts(products) {
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = products.map(p => `
-                <div class="product-card" onclick="openDetails(${p.id})">
-                    <img src="${p.main_image}" alt="${p.name}" loading="lazy">
-                    <div class="p-info">
-                        <div class="p-name">${p.name}</div>
-                        <div class="p-price">${p.price.toLocaleString()} MMK</div>
+        async function updateHistoryList() {
+            const historyListEl = document.getElementById('historyList');
+            historyListEl.innerHTML = `<p style="text-align:center;">Loading history...</p>`;
+
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_id', currentUser.user_id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                historyListEl.innerHTML = `<p style="color:red;">Error loading history: ${error.message}</p>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                historyListEl.innerHTML = `<p data-t="no_history">${currentTranslations[currentLang].no_history}</p>`;
+                applyTranslations();
+                return;
+            }
+            
+            historyListEl.innerHTML = ''; // Clear loading text
+            
+            data.forEach(order => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'history-item';
+                
+                const statusKey = `status_${order.status}`;
+                const statusText = currentTranslations[currentLang][statusKey] || order.status;
+                
+                itemEl.innerHTML = `
+                    <div>
+                        <p><strong>Order #${order.id}</strong></p>
+                        <p>${order.items.length} items, ${Number(order.total_amount).toLocaleString()} Ks</p>
+                        <p style="font-size:0.8em; color:#777;">Date: ${new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
-                </div>
-            `).join('');
-        }
-        
-        // Example Placeholder for updateCartUI
-        function updateCartUI() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cartCount').innerText = count;
-            // You should also update cartItemsContainer and cartTotal here
+                    <div>
+                        <span class="status-badge status-${order.status}">${statusText}</span>
+                    </div>
+                `;
+                historyListEl.appendChild(itemEl);
+            });
         }
 
-        // =================================================================
-        // 5. INITIAL SETUP
-        // =================================================================
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Load Dark Mode State
-            if (localStorage.getItem('darkMode') === 'true') {
-                toggleDarkMode(); // Toggle once to set state and icon
-            } else {
-                document.getElementById('theme-icon').className = 'fas fa-moon'; // Default light
+
+        // --- INITIALIZATION ---
+
+        function init() {
+            // Load preferred language
+            const savedLang = localStorage.getItem('lang');
+            if (savedLang && currentTranslations[savedLang]) {
+                currentLang = savedLang;
             }
-
-            // Load Language
-            setLanguage(currentLanguage);
-
-            // Fetch initial products
-            await fetchProducts();
+            applyTranslations();
             
-            // Check for existing session
-            const { data: { user } } = await supabase.auth.getUser();
-            currentUser = user;
-            if (currentUser) {
-                await fetchOrCreateUserProfile(currentUser);
-            }
-            updateLoginUI(currentUser);
-            updateCartUI(); // Initial cart count
-        });
+            // Set initial tab and load products
+            switchTab('women'); 
+            
+            // Check auth state
+            supabase.auth.onAuthStateChange((event, session) => {
+                // This will handle initial load and subsequent changes
+                if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                    checkAuth();
+                }
+            });
 
+            // Set up banner rotation
+            setInterval(rotateBanner, 5000); 
+            
+            // Update cart UI on load
+            updateCartUI();
+        }
+
+        init();
     </script>
 </body>
 </html>
