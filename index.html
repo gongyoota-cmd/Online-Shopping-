@@ -151,23 +151,23 @@
     
     <div class="side-menu" id="sideMenu">
         <div class="menu-tabs">
-            <div class="tab active" onclick="switchTab('women')">WOMEN</div>
-            <div class="tab" onclick="switchTab('men')">MEN</div>
+            <div class="tab active" onclick="switchTab('women')" data-t="women_tab">WOMEN</div>
+            <div class="tab" onclick="switchTab('men')" data-t="men_tab">MEN</div>
         </div>
         <div class="menu-content">
             <div id="women-menu" class="menu-section active">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', translate('all'), 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', translate('clothing'), 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', translate('shoes'), 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', translate('bag'), 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', translate('all'), 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', translate('clothing'), 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', translate('shoes'), 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', translate('accessories'), 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
         <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
@@ -244,7 +244,7 @@
                 <div id="verifyOtpLogin" style="display:none; margin-top:10px;">
                     <p style="font-size:12px; color:var(--accent-color); text-align:center;" data-t="otp_sent_info">OTP code sent to your phone. Enter below:</p>
                     <div class="input-group"><label data-t="pass_label">OTP Code</label><input type="text" id="lOtp"></div>
-                    <button class="order-btn" onclick="verifyOtp('login')" data-t="login_btn">Verify OTP & Login</button>
+                    <button class="order-btn" onclick="verifyOtp('login')" data-t="verify_btn">Verify OTP & Login</button>
                 </div>
             </div>
             
@@ -256,7 +256,7 @@
                  <div id="verifyOtpRegister" style="display:none; margin-top:10px;">
                     <p style="font-size:12px; color:var(--accent-color); text-align:center;" data-t="otp_sent_info">OTP code sent to your phone. Enter below:</p>
                     <div class="input-group"><label data-t="pass_label">OTP Code</label><input type="text" id="rOtp"></div>
-                    <button class="order-btn" onclick="verifyOtp('register')" data-t="register_btn">Verify OTP & Register</button>
+                    <button class="order-btn" onclick="verifyOtp('register')" data-t="verify_btn">Verify OTP & Register</button>
                 </div>
             </div>
         </div>
@@ -380,10 +380,10 @@
                 men_cat: "MEN'S FASHION", accessories: "Accessories",
                 order_form: "Order Form", address_label: "Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)", contact_label: "Contact Phone (ဆက်သွယ်ရန်ဖုန်း)", note_label: "Note (အကြောင်းအရာ)",
                 slip_label: "Payment Slip (ပြေစာ)", send_btn: "Send to Admin", chat_title: "Support Chat", history_title: "My Orders",
-                settings_title: "Settings", dark_mode: "Dark Mode", language_title: "Language", login_tab: "Login", register_tab: "Register", phone_label: "Phone", pass_label: "OTP Code", login_btn: "Send OTP Code", register_btn: "Send OTP Code", logout_btn: "Logout", name_label: "Name",
+                settings_title: "Settings", dark_mode: "Dark Mode", language_title: "Language", login_tab: "Login", register_tab: "Register", phone_label: "Phone", pass_label: "OTP Code", login_btn: "Send OTP Code", register_btn: "Send OTP Code", logout_btn: "Logout", name_label: "Name", verify_btn: "Verify OTP & Proceed",
                 order_sent_h3: "👾 Order sent!", order_sent_p: "Payment successful, delivery will be made soon.🎉", ok_btn: "OK",
-                search_placeholder: "Search...", chat_reply: "Hello! How can I help you today?",
-                // New Keys for OTP Flow
+                search_placeholder: "Search...", chat_reply: "Hello! How can I help you today?", women_tab: "WOMEN", men_tab: "MEN",
+                // [NEW KEYS FOR OTP FLOW]
                 err_no_name: "Please enter your name for registration.",
                 err_no_phone: "Please enter your phone number.",
                 err_phone_format: "Please start the phone number with your country code (+959...).",
@@ -397,15 +397,15 @@
                 men_cat: "အမျိုးသားဖက်ရှင်", accessories: "အသုံးအဆောင်",
                 order_form: "မှာယူမှုပုံစံ", address_label: "ပို့ဆောင်ရန်လိပ်စာ", contact_label: "ဆက်သွယ်ရန်ဖုန်း", note_label: "အကြောင်းအရာ",
                 slip_label: "ငွေလွှဲပြေစာ", send_btn: "Admin ထံသို့ ပို့မည်", chat_title: "အကူအညီချတ်", history_title: "မှာယူမှုမှတ်တမ်း",
-                settings_title: "ဆက်တင်များ", dark_mode: "ညမုဒ်", language_title: "ဘာသာစကား", login_tab: "ဝင်ရန်", register_tab: "အကောင့်ဖွင့်ရန်", phone_label: "ဖုန်းနံပါတ်", pass_label: "OTP ကုဒ်", login_btn: "OTP ကုဒ်ပို့မည်", register_btn: "OTP ကုဒ်ပို့မည်", logout_btn: "ထွက်မည်", name_label: "နာမည်",
+                settings_title: "ဆက်တင်များ", dark_mode: "ညမုဒ်", language_title: "ဘာသာစကား", login_tab: "ဝင်ရန်", register_tab: "အကောင့်ဖွင့်ရန်", phone_label: "ဖုန်းနံပါတ်", pass_label: "OTP ကုဒ်", login_btn: "OTP ကုဒ်ပို့မည်", register_btn: "OTP ကုဒ်ပို့မည်", logout_btn: "ထွက်မည်", name_label: "နာမည်", verify_btn: "OTP စစ်ဆေး၍ ဆက်သွားမည်",
                 order_sent_h3: "👾 မှာယူမှု အောင်မြင်! ", order_sent_p: "ငွေပေးချေမှုအောင်မြင်ပါပြီ၊ မကြာမီ ပို့ဆောင်ပေးပါမည်။🎉", ok_btn: "အိုကေ",
-                search_placeholder: "ရှာဖွေပါ...", chat_reply: "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?",
-                // New Keys for OTP Flow
+                search_placeholder: "ရှာဖွေပါ...", chat_reply: "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?", women_tab: "အမျိုးသမီး", men_tab: "အမျိုးသား",
+                // [NEW KEYS FOR OTP FLOW]
                 err_no_name: "ကျေးဇူးပြု၍ မှတ်ပုံတင်ရန် နာမည်ထည့်ပါရှင်။",
                 err_no_phone: "ကျေးဇူးပြု၍ ဖုန်းနံပါတ် ဖြည့်ပါ။",
                 err_phone_format: "ဖုန်းနံပါတ်ကို နိုင်ငံကုဒ် (+959...) ဖြင့် စတင်ဖြည့်သွင်းပါရှင်။",
                 status_sending: "ပို့နေပါသည်...",
-                status_otp_sent: "OTP ကုဒ်ကို ဖုန်းသို့ ပို့လိုက်ပါပြီ။", // Using full phrase for better flow
+                status_otp_sent: "OTP ကုဒ်ကို ဖုန်းသို့ ပို့လိုက်ပါပြီ။",
                 err_sending_otp: "OTP ပို့ရာတွင် အမှားဖြစ်ပွား",
                 otp_sent_info: "OTP ကုဒ်ကို သင့်ဖုန်းသို့ ပို့လိုက်ပါပြီ။ အောက်တွင် ဖြည့်ပါ:"
             },
@@ -414,10 +414,10 @@
                 men_cat: "แฟชั่นบุรุษ", accessories: "เครื่องประดับ",
                 order_form: "แบบฟอร์มคำสั่งซื้อ", address_label: "ที่อยู่จัดส่ง", contact_label: "เบอร์ติดต่อ", note_label: "หมายเหตุ",
                 slip_label: "สลิปการชำระเงิน", send_btn: "ส่งถึงแอดมิน", chat_title: "แชทสนับสนุน", history_title: "คำสั่งซื้อของฉัน",
-                settings_title: "การตั้งค่า", dark_mode: "โหมดกลางคืน", language_title: "ภาษา", login_tab: "เข้าสู่ระบบ", register_tab: "ลงทะเบียน", phone_label: "เบอร์โทรศัพท์", pass_label: "รหัส OTP", login_btn: "ส่งรหัส OTP", register_btn: "ส่งรหัส OTP", logout_btn: "ออกจากระบบ", name_label: "ชื่อ",
+                settings_title: "การตั้งค่า", dark_mode: "โหมดกลางคืน", language_title: "ภาษา", login_tab: "เข้าสู่ระบบ", register_tab: "ลงทะเบียน", phone_label: "เบอร์โทรศัพท์", pass_label: "รหัส OTP", login_btn: "ส่งรหัส OTP", register_btn: "ส่งรหัส OTP", logout_btn: "ออกจากระบบ", name_label: "ชื่อ", verify_btn: "ยืนยัน OTP และดำเนินการต่อ",
                 order_sent_h3: "👾 ส่งคำสั่งซื้อแล้ว!", order_sent_p: "ชำระเงินสำเร็จแล้ว จะดำเนินการจัดส่งเร็วๆ นี้🎉", ok_btn: "ตกลง",
-                search_placeholder: "ค้นหา...", chat_reply: "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?",
-                // New Keys for OTP Flow
+                search_placeholder: "ค้นหา...", chat_reply: "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?", women_tab: "สตรี", men_tab: "บุรุษ",
+                // [NEW KEYS FOR OTP FLOW]
                 err_no_name: "กรุณาใส่ชื่อของคุณเพื่อลงทะเบียน",
                 err_no_phone: "กรุณาใส่เบอร์โทรศัพท์ของคุณ",
                 err_phone_format: "โปรดขึ้นต้นเบอร์โทรศัพท์ด้วยรหัสประเทศ (+66xxxx...) [Thai example]",
@@ -431,10 +431,21 @@
         let currentLang = localStorage.getItem('kshop_lang') || 'en';
         
         // --- FALLBACK SAMPLE PRODUCTS (MODIFIED for image switching) ---
-        // ... (Products array remains the same) ...
+        const products = [
+            { id: 1, name: "Luxury Red Dress", price: 150000, category: "clothing", gender: "women", sizes: ["S", "M", "L"], colors: { Red: "https://images.unsplash.com/photo-1596707338382-b7b5f5e8f4f3?w=800", Black: "https://images.unsplash.com/photo-1582239611649-e25f8280b037?w=800" }, img: "https://images.unsplash.com/photo-1596707338382-b7b5f5e8f4f3?w=800", desc: "Elegant red dress made from imported silk." },
+            { id: 2, name: "Summer Floral Shirt", price: 35000, category: "clothing", gender: "women", sizes: ["XS", "S", "M"], colors: { White: "https://images.unsplash.com/photo-1588820421251-50e50d6f43f1?w=800" }, img: "https://images.unsplash.com/photo-1588820421251-50e50d6f43f1?w=800", desc: "Light and comfortable floral shirt for summer." },
+            { id: 3, name: "Premium Leather Bag", price: 80000, category: "bag", gender: "women", sizes: ["OS"], colors: { Brown: "https://images.unsplash.com/photo-1544816155-12dfaa749609?w=800", Black: "https://images.unsplash.com/photo-1584917865442-de8484e5f038?w=800" }, img: "https://images.unsplash.com/photo-1544816155-12dfaa749609?w=800", desc: "High quality leather shoulder bag." },
+            { id: 4, name: "Sports Running Shoes", price: 55000, category: "shoes", gender: "men", sizes: ["7", "8", "9", "10"], colors: { Blue: "https://images.unsplash.com/photo-1549298828-b219f8b417f7?w=800", Red: "https://images.unsplash.com/photo-1560769629-9fa023a85472?w=800" }, img: "https://images.unsplash.com/photo-1549298828-b219f8b417f7?w=800", desc: "Comfortable and durable running shoes." },
+            { id: 5, name: "Formal Men Suit", price: 250000, category: "clothing", gender: "men", sizes: ["M", "L", "XL"], colors: { Gray: "https://images.unsplash.com/photo-1551624835-776f82782b3d?w=800" }, img: "https://images.unsplash.com/photo-1551624835-776f82782b3d?w=800", desc: "Tailored suit for formal occasions." },
+            { id: 6, name: "Cool T-Shirt", price: 15000, category: "clothing", gender: "men", sizes: ["S", "M", "L"], colors: { White: "https://images.unsplash.com/photo-1521572178229-37e408544c04?w=800" }, img: "https://images.unsplash.com/photo-1521572178229-37e408544c04?w=800", desc: "Classic white cotton T-shirt." },
+        ];
         
         // --- FALLBACK SAMPLE BANNERS ---
-        // ... (Banners array remains the same) ...
+        const banners = [
+            'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800',
+            'https://images.unsplash.com/photo-1509939106095-207908c697e6?w=800',
+            'https://images.unsplash.com/photo-1528698188046-e58f000fb8c9?w=800'
+        ];
 
         // --- WINDOW ONLOAD ---
         window.onload = async function() {
@@ -452,7 +463,7 @@
             // Check for existing Supabase session and load profile
             await loadUserSession();
             
-            loadProducts('all', currentTranslations[currentLang].all, 'women'); 
+            loadProducts('all', translate('all'), 'women'); 
             updateUserUI();
             loadBanners(); 
             
@@ -492,7 +503,6 @@
         function translate(key) {
             const t = currentTranslations[currentLang];
             // If the key is found in the current language map, use it. Otherwise, use the key itself (often English).
-            // This is used for dynamic messages in showSnackbar and button texts during loading.
             return (t && t[key]) ? t[key] : key;
         }
 
@@ -511,6 +521,10 @@
             // Update OTP button text after language change
              document.getElementById('sendOtpBtn').innerText = t.login_btn;
              document.getElementById('sendOtpRegisterBtn').innerText = t.register_btn;
+             
+             // Update Verify Button text
+             document.querySelector('#verifyOtpLogin button').innerText = t.verify_btn;
+             document.querySelector('#verifyOtpRegister button').innerText = t.verify_btn;
         }
 
         function toggleLanguage(lang) {
@@ -520,10 +534,164 @@
                 applyLanguage(lang);
             }
         }
-        
-        // ... (Banners and other utility functions remain the same) ...
 
-        // --- OTP Step 1: Send OTP to Phone (MODIFIED) ---
+        // --- BANNER SLIDER ---
+        let currentSlide = 0;
+        function loadBanners() {
+            const wrapper = document.getElementById('sliderWrapper');
+            const dotsContainer = document.getElementById('dotsContainer');
+            wrapper.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            banners.forEach((src, index) => {
+                wrapper.innerHTML += `<div class="slide"><img src="${src}" alt="Banner ${index + 1}"></div>`;
+                dotsContainer.innerHTML += `<span class="dot" onclick="goToSlide(${index})"></span>`;
+            });
+            updateSlider();
+            setInterval(nextSlide, 5000); 
+        }
+
+        function updateSlider() {
+            const wrapper = document.getElementById('sliderWrapper');
+            wrapper.style.transform = `translateX(${-currentSlide * 100}%)`;
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % banners.length;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+        }
+
+        // --- THEME ---
+        function toggleTheme(checkbox) {
+            if (checkbox.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('kshop_dark_mode', 'on');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('kshop_dark_mode', 'off');
+            }
+        }
+
+        // --- UI UTILITY ---
+        function showSnackbar(message, type = 'default') {
+            const snackbar = document.getElementById('snackbar');
+            snackbar.innerText = message;
+            snackbar.className = 'show';
+            if (type === 'error') snackbar.classList.add('error');
+            if (type === 'success') snackbar.classList.add('success');
+            
+            setTimeout(function(){ 
+                snackbar.className = ''; 
+            }, 3000);
+        }
+        
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.querySelector('.overlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatBody = document.getElementById('chatBody');
+            // User Message
+            chatBody.innerHTML += `<div style="text-align:right; margin-bottom:5px;"><div style="background:var(--vibrant-blue); color:white; padding:8px; border-radius:5px; display:inline-block; max-width:80%;">${message}</div></div>`;
+            input.value = '';
+            chatBody.scrollTop = chatBody.scrollHeight;
+            
+            // Simulating auto-reply
+            setTimeout(() => {
+                 chatBody.innerHTML += `<div style="background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; margin-bottom:5px; max-width:80%;">${translate('chat_reply')}</div>`;
+                 chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1500);
+        }
+
+        function toggleSearch() {
+            const searchBox = document.getElementById('searchBox');
+            searchBox.style.display = searchBox.style.display === 'block' ? 'none' : 'block';
+            if (searchBox.style.display === 'block') document.getElementById('searchInput').focus();
+        }
+        
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+        
+        function closeModal(id) { 
+            document.getElementById(id).style.display='none'; 
+        }
+        
+        // --- AUTH UI ---
+        function checkAuth() {
+            if (currentUser) {
+                openHistory(); // Logged in: show history/profile
+            } else {
+                openAuthModal(); // Not logged in: show login/register
+            }
+        }
+        
+        function openAuthModal() {
+            showAuthForm('login');
+            document.getElementById('authModal').style.display = 'flex';
+        }
+        
+        function showAuthForm(type) {
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            // Reset OTP fields when switching tabs
+            document.getElementById('verifyOtpLogin').style.display = 'none';
+            document.getElementById('verifyOtpRegister').style.display = 'none';
+            document.getElementById('sendOtpBtn').style.display = 'block';
+            document.getElementById('sendOtpRegisterBtn').style.display = 'block';
+            
+            tabLogin.style.borderBottom = 'none';
+            tabRegister.style.borderBottom = 'none';
+            tabLogin.style.color = '#777';
+            tabRegister.style.color = '#777';
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'none';
+
+            if (type === 'login') {
+                tabLogin.style.borderBottom = '2px solid #2d2d2d';
+                tabLogin.style.color = '#2d2d2d';
+                loginForm.style.display = 'block';
+            } else {
+                tabRegister.style.borderBottom = '2px solid #2d2d2d';
+                tabRegister.style.color = '#2d2d2d';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function updateUserUI() {
+            const userDot = document.getElementById('userDot');
+            if (currentUser) {
+                userDot.style.display = 'block';
+                // Optional: Update profile info elsewhere, like menu header
+            } else {
+                userDot.style.display = 'none';
+            }
+        }
+
+        // --- OTP Step 1: Send OTP to Phone (MODIFIED and ENHANCED) ---
         async function sendOtp(type) {
             let phone, btn;
             
@@ -545,12 +713,13 @@
                 return;
             }
             
-            // 🔑 E.164 Format Check: Starts with '+' (User's requested logic)
+            // 🔑 E.164 Format Check: Starts with '+' (Your requested logic integrated with translation)
             if (!phone.startsWith('+')) {
                  showSnackbar(translate("err_phone_format"), 'error');
                  return;
             }
-            
+
+            // --- Original Logic Continues ---
             currentAuthPhone = phone; // Store the phone number (E.164 format)
             
             const originalText = btn.innerText;
@@ -585,20 +754,386 @@
             btn.disabled = false; // Re-enable for possible resend action/retrying
         }
         
-        // --- OTP Step 2: Verify OTP and Login/Register (REMAINS THE SAME) ---
+        // --- OTP Step 2: Verify OTP and Login/Register ---
         async function verifyOtp(type) {
-            // ... (Logic remains the same as in the original file) ...
+            let otp, phone, btn;
+            
+            if (!currentAuthPhone) {
+                showSnackbar("Please send OTP first.", 'error');
+                return;
+            }
+            phone = currentAuthPhone;
+
+            if (type === 'login') {
+                otp = document.getElementById('lOtp').value.trim();
+                btn = document.getElementById('verifyOtpLogin').querySelector('button');
+            } else { // register
+                otp = document.getElementById('rOtp').value.trim();
+                btn = document.getElementById('verifyOtpRegister').querySelector('button');
+            }
+
+            if (otp.length !== 6) {
+                showSnackbar("OTP code must be 6 digits.", 'error');
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            // Verify the code
+            const { data: { session }, error: verifyError } = await supabase.auth.verifyOtp({ 
+                phone, 
+                token: otp, 
+                type: 'sms' 
+            });
+
+            if (verifyError) {
+                console.error("OTP Verification Error:", verifyError);
+                showSnackbar(`Verification Failed: ${verifyError.message}`, 'error');
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+            
+            // If verification successful
+            if (session) {
+                showSnackbar('Login Successful!', 'success');
+                
+                // If registering, create profile
+                if (type === 'register') {
+                    const name = document.getElementById('rName').value.trim();
+                    const { error: profileError } = await supabase
+                        .from('users')
+                        .insert({ 
+                            user_id: session.user.id, 
+                            name: name, 
+                            phone: phone 
+                        });
+                        
+                    if (profileError) {
+                        console.error("Profile Creation Error:", profileError);
+                        showSnackbar("Profile setup failed. Please contact support.", 'error');
+                        await supabase.auth.signOut(); // Sign out the incomplete registration
+                        return;
+                    }
+                }
+                
+                await loadUserSession(); // Load the newly created/logged in user profile
+                closeModal('authModal');
+                updateUserUI();
+                
+                // Reset forms for next use
+                document.getElementById('lPhone').value = '';
+                document.getElementById('lOtp').value = '';
+                document.getElementById('rName').value = '';
+                document.getElementById('rPhone').value = '';
+                document.getElementById('rOtp').value = '';
+                document.getElementById('verifyOtpLogin').style.display = 'none';
+                document.getElementById('verifyOtpRegister').style.display = 'none';
+                document.getElementById('sendOtpBtn').style.display = 'block';
+                document.getElementById('sendOtpRegisterBtn').style.display = 'block';
+            }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
 
-        /* The following functions (doLogin, doRegister) are removed/replaced by sendOtp/verifyOtp 
-        async function doLogin() { ... }
-        async function doRegister() { ... }
-        */
-        
-        // ... (doLogout, openHistory, loadProducts, renderProducts, openDetails, etc. functions remain the same) ...
+        async function doLogout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                showSnackbar("Logout failed.", 'error');
+                return;
+            }
+            currentUser = null;
+            updateUserUI();
+            closeModal('historyModal');
+            showSnackbar("Logged out successfully.", 'success');
+        }
 
-        // --- UI UTILITY (REMAINS THE SAME) ---
-        // ... (toggleMenu, toggleSearch, closeModal, searchProducts, switchTab functions remain the same) ...
+        async function openHistory() {
+            if (!currentUser) {
+                showSnackbar("Please login first.", 'error');
+                return;
+            }
+            
+            document.getElementById('historyModal').style.display = 'flex';
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<p style="text-align:center;">Loading orders...</p>';
+
+            let { data: orders, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_id', currentUser.user_id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                historyList.innerHTML = `<p style="text-align:center; color:red;">Error loading history: ${error.message}</p>`;
+                return;
+            }
+
+            if (orders.length === 0) {
+                historyList.innerHTML = '<p style="text-align:center;">No orders found.</p>';
+                return;
+            }
+
+            historyList.innerHTML = orders.map(order => `
+                <div class="history-item">
+                    <div>
+                        <strong>Order ID: ${order.id}</strong><br>
+                        <small>${order.product_name} x ${order.quantity}</small><br>
+                        <small>Total: ${order.price.toLocaleString()} MMK</small>
+                    </div>
+                    <div style="font-size:12px; color:#4CAF50;">Sent</div>
+                </div>
+            `).join('');
+        }
+
+        // --- PRODUCT LOADING & RENDERING ---
+        function loadProducts(category, title, gender) {
+            document.getElementById('pageTitle').innerText = title;
+            document.getElementById('productsContainer').innerHTML = '';
+            document.getElementById('loading').style.display = 'block';
+
+            // Filter products based on category and gender
+            currentProducts = products.filter(p => 
+                (category === 'all' || p.category === category) && p.gender === gender
+            );
+            
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                renderProducts(currentProducts);
+            }, 500); 
+        }
+
+        function renderProducts(pList) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = ''; 
+            
+            if (pList.length === 0) {
+                container.innerHTML = '<p style="text-align:center; width:100%; padding:20px;">No products found.</p>';
+                return;
+            }
+
+            pList.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.img}" alt="${p.name}" class="p-img">
+                    <div class="p-info">
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-price">${p.price.toLocaleString()} MMK</div>
+                    </div>
+                    <div class="cart-btn" onclick="openDetails(${p.id})"><i class="fas fa-eye"></i></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // --- PRODUCT DETAILS ---
+        function openDetails(id) {
+            selectedProduct = currentProducts.find(p => p.id === id);
+            if (!selectedProduct) return;
+
+            document.getElementById('detail-img').src = selectedProduct.img;
+            document.getElementById('detail-name').innerText = selectedProduct.name;
+            document.getElementById('detail-price').innerText = `${selectedProduct.price.toLocaleString()} MMK`;
+            document.getElementById('detail-description').innerText = selectedProduct.desc || "No description available.";
+            
+            // Reset and populate size and color selectors
+            const sizeSelect = document.getElementById('sizeSelect');
+            const colorSelect = document.getElementById('colorSelect');
+            sizeSelect.innerHTML = '';
+            colorSelect.innerHTML = '';
+            
+            selectedProduct.sizes.forEach(s => sizeSelect.innerHTML += `<option value="${s}">${s}</option>`);
+            Object.keys(selectedProduct.colors).forEach(c => colorSelect.innerHTML += `<option value="${c}">${c}</option>`);
+            
+            // Add event listener to color selector for image switching
+            colorSelect.onchange = function() {
+                const selectedColor = this.value;
+                const newImgSrc = selectedProduct.colors[selectedColor];
+                if (newImgSrc) {
+                    document.getElementById('detail-img').src = newImgSrc;
+                }
+            };
+
+            document.getElementById('detailsModal').style.display = 'flex';
+            // Set quantity back to 1
+            document.getElementById('quantityInput').value = 1;
+        }
+
+        // --- CHECKOUT FLOW ---
+        function openCheckoutFromDetails() {
+            closeModal('detailsModal');
+            
+            // Get selected attributes
+            const size = document.getElementById('sizeSelect').value;
+            const color = document.getElementById('colorSelect').value;
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            
+            // Calculate total price
+            const totalPrice = selectedProduct.price * quantity;
+
+            // Set modal content
+            document.getElementById('modal-img').src = document.getElementById('detail-img').src; // Use the currently displayed image
+            document.getElementById('modal-name').innerText = `${selectedProduct.name} (${color}, ${size})`;
+            document.getElementById('modal-price').innerText = `${totalPrice.toLocaleString()} MMK (x${quantity})`;
+
+            // Auto-fill phone number if logged in
+            if (currentUser && currentUser.phone) {
+                 // Removing 'tel:' prefix if present, and setting to contactPhoneInput
+                document.getElementById('contactPhoneInput').value = currentUser.phone.replace('tel:', ''); 
+            } else {
+                 document.getElementById('contactPhoneInput').value = '';
+            }
+
+            document.getElementById('checkoutModal').style.display = 'flex';
+            
+            // Store temp data for the final order send
+            selectedProduct.temp_size = size;
+            selectedProduct.temp_color = color;
+            selectedProduct.temp_quantity = quantity;
+            selectedProduct.temp_total_price = totalPrice;
+        }
+
+        function checkSlipFile() {
+            const slipInput = document.getElementById('slipInput');
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = !slipInput.files || slipInput.files.length === 0;
+        }
+
+        async function sendOrder() {
+            if (!currentUser) {
+                showSnackbar("Please login or register first.", 'error');
+                closeModal('checkoutModal');
+                openAuthModal();
+                return;
+            }
+
+            const address = document.getElementById('addressInput').value.trim();
+            const contactPhone = document.getElementById('contactPhoneInput').value.trim();
+            const note = document.getElementById('noteInput').value.trim();
+            const slipFile = document.getElementById('slipInput').files[0];
+
+            if (!address || !contactPhone || !slipFile) {
+                showSnackbar("Please fill all required fields and upload the payment slip.", 'error');
+                return;
+            }
+            
+            const sendBtn = document.getElementById('sendBtn');
+            const originalText = sendBtn.innerText;
+            sendBtn.innerText = "Sending...";
+            sendBtn.disabled = true;
+
+            let slipUrl = null;
+            try {
+                // 1. Upload Slip to Supabase Storage
+                const fileExt = slipFile.name.split('.').pop();
+                const fileName = `${currentUser.user_id}/${Date.now()}.${fileExt}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('slips') 
+                    .upload(fileName, slipFile, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (uploadError) throw uploadError;
+
+                // 2. Get Public URL
+                const { data: publicUrlData } = supabase.storage
+                    .from('slips')
+                    .getPublicUrl(fileName);
+                    
+                slipUrl = publicUrlData.publicUrl;
+
+                // 3. Insert Order into Supabase Database
+                const orderData = {
+                    user_id: currentUser.user_id,
+                    product_id: selectedProduct.id,
+                    product_name: selectedProduct.name,
+                    price: selectedProduct.temp_total_price, // Total price
+                    quantity: selectedProduct.temp_quantity,
+                    size: selectedProduct.temp_size,
+                    color: selectedProduct.temp_color,
+                    address: address,
+                    contact_phone: contactPhone,
+                    note: note,
+                    slip_url: slipUrl,
+                    status: 'pending' 
+                };
+                
+                const { error: dbError } = await supabase
+                    .from('orders')
+                    .insert(orderData);
+
+                if (dbError) throw dbError;
+                
+                // 4. Send Notification to Telegram (for Admin)
+                const telegramMessage = `
+*🎉 New Order Alert!*
+---
+*User:* ${currentUser.name || 'N/A'} (Phone: ${contactPhone})
+*Product:* ${selectedProduct.name}
+*Details:* ${selectedProduct.temp_quantity} x ${selectedProduct.temp_total_price.toLocaleString()} MMK (${selectedProduct.temp_color}, ${selectedProduct.temp_size})
+*Address:* ${address}
+*Note:* ${note || 'None'}
+---
+*Slip URL:* [View Slip](${slipUrl})
+                `;
+                
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown',
+                    })
+                });
+
+                // 5. Success
+                closeModal('checkoutModal');
+                document.getElementById('successModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error("Order process error:", error);
+                showSnackbar(`Order failed: ${error.message || 'Check console.'}`, 'error');
+            } finally {
+                sendBtn.innerText = originalText;
+                sendBtn.disabled = false;
+            }
+        }
+        
+        // --- SEARCH ---
+        function searchProducts() { 
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const con = document.getElementById('productsContainer');
+            const productCards = con.querySelectorAll('.product-card');
+            if (searchTerm.length === 0) {
+                productCards.forEach(card => card.style.display = 'flex');
+                return;
+            }
+            productCards.forEach(card => {
+                const productName = card.querySelector('.p-name').innerText.toLowerCase(); 
+                if (productName.includes(searchTerm)) card.style.display = 'flex'; 
+                else card.style.display = 'none'; 
+            });
+        }
+        
+        // --- MENU TAB SWITCHING ---
+        function switchTab(t) { 
+            document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.menu-section').forEach(e=>e.classList.remove('active'));
+            if(t==='women'){ 
+                document.querySelectorAll('.tab')[0].classList.add('active'); 
+                document.getElementById('women-menu').classList.add('active'); 
+            }
+            else { 
+                document.querySelectorAll('.tab')[1].classList.add('active'); 
+                document.getElementById('men-menu').classList.add('active'); 
+            }
+        }
     </script>
 </body>
 </html>
