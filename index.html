@@ -5,15 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fashion Lab</title>
 
-    <!-- FONT / SUPABASE -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- SEPARATED CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body id="body">
+
+    <header>
+        <div class="header-left">
+            <button class="menu-btn" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Fashion Lab</div>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+            <button class="icon-btn" onclick="openSettings()"><i class="fas fa-user-circle"></i></button>
+        </div>
+    </header>
+
+    <div class="search-box" id="searchBox" style="display: none;">
+        <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
+    </div>
 
     <div class="overlay" onclick="toggleMenu()"></div>
 
@@ -29,31 +44,17 @@
                 <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
                 <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
                 <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'women')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
-
             <div id="men-menu" class="menu-section">
                 <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'men')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
                 <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
         </div>
-        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
-    </div>
-
-    <header>
-        <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab</div>
-        <div class="nav-icons">
-            <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
-            <i class="fas fa-cog" onclick="openSettings()"></i>
-        </div>
-    </header>
-
-    <div id="searchBox">
-        <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()">
     </div>
 
     <div class="main-content">
@@ -62,7 +63,7 @@
                 <div class="slide">
                     <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800">
                 </div>
-            </div>
+                </div>
             <div class="dots-container" id="dotsContainer"></div>
         </div>
 
@@ -83,12 +84,64 @@
         </div>
     </div>
 
-    <!-- ALL MODALS + BODY CONTENTS CUT — NO CHANGES -->
-    <!-- * FULL original body remains here unchanged * -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSettings()">&times;</span>
+            <h2>Settings / Profile</h2>
+            <div class="setting-item">
+                <label data-t="lang">Language</label>
+                <select id="langSelect" onchange="setLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="mm">မြန်မာ</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label data-t="dark_mode">Dark Mode</label>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div id="authStatus" class="auth-status">
+                <span id="welcomeMessage"></span>
+                <button id="authBtn" onclick="openModal('authModal')">Sign In / Register</button>
+                <button id="logoutBtn" onclick="signOut()" style="display:none;background:var(--accent-color);">Logout</button>
+            </div>
+            <div class="order-history" id="orderHistory" style="margin-top:20px;display:none;">
+                <h3 data-t="order_history">Order History</h3>
+                </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('authModal')">&times;</span>
+            <h2 id="authTitle">Sign In</h2>
+
+            <div id="loginForm">
+                <input type="text" id="phone_number_login" placeholder="Phone Number (e.g., +959xxxxxxxxx)">
+                <button onclick="sendOtp('login')">Send OTP</button>
+            </div>
+
+            <div id="otpVerification" style="display:none;">
+                <input type="text" id="otp_code" placeholder="Enter OTP Code (6 digits)">
+                <button onclick="verifyOtp()">Verify OTP</button>
+            </div>
+
+            <p class="error-message" id="authError" style="display:none;"></p>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrder()">&times;</span>
+            <div id="orderDetailContent">
+                </div>
+        </div>
+    </div>
 
     <div id="snackbar"></div>
 
-    <!-- SEPARATED JS -->
     <script src="script.js"></script>
 
 </body>
