@@ -25,115 +25,171 @@
                 <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
                 <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
                 <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bags', 'Bags', 'women')"><span data-t="bags">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('bag', 'Bags', 'women')"><span data-t="bag">Bags</span> <i class="fas fa-chevron-right"></i></div>
             </div>
             <div id="men-menu" class="menu-section">
-                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">MEN'S FASHION</div>
-                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
-                <div class="menu-item" onclick="loadProducts('bags', 'Bags', 'men')"><span data-t="bags">Bags</span> <i class="fas fa-chevron-right"></i></div>
+                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="men_cat">MEN'S FASHION</div>
+                <div class="menu-item" onclick="loadProducts('all', 'Men All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Men Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Men Shoes', 'men')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="menu-item" onclick="showModal('historyModal')"><i class="fas fa-history"></i> <span data-t="history">Order History</span></div>
-            <div class="menu-item" onclick="showModal('settingsModal')"><i class="fas fa-cog"></i> <span data-t="settings">Settings</span></div>
-            <div class="menu-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-t="logout">Logout</span></div>
         </div>
+        <div class="menu-footer">Yangon, Myanmar<br>09752965423<br>@ Fashion Lab 2025</div>
     </div>
 
     <header>
-        <div style="display:flex; align-items:center;">
-            <i class="fas fa-bars" onclick="toggleMenu()" style="margin-right:15px;"></i>
-            <h1 style="font-size:20px;">Fashion Lab</h1>
-        </div>
+        <div onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div style="font-weight:bold; font-size: 20px; color: var(--accent-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1);">Fashion Lab</div>
         <div class="nav-icons">
             <i class="fas fa-search" onclick="toggleSearch()"></i>
-            <i class="fas fa-user" onclick="checkAuthAndOpenProfile()"></i>
-            <i class="fas fa-shopping-cart" onclick="showModal('cartModal')"></i>
+            <i class="fas fa-user" onclick="checkAuth()"><span class="user-dot" id="userDot"></span></i>
+            <i class="fas fa-cog" onclick="openSettings()"></i>
         </div>
     </header>
+    <div id="searchBox"><input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()"></div>
 
-    <div id="searchBox" style="display:none; padding:10px 20px; background:var(--header-bg); position:sticky; top:55px; z-index:90;">
-        <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Search products..." style="width:100%; padding:8px; border-radius:5px; border:none;">
+    <div class="main-content">
+        <div class="slider-container">
+            <div class="slider-wrapper" id="sliderWrapper">
+                <div class="slide"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800" alt="Banner 1"></div>
+            </div>
+            <div class="dots-container" id="dotsContainer"></div>
+        </div>
+
+        <div class="section-title" id="pageTitle">All Products</div>
+        <div id="loading" style="text-align:center; padding:20px; display:none;">Loading...</div>
+        <div class="product-grid" id="productsContainer"></div>
     </div>
 
-    <main id="productsContainer" class="product-grid" style="padding:20px;"></main>
-    
+    <div class="support-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header" data-t="chat_title">Support Chat</div>
+        <div class="chat-body" id="chatBody">
+            <div style="background:#eee; color:#333; padding:8px; border-radius:5px; display:inline-block; margin-bottom:5px;">မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type message...">
+            <button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
+            <h3 data-t="settings_title">Settings</h3>
+            <div class="setting-row">
+                <span data-t="dark_mode">Dark Mode</span>
+                <label class="switch"><input type="checkbox" onchange="toggleTheme(this)" id="darkModeToggle"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span data-t="language_title">Language</span>
+                <select id="langSelect" onchange="toggleLanguage(this.value)">
+                    <option value="en">English (EN)</option>
+                    <option value="my">မြန်မာ (MY)</option>
+                    <option value="th">ไทย (TH)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="authModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
-            <h3 data-t="auth_h3" style="text-align:center;">Login / Register</h3>
+            <span class="close-modal" onclick="closeModal('authModal')">&times;</span>
+            <h3 style="text-align:center;">Welcome</h3>
+            <div style="display:flex; margin-bottom:20px; border-bottom:1px solid #ddd;">
+                <div style="flex:1; text-align:center; padding:10px; font-weight:bold; border-bottom:2px solid #2d2d2d; cursor:pointer;" id="tabLogin" onclick="showAuthForm('login')" data-t="login_tab">Login</div>
+                <div style="flex:1; text-align:center; padding:10px; color:#777; cursor:pointer;" id="tabRegister" onclick="showAuthForm('register')" data-t="register_tab">Register</div>
+            </div>
             
             <div id="loginForm">
-                <div class="input-group">
-                    <label data-t="email_label">Email (အီးမေးလ်)</label>
-                    <input type="email" id="lEmail" placeholder="yourname@example.com" oninput="checkLoginInputs()">
+                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="lPhone"></div>
+                <button class="order-btn" id="sendOtpBtn" onclick="sendOtp('login')" data-t="login_btn">Send OTP Code</button>
+                
+                <div id="verifyOtpLogin" style="display:none; margin-top:10px;">
+                    <p style="font-size:12px; color:var(--accent-color); text-align:center;">OTP code sent to your phone. Enter below:</p>
+                    <div class="input-group"><label data-t="pass_label">OTP Code</label><input type="text" id="lOtp"></div>
+                    <button class="order-btn" onclick="verifyOtp('login')" data-t="login_btn">Verify OTP & Login</button>
                 </div>
-                <button class="order-btn" id="loginBtn" onclick="sendOtp('login')" disabled data-t="login_btn">Login with OTP</button>
-                <p style="text-align:center; margin-top:10px;"><a href="#" onclick="showRegisterForm()">Register လုပ်ရန်</a></p>
-            </div>
-
-            <div id="verifyOtpLogin" style="display:none;">
-                <p data-t="otp_sent_to">OTP Code ကို အီးမေးလ်ထဲသို့ ပို့လိုက်ပါပြီ</p>
-                <div class="input-group">
-                    <label data-t="otp_code">OTP Code (ဂဏန်း ၆ လုံး)</label>
-                    <input type="text" id="lOTP" placeholder="Enter 6-digit code" oninput="checkVerifyLInputs()" maxlength="6">
-                </div>
-                <button class="order-btn" id="verifyLBtn" onclick="verifyOtp('login')" disabled data-t="verify_btn">Verify OTP</button>
-            </div>
-
-            <div id="registerForm" style="display:none;">
-                <div class="input-group">
-                    <label data-t="name_label">Name (နာမည်)</label>
-                    <input type="text" id="rName" placeholder="Enter your name" oninput="checkRegisterInputs()">
-                </div>
-                <div class="input-group">
-                    <label data-t="email_label">Email (အီးမေးလ်)</label>
-                    <input type="email" id="rEmail" placeholder="yourname@example.com" oninput="checkRegisterInputs()">
-                </div>
-                <button class="order-btn" id="registerBtn" onclick="sendOtp('register')" disabled data-t="register_btn">Register and Send OTP</button>
-                <p style="text-align:center; margin-top:10px;"><a href="#" onclick="showLoginForm()">Login လုပ်ရန်</a></p>
             </div>
             
-            <div id="verifyOtpRegister" style="display:none;">
-                <p data-t="otp_sent_to">OTP Code ကို အီးမေးလ်ထဲသို့ ပို့လိုက်ပါပြီ</p>
-                <div class="input-group">
-                    <label data-t="otp_code">OTP Code (ဂဏန်း ၆ လုံး)</label>
-                    <input type="text" id="rOTP" placeholder="Enter 6-digit code" oninput="checkVerifyRInputs()" maxlength="6">
+            <div id="registerForm" style="display:none;">
+                <div class="input-group"><label data-t="name_label">Name</label><input type="text" id="rName"></div>
+                <div class="input-group"><label data-t="phone_label">Phone</label><input type="tel" id="rPhone"></div>
+                <button class="order-btn" id="sendOtpRegisterBtn" onclick="sendOtp('register')" data-t="register_btn">Send OTP Code</button>
+                
+                 <div id="verifyOtpRegister" style="display:none; margin-top:10px;">
+                    <p style="font-size:12px; color:var(--accent-color); text-align:center;">OTP code sent to your phone. Enter below:</p>
+                    <div class="input-group"><label data-t="pass_label">OTP Code</label><input type="text" id="rOtp"></div>
+                    <button class="order-btn" onclick="verifyOtp('register')" data-t="register_btn">Verify OTP & Register</button>
                 </div>
-                <button class="order-btn" id="verifyRBtn" onclick="verifyOtp('register')" disabled data-t="verify_btn">Verify OTP</button>
             </div>
-
+        </div>
+    </div>
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('historyModal')">&times;</span>
+            <h3 data-t="history_title">My Orders</h3>
+            <div id="historyList"><p style="text-align:center;">Loading...</p></div>
+            <button class="order-btn" onclick="doLogout()" style="background:#d32f2f; margin-top:20px;" data-t="logout_btn">Logout</button>
         </div>
     </div>
     
-    <div class="modal" id="cartModal">
+    <div class="modal" id="detailsModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('cartModal')">&times;</span>
-            <h3 data-t="cart_h3">🛒 Your Cart</h3>
-            <div id="cartItems"></div>
-            <div class="cart-summary">
-                <h4 data-t="total_h4">Total: <span id="cartTotal">0</span> Ks</h4>
-                <button class="order-btn" id="checkoutBtn" onclick="showCheckout()" disabled data-t="checkout_btn">Checkout</button>
-            </div>
-        </div>
-    </div>
+            <span class="close-modal" onclick="closeModal('detailsModal')">&times;</span>
+            <div id="detailContent">
+                <img id="detail-img" src="" style="width:100%; height:300px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
+                <h3 id="detail-name" style="margin-top:0;"></h3>
+                <div id="detail-price" style="font-weight:bold; font-size:18px; color:var(--accent-color); margin-bottom:15px;"></div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div class="input-group">
+                        <label>Size (အရွယ်အစား)</label>
+                        <select id="sizeSelect"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Color (အရောင်)</label>
+                        <select id="colorSelect"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Quantity (အရေအတွက်)</label>
+                        <input type="number" id="quantityInput" value="1" min="1">
+                    </div>
+                </div>
 
-    <div class="modal" id="detailModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('detailModal')">&times;</span>
-            <div id="productDetail"></div>
+                <p id="detail-description" style="font-size:14px; color:#666; border-top:1px solid #eee; padding-top:15px;">No description available.</p>
+                
+                <button class="order-btn" id="buyNowBtn" onclick="openCheckoutFromDetails()">Buy Now</button>
+            </div>
         </div>
     </div>
 
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('checkoutModal')">&times;</span>
-            <h3 data-t="checkout_h3">📦 Checkout</h3>
-            <div id="checkoutItems"></div>
-            <div class="checkout-form">
-                <h4 data-t="total_h4">Total: <span id="checkoutTotal">0</span> Ks</h4>
+            <span class="close-modal" onclick="closeModal('checkoutModal')">&times;</span>
+            <h3 data-t="order_form">Order Form</h3>
+            <div style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px; display:flex; gap:10px;">
+                <img id="modal-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:5px;">
+                <div><div id="modal-name" style="font-weight:bold;"></div><div id="modal-price" style="color:var(--accent-color);"></div></div>
+            </div>
+            
+            <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>KPay</b><br><small>09********* ( Mu )</small></div>
+            </div>
+            <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a6/6d/f2/a66df291-0b98-0535-4001-420593406989/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>KPay</b><br><small>09********* ( Mu )</small></div>
+            </div>
+            <div class="pay-row">
+                <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/d9/92/96d99262-2375-8345-2631-661213202873/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/246x0w.webp" class="pay-icon"> 
+                <div><b>Wave Money</b><br><small>09********* ( Mu )</small></div>
+            </div>
+            
+            <div style="margin-top: 15px;">
                 <div class="input-group">
-                    <label data-t="delivery_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
+                    <label data-t="address_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
                     <textarea id="addressInput" rows="3"></textarea>
                 </div>
                 <div class="input-group">
@@ -141,8 +197,8 @@
                     <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
                 </div>
                 <div class="input-group">
-                    <label data-t=\"note_label\">Note (အကြောင်းအရာ)</label>
-                    <input type=\"text\" id=\"noteInput\" placeholder=\"Note\">
+                    <label data-t="note_label">Note (အကြောင်းအရာ)</label>
+                    <input type="text" id="noteInput" placeholder="Note">
                 </div>
             </div>
 
@@ -160,72 +216,8 @@
         </div>
     </div>
 
-    <div class="modal" id="historyModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('historyModal')">&times;</span>
-            <h3 data-t="history_h3">Order History</h3>
-            <div id="orderHistoryContainer"></div>
-        </div>
-    </div>
-    
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('settingsModal')">&times;</span>
-            <h3 data-t="settings_h3">Settings</h3>
-            <div class="setting-item">
-                <span data-t="dark_mode">Dark Mode</span>
-                <label class="switch">
-                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="setting-item">
-                <span data-t="language_setting">Language</span>
-                <select id="langSelect" onchange="setLanguage(this.value)">
-                    <option value="my">မြန်မာ (Myanmar)</option>
-                    <option value="en">English</option>
-                    <option value="th">ไทย (Thai)</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="profileModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('profileModal')">&times;</span>
-            <h3 data-t="profile_h3">My Profile</h3>
-            <div class="profile-info">
-                <p><i class="fas fa-user"></i> <span data-t="name_label">Name</span>: <span id="profileName"></span></p>
-                <p><i class="fas fa-envelope"></i> <span data-t="email_label">Email</span>: <span id="profileEmail"></span></p>
-            </div>
-            <p style="margin-top:20px; text-align:center;"><a href="#" onclick="logout()" style="color:var(--accent-color); text-decoration:none;"><i class="fas fa-sign-out-alt"></i> <span data-t="logout">Logout</span></a></p>
-        </div>
-    </div>
-    
-    <div class="modal" id="chatModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('chatModal')">&times;</span>
-            <h3 data-t="chat_h3">Chat with Admin</h3>
-            <div id="chatMessages" class="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message..." onkeyup="if(event.key==='Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
     <div id="snackbar"></div>
 
-    <div class="chat-toggle" onclick="showModal('chatModal')">
-        <i class="fas fa-comments"></i>
-    </div>
-
     <script src="script.js"></script>
-    <script>
-        // Start the app
-        loadProducts('all', 'All Products', 'women');
-        checkAuthStatus();
-        loadLanguagePreference();
-    </script>
 </body>
 </html>
