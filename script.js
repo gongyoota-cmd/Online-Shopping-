@@ -4,18 +4,17 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
 const CHAT_ID = '-5098597126'; 
 
+// CONFIG
+// ... existing variables ...
+
 // Custom domain used for Supabase Auth (OTP will use the phone number directly if phone auth is enabled in Supabase)
-// NOTE: If Supabase Phone Auth is disabled, this code will fail.
-// We are assuming Phone Auth is enabled in the Supabase project.
-const AUTH_DOMAIN = '@kshop.com'; 
+// NOTE: This is no longer relevant for Email Magic Link.
+// We need to set the redirect URL where Supabase will send the user after clicking the link.
+// For local development, this is often the current page URL.
+const REDIRECT_URL = window.location.origin; // Dynamically uses your current domain (e.g., https://your-site.com)
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let currentProducts = [];
-// currentUser now stores the profile data fetched from the 'users' table
-let currentUser = null; 
-let selectedProduct = null; 
-// Variable to hold the phone number during the OTP flow
-let currentAuthPhone = null; 
+// ... rest of the script ...
 
 // --- TRANSLATION MAP (EN, MY, TH) ---
 const currentTranslations = {
