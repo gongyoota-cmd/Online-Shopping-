@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Lab - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <div class="menu-item active" onclick="showSection('orders')"><i class="fas fa-shopping-cart"></i> Orders</div>
+        <div class="menu-item" onclick="showSection('products')"><i class="fas fa-tshirt"></i> Products</div>
+        <div class="menu-item" onclick="adminLogout()" style="margin-top:auto; background:#d32f2f;"><i class="fas fa-sign-out-alt"></i> Logout</div>
+    </div>
+
+    <div class="main-content">
+        <div id="orders-section" class="section active">
+            <h2>Order Management</h2>
+            <div id="loadingOrders">Loading orders...</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Item</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody"></tbody>
+            </table>
+        </div>
+
+        <div id="products-section" class="section">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Product Management</h2>
+                <button class="add-btn" onclick="openProductModal()">+ Add New Product</button>
+            </div>
+            
+            <div class="product-grid" id="adminProductList"></div>
+        </div>
+    </div>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h3>Add New Product</h3>
+            <input type="text" id="pName" placeholder="Product Name">
+            <input type="number" id="pPrice" placeholder="Price (Kyats)">
+            <input type="text" id="pImg" placeholder="Image URL (Link)">
+            <select id="pCategory">
+                <option value="clothing">Clothing</option>
+                <option value="shoes">Shoes</option>
+                <option value="bag">Bags</option>
+                <option value="accessories">Accessories</option>
+            </select>
+            <select id="pGender">
+                <option value="women">Women</option>
+                <option value="men">Men</option>
+            </select>
+            <textarea id="pDesc" placeholder="Description"></textarea>
+            <button class="save-btn" onclick="saveProduct()">Save Product</button>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
