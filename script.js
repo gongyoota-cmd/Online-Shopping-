@@ -4,777 +4,690 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
 const CHAT_ID = '-5098597126'; 
 
-// CONFIG
-// ... existing variables ...
-
-// Custom domain used for Supabase Auth (OTP will use the phone number directly if phone auth is enabled in Supabase)
-// NOTE: This is no longer relevant for Email Magic Link.
-// We need to set the redirect URL where Supabase will send the user after clicking the link.
-// For local development, this is often the current page URL.
-const REDIRECT_URL = window.location.origin; // Dynamically uses your current domain (e.g., https://your-site.com)
+// Custom domain used for Supabase Auth (Magic Link Redirect)
+const REDIRECT_URL = window.location.origin; // Uses the current domain for redirection
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-// ... rest of the script ...
+let currentProducts = [];
+// currentUser now stores the profile data fetched from the 'users' table
+let currentUser = null; 
+let selectedProduct = null; 
+// currentAuthPhone is no longer relevant for Magic Link
+let currentAuthPhone = null; 
+let currentLang = 'my'; 
+let currentTranslations = {}; 
 
-// --- TRANSLATION MAP (EN, MY, TH) ---
-const currentTranslations = {
-    en: {
-        shop_cat: "WOMEN'S FASHION", all: "All Products", clothing: "Clothing", shoes: "Shoes", bag: "Bags",
-        men_cat: "MEN'S FASHION", accessories: "Accessories",
-        order_form: "Order Form", address_label: "Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)", contact_label: "Contact Phone (ဆက်သွယ်ရန်ဖုန်း)", note_label: "Note (အကြောင်းအရာ)",
-        slip_label: "Payment Slip (ပြေစာ)", send_btn: "Send to Admin", chat_title: "Support Chat", history_title: "My Orders",
-        settings_title: "Settings", dark_mode: "Dark Mode", language_title: "Language", login_tab: "Login", register_tab: "Register", phone_label: "Phone", pass_label: "OTP Code", login_btn: "Send OTP Code", register_btn: "Send OTP Code", logout_btn: "Logout", name_label: "Name",
-        order_sent_h3: "👾 Order sent!", order_sent_p: "Payment successful, delivery will be made soon.🎉", ok_btn: "OK",
-        search_placeholder: "Search...", chat_reply: "Hello! How can I help you today?" 
-    },
-    my: {
-        shop_cat: "အမျိုးသမီးဖက်ရှင်", all: "ပစ္စည်းအားလုံး", clothing: "အဝတ်အထည်", shoes: "ဖိနပ်", bag: "အိတ်",
-        men_cat: "အမျိုးသားဖက်ရှင်", accessories: "အသုံးအဆောင်",
-        order_form: "မှာယူမှုပုံစံ", address_label: "ပို့ဆောင်ရန်လိပ်စာ", contact_label: "ဆက်သွယ်ရန်ဖုန်း", note_label: "အကြောင်းအရာ",
-        slip_label: "ငွေလွှဲပြေစာ", send_btn: "Admin ထံသို့ ပို့မည်", chat_title: "အကူအညီချတ်", history_title: "မှာယူမှုမှတ်တမ်း",
-        settings_title: "ဆက်တင်များ", dark_mode: "ညမုဒ်", language_title: "ဘာသာစကား", login_tab: "ဝင်ရန်", register_tab: "အကောင့်ဖွင့်ရန်", phone_label: "ဖုန်းနံပါတ်", pass_label: "OTP ကုဒ်", login_btn: "OTP ကုဒ်ပို့မည်", register_btn: "OTP ကုဒ်ပို့မည်", logout_btn: "ထွက်မည်", name_label: "နာမည်",
-        order_sent_h3: "👾 မှာယူမှု အောင်မြင်! ", order_sent_p: "ငွေပေးချေမှုအောင်မြင်ပါပြီ၊ မကြာမီ ပို့ဆောင်ပေးပါမည်။🎉", ok_btn: "အိုကေ",
-        search_placeholder: "ရှာဖွေပါ...", chat_reply: "မင်္ဂလာပါ... ဘာကူညီပေးရမလဲရှင့်?" 
-    },
-    th: {
-        shop_cat: "แฟชั่นสตรี", all: "สินค้าทั้งหมด", clothing: "เสื้อผ้า", shoes: "รองเท้า", bag: "กระเป๋า",
-        men_cat: "แฟชั่นบุรุษ", accessories: "เครื่องประดับ",
-        order_form: "แบบฟอร์มคำสั่งซื้อ", address_label: "ที่อยู่จัดส่ง", contact_label: "เบอร์ติดต่อ", note_label: "หมายเหตุ",
-        slip_label: "สลิปการชำระเงิน", send_btn: "ส่งถึงแอดมิน", chat_title: "แชทสนับสนุน", history_title: "คำสั่งซื้อของฉัน",
-        settings_title: "การตั้งค่า", dark_mode: "โหมดกลางคืน", language_title: "ภาษา", login_tab: "เข้าสู่ระบบ", register_tab: "ลงทะเบียน", phone_label: "เบอร์โทรศัพท์", pass_label: "รหัส OTP", login_btn: "ส่งรหัส OTP", register_btn: "ส่งรหัส OTP", logout_btn: "ออกจากระบบ", name_label: "ชื่อ",
-        order_sent_h3: "👾 ส่งคำสั่งซื้อแล้ว!", order_sent_p: "ชำระเงินสำเร็จแล้ว จะดำเนินการจัดส่งเร็วๆ นี้🎉", ok_btn: "ตกลง",
-        search_placeholder: "ค้นหา...", chat_reply: "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?" 
-    }
-};
-
-let currentLang = localStorage.getItem('kshop_lang') || 'en';
-
-// --- FALLBACK SAMPLE PRODUCTS (MODIFIED for image switching) ---
-const allSampleProducts = [
-    // Sample 1: Summer Floral Dress (Has multiple colors/images)
-    {
-        name: "Summer Floral Dress", 
-        price: 25000, 
-        image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", // Default image
-        category: "clothing", 
-        gender: "women", 
-        description: "Lightweight cotton floral dress perfect for summer outings.", 
-        sizes: ["S", "M", "L", "XL"], 
-        colors: [
-            { name: "Red", image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" }, 
-            { name: "Blue", image_url: "https://images.unsplash.com/photo-1594633312681-425c220f54b7?w=500" }, 
-            { name: "Yellow", image_url: "https://images.unsplash.com/photo-1574519525492-23c28a8d119e?w=500" } 
-        ]
-    },
-    // Sample 2: Red Stiletto Heels 
-    {
-        name: "Red Stiletto Heels", 
-        price: 45000, 
-        image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", 
-        category: "shoes", 
-        gender: "women", 
-        description: "Elegant red heels for any formal occasion. Heel height: 4 inches.",
-        sizes: ["36", "37", "38", "39"], 
-        colors: [
-            { name: "Red", image_url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500" },
-            { name: "Black", image_url: "https://images.unsplash.com/photo-1563297007-0bf0299ac7b5?w=500" }
-        ]
-    },
-    // Sample 3: Tote Shoulder Bag
-    {
-        name: "Tote Shoulder Bag", 
-        price: 55000, 
-        image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", 
-        category: "bag", 
-        gender: "women",
-        description: "Spacious tote bag for daily essentials.", 
-        sizes: ["One Size"], 
-        colors: [ 
-            { name: "Brown", image_url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500" },
-            { name: "Beige", image_url: "https://images.unsplash.com/photo-1534005199650-ef8a15e12812?w=500" },
-            { name: "Black", image_url: "https://images.unsplash.com/photo-1585800588663-b8a2e20b5e28?w=500" }
-        ] 
-    }, 
-    {
-        name: "Denim Jacket", 
-        price: 75000, 
-        image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500", 
-        category: "clothing", 
-        gender: "men", 
-        description: "Classic blue denim jacket, regular fit.", 
-        sizes: ["M", "L", "XL"], 
-        colors: [{ name: "Blue", image_url: "https://images.unsplash.com/photo-1565406080356-83606f71d532?w=500" }]
-    },
-    {
-        name: "Sports Watch", 
-        price: 95000, 
-        image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500", 
-        category: "accessories", 
-        gender: "men", 
-        description: "Waterproof digital sports watch with stopwatch.", 
-        sizes: ["Adjustable"], 
-        colors: [
-            { name: "Black", image_url: "https://images.unsplash.com/photo-1620247472016-b83072225a07?w=500" },
-            { name: "Silver", image_url: "https://images.unsplash.com/photo-1523275335684-c464a972620e?w=500" }
-        ]
-    }
-];
-
-// --- FALLBACK SAMPLE BANNERS ---
-const sampleBanners = [
-    {image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"},
-    {image_url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800"},
-    {image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"}
-];
-
-// --- WINDOW ONLOAD ---
-window.onload = async function() {
-    const langSelect = document.getElementById('langSelect');
-    const savedLang = localStorage.getItem('kshop_lang');
-    if (savedLang && currentTranslations[savedLang]) {
-        currentLang = savedLang;
-        langSelect.value = currentLang;
-        applyLanguage(currentLang);
-    } else if (langSelect.options.length > 0 && currentTranslations[currentLang]) {
-        langSelect.value = currentLang;
-        applyLanguage(currentLang);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    // Load and apply translations
+    loadTranslations();
     
-    // Check for existing Supabase session and load profile
-    await loadUserSession();
+    // Check initial auth state
+    handleAuthChange();
     
-    loadProducts('all', currentTranslations[currentLang].all, 'women'); 
-    updateUserUI();
-    loadBanners(); 
-    
-    if(localStorage.getItem('kshop_dark_mode') === 'on') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').checked = true;
-    }
-}
-
-// --- AUTH: Session/Profile Loading ---
-async function loadUserSession() {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) {
-        console.error("Error fetching session:", sessionError);
-        return;
-    }
-    if (session) {
-        const userId = session.user.id;
-        // Fetch user profile from the custom 'users' table using the Supabase Auth UID
-        let { data: profile, error: profileError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('user_id', userId)
-            .single();
-            
-        if (profileError) {
-            console.error("Error fetching profile:", profileError);
-            // Could be a user who signed up but profile creation failed. Sign them out for cleanup.
-            await supabase.auth.signOut();
-            return;
+    // Listen for auth state changes (crucial for Magic Link)
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+            handleAuthChange();
         }
-        currentUser = profile;
+    });
+
+    // Load initial products (default tab)
+    loadProducts('all', 'All Products', 'women');
+});
+
+// --- TRANSLATION and UI UTILS ---
+
+async function loadTranslations() {
+    // Simplified translation data structure for demonstration
+    currentTranslations = {
+        'my': {
+            // General UI
+            'menu': 'မီနူး', 'cart': 'စျေးဝယ်ခြင်း', 'search': 'ရှာရန်', 'my_account': 'ကျွန်ုပ်၏အကောင့်', 'logout': 'အကောင့်ထွက်',
+            'order_history': 'အမှာစာမှတ်တမ်း', 'all': 'ပစ္စည်းအားလုံး', 'shop_cat': 'အမျိုးသမီးဖက်ရှင်',
+            
+            // Auth Form
+            'register_h3': 'အကောင့်ဖန်တီးပါ', 'login_h3': 'ဝင်ရောက်ပါ',
+            'name_label': 'အမည်', 'email_label': 'အီးမေးလ်', 
+            'register_btn': 'Magic Link ပို့မည်', 'login_btn': 'Magic Link ပို့မည်',
+            'register_link': 'အကောင့်မရှိဘူးလား? အကောင့်ဖွင့်ပါ', 'login_link': 'အကောင့်ရှိပြီးသားလား? ဝင်ရောက်ပါ',
+            'check_email_h3': '📧 သင့်အီးမေးလ်ကို စစ်ဆေးပါ!',
+            
+            // Order Form
+            'order_h3': 'အော်ဒါမှာယူခြင်း', 'del_info_h3': 'ပို့ဆောင်မည့်အချက်အလက်', 
+            'del_label': 'ပို့ဆောင်ရန်လိပ်စာ', 'contact_label': 'ဆက်သွယ်ရန်ဖုန်း', 
+            'note_label': 'မှတ်ချက်', 'slip_label': 'ငွေရှင်းပြေစာ',
+            'send_btn': 'Admin ထံသို့ ပို့မည်', 'order_sent_h3': '👾 အော်ဒါပို့ပြီးပါပြီ!', 
+            'order_sent_p': 'ငွေပေးချေမှု အောင်မြင်ပါသည်။ မကြာမီ ပို့ဆောင်ပေးပါမည်။ 🎉', 'ok_btn': 'OK',
+            
+            // History
+            'history_h3': 'အမှာစာမှတ်တမ်း', 'pending': 'စောင့်ဆိုင်းဆဲ', 'delivered': 'ပို့ပြီး',
+            
+            // Product Modal
+            'size_label': 'Size ရွေးပါ', 'add_to_cart': 'စျေးခြင်းထဲ ထည့်မည်',
+            
+            // Cart Modal
+            'cart_h3': 'စျေးခြင်း', 'total': 'စုစုပေါင်း', 'order_btn': 'မှာယူမည်',
+        },
+        'en': {
+            // General UI
+            'menu': 'Menu', 'cart': 'Cart', 'search': 'Search', 'my_account': 'My Account', 'logout': 'Logout',
+            'order_history': 'Order History', 'all': 'All Products', 'shop_cat': "WOMEN'S FASHION",
+            
+            // Auth Form
+            'register_h3': 'Create Account', 'login_h3': 'Login',
+            'name_label': 'Name', 'email_label': 'Email', 
+            'register_btn': 'Send Magic Link', 'login_btn': 'Send Magic Link',
+            'register_link': 'Create new account', 'login_link': 'Already have an account? Login',
+            'check_email_h3': '📧 Check Your Email!',
+            
+            // Order Form
+            'order_h3': 'Place Order', 'del_info_h3': 'Delivery Information', 
+            'del_label': 'Delivery Address', 'contact_label': 'Contact Phone', 
+            'note_label': 'Note', 'slip_label': 'Payment Slip',
+            'send_btn': 'Send to Admin', 'order_sent_h3': '👾 Order sent!', 
+            'order_sent_p': 'Payment successful, delivery will be made soon.🎉', 'ok_btn': 'OK',
+            
+            // History
+            'history_h3': 'Order History', 'pending': 'Pending', 'delivered': 'Delivered',
+            
+            // Product Modal
+            'size_label': 'Select Size', 'add_to_cart': 'Add to Cart',
+            
+            // Cart Modal
+            'cart_h3': 'Cart', 'total': 'Total', 'order_btn': 'Place Order',
+        }
+    };
+    applyTranslations();
+    // Re-render auth form if needed, to apply new 'email_label'
+    if (document.getElementById('authModal').style.display === 'block') {
+         showAuthForm(document.getElementById('loginForm').style.display !== 'none' ? 'login' : 'register');
     }
 }
 
-
-// --- LANGUAGE ---
-function applyLanguage(lang) {
-    const t = currentTranslations[lang];
-    if (!t) return;
+function applyTranslations() {
     document.querySelectorAll('[data-t]').forEach(el => {
         const key = el.getAttribute('data-t');
-        if (t[key]) el.innerText = t[key];
-    });
-    document.querySelector('#chatInput').placeholder = (lang === 'my') ? "စာပို့ပါ..." : (lang === 'th' ? "พิมพ์ข้อความ..." : "Type message...");
-    document.querySelector('#searchInput').placeholder = t.search_placeholder || "Search...";
-    document.querySelector('#pageTitle').innerText = t.all; 
-    
-    // Update OTP button text after language change
-     document.getElementById('sendOtpBtn').innerText = t.login_btn;
-     document.getElementById('sendOtpRegisterBtn').innerText = t.register_btn;
-}
-
-function toggleLanguage(lang) {
-    if (currentTranslations[lang]) {
-        currentLang = lang;
-        localStorage.setItem('kshop_lang', lang);
-        applyLanguage(lang);
-    }
-}
-
-// --- BANNERS ---
-let slideIndex = 0;
-
-async function loadBanners() {
-    const { data, error } = await supabase
-        .from('banners')
-        .select('image_url')
-        .order('order_index', { ascending: true }); 
-
-    let finalBanners = [];
-    if (!error && data && data.length > 0) {
-        finalBanners = data;
-    } else {
-        console.log("Using Sample Banners (Supabase empty or error)");
-        finalBanners = sampleBanners;
-    }
-
-    const wrapper = document.getElementById('sliderWrapper');
-    const dotsContainer = document.getElementById('dotsContainer');
-    wrapper.innerHTML = '';
-    dotsContainer.innerHTML = '';
-
-    finalBanners.forEach((b, index) => {
-        wrapper.innerHTML += `<div class="slide"><img src="${b.image_url}" alt="Banner ${index + 1}"></div>`;
-        const activeClass = index === 0 ? ' active' : '';
-        dotsContainer.innerHTML += `<span class="dot${activeClass}" onclick="currentSlide(${index})"></span>`;
-    });
-    
-    if(finalBanners.length > 0) {
-         startSlider();
-    }
-}
-
-function startSlider() {
-    showSlides();
-    setInterval(() => {
-        slideIndex++;
-        showSlides();
-    }, 3000); 
-}
-function showSlides() {
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    if (slides.length === 0) return; 
-    
-    if (slideIndex >= slides.length) slideIndex = 0;
-    if (slideIndex < 0) slideIndex = slides.length - 1;
-    
-    document.getElementById('sliderWrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
-    
-    dots.forEach(d => d.classList.remove('active'));
-    dots[slideIndex].classList.add('active');
-}
-function currentSlide(n) { slideIndex = n; showSlides(); }
-
-function updateUserUI() {
-    // Check for currentUser object loaded from the custom 'users' table
-    if(currentUser) document.getElementById('userDot').style.display = 'block';
-    else document.getElementById('userDot').style.display = 'none';
-}
-
-// --- SETTINGS ---
-function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-function toggleTheme(cb) { 
-    document.body.classList.toggle('dark-mode', cb.checked); 
-    localStorage.setItem('kshop_dark_mode', cb.checked ? 'on' : 'off');
-}
-
-// --- CHAT ---
-function toggleChat() {
-    const box = document.getElementById('chatBox');
-    box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-}
-function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const userMessage = input.value.trim();
-    if (userMessage === "") return;
-    const body = document.getElementById('chatBody');
-    
-    const userDiv = document.createElement('div');
-    userDiv.style.cssText = "background:var(--vibrant-blue); color:white; padding:8px; border-radius:5px; margin-bottom:10px; text-align:right; margin-left:auto; display:table;";
-    userDiv.innerText = userMessage;
-    body.appendChild(userDiv);
-    input.value = '';
-
-    const botReplyText = currentTranslations[currentLang].chat_reply || "Hello! How can I help you today?";
-    setTimeout(() => {
-        const replyDiv = document.createElement('div');
-        replyDiv.style.cssText = "background:var(--bg-color); color:var(--text-color); padding:8px; border-radius:5px; margin-bottom:10px; display:table; border:1px solid #ddd;";
-        replyDiv.innerText = botReplyText;
-        body.appendChild(replyDiv);
-        body.scrollTop = body.scrollHeight;
-    }, 1000); 
-}
-
-// --- SNACKBAR/TOAST FUNCTION ---
-function showSnackbar(message, type = 'default') {
-    const x = document.getElementById("snackbar");
-    x.innerText = message;
-    
-    x.className = 'show'; // Start with show class
-    
-    // Apply color based on type
-    x.classList.remove('error', 'success');
-    if (type === 'error') {
-        x.classList.add('error');
-    } else if (type === 'success') {
-        x.classList.add('success');
-    }
-
-    // After 3 seconds, hide the snackbar and reset class
-    setTimeout(function(){ 
-        x.classList.remove('show'); 
-        // Delay removing color class until animation is mostly done
-        setTimeout(() => { x.className = ''; }, 500); 
-    }, 3000);
-}
-
-// --- AUTH & HISTORY (OTP MODIFIED) ---
-function checkAuth() { 
-    if(currentUser) openHistory(); 
-    else {
-        document.getElementById('authModal').style.display = 'flex'; 
-        // Reset to default login view on open
-        showAuthForm('login'); 
-        // Clear any previous OTP steps
-        document.getElementById('lPhone').value = '';
-        document.getElementById('verifyOtpLogin').style.display = 'none';
-        document.getElementById('sendOtpBtn').style.display = 'block';
-
-        document.getElementById('rName').value = '';
-        document.getElementById('rPhone').value = '';
-        document.getElementById('verifyOtpRegister').style.display = 'none';
-        document.getElementById('sendOtpRegisterBtn').style.display = 'block';
-        currentAuthPhone = null;
-    }
-}
-
-function showAuthForm(type) {
-    // Reset to Step 1 when switching tabs
-    currentAuthPhone = null;
-
-    if(type === 'login') {
-        document.getElementById('tabLogin').style.borderBottom = '2px solid #2d2d2d';
-        document.getElementById('tabRegister').style.borderBottom = 'none';
-        document.getElementById('tabRegister').style.color = '#777';
-        document.getElementById('tabLogin').style.color = 'var(--text-color)';
-        document.getElementById('loginForm').style.display='block';
-        document.getElementById('registerForm').style.display='none';
-        
-        // Show Step 1 for Login
-        document.getElementById('verifyOtpLogin').style.display = 'none';
-        document.getElementById('sendOtpBtn').style.display = 'block';
-        document.getElementById('lPhone').value = ''; // Clear phone input on switch
-    } else {
-        document.getElementById('tabLogin').style.borderBottom = 'none';
-        document.getElementById('tabRegister').style.borderBottom = '2px solid #2d2d2d';
-        document.getElementById('tabLogin').style.color = '#777';
-        document.getElementById('tabRegister').style.color = 'var(--text-color)';
-        document.getElementById('loginForm').style.display='none';
-        document.getElementById('registerForm').style.display='block';
-        
-        // Show Step 1 for Register
-        document.getElementById('verifyOtpRegister').style.display = 'none';
-        document.getElementById('sendOtpRegisterBtn').style.display = 'block';
-        document.getElementById('rName').value = ''; // Clear name input on switch
-        document.getElementById('rPhone').value = ''; // Clear phone input on switch
-    }
-}
-
-// --- OTP Step 1: Send OTP to Phone ---
-async function sendOtp(type) {
-    let phone, btn;
-    
-    if (type === 'login') {
-        phone = document.getElementById('lPhone').value.trim();
-        btn = document.getElementById('sendOtpBtn');
-    } else { // register
-        const name = document.getElementById('rName').value.trim();
-        if (!name) {
-            showSnackbar("Please enter your name for registration.", 'error');
-            return;
+        if (currentTranslations[currentLang] && currentTranslations[currentLang][key]) {
+            el.innerText = currentTranslations[currentLang][key];
         }
-        phone = document.getElementById('rPhone').value.trim();
-        btn = document.getElementById('sendOtpRegisterBtn');
-    }
-
-    if (!phone) {
-        showSnackbar("Please enter your phone number.", 'error');
-        return;
-    }
-    
-    const cleanedPhone = phone.replace(/\D/g, ''); 
-    
-    if (cleanedPhone.length < 6) { // Basic check
-         showSnackbar("Invalid phone number format.", 'error');
-         return;
-    }
-    
-    currentAuthPhone = cleanedPhone; // Store the phone number
-    
-    const originalText = btn.innerText;
-    btn.innerText = "Sending...";
-    btn.disabled = true;
-
-    // Use Supabase signInWithOtp with the 'phone' option
-    const { error: otpError } = await supabase.auth.signInWithOtp({ 
-        phone: cleanedPhone 
-    });
-
-    if (otpError) {
-        showSnackbar("Error sending OTP: " + otpError.message, 'error');
-        btn.innerText = originalText;
-        btn.disabled = false;
-        return;
-    }
-    
-    showSnackbar(`OTP code sent to ${cleanedPhone}.`, 'success');
-
-    if (type === 'login') {
-        document.getElementById('sendOtpBtn').style.display = 'none';
-        document.getElementById('verifyOtpLogin').style.display = 'block';
-    } else { // register
-        document.getElementById('sendOtpRegisterBtn').style.display = 'none';
-        document.getElementById('verifyOtpRegister').style.display = 'block';
-    }
-
-    btn.innerText = originalText;
-    btn.disabled = false; // Re-enable in case they want to retry sending
-}
-
-// --- OTP Step 2: Verify OTP and Login/Register ---
-async function verifyOtp(type) {
-    let otp, btn, name = null;
-    
-    if (!currentAuthPhone) {
-         showSnackbar("Please send OTP first.", 'error');
-         return;
-    }
-
-    if (type === 'login') {
-        otp = document.getElementById('lOtp').value.trim();
-        btn = document.getElementById('verifyOtpLogin').querySelector('button');
-    } else { // register
-        otp = document.getElementById('rOtp').value.trim();
-        btn = document.getElementById('verifyOtpRegister').querySelector('button');
-        name = document.getElementById('rName').value.trim(); // Get name for registration
-    }
-
-    if (!otp) {
-        showSnackbar("Please enter the OTP code.", 'error');
-        return;
-    }
-    
-    const originalText = btn.innerText;
-    btn.innerText = "Verifying...";
-    btn.disabled = true;
-
-    // Use Supabase verifyOtp
-    const { data: authData, error: authError } = await supabase.auth.verifyOtp({
-        phone: currentAuthPhone,
-        token: otp,
-        type: 'sms'
-    });
-
-    if (authError) {
-        showSnackbar("OTP verification failed: " + authError.message, 'error');
-        btn.innerText = originalText;
-        btn.disabled = false;
-        return;
-    }
-
-    const userId = authData.user.id;
-
-    if (type === 'register') {
-         // ** Registration flow **
-        if (!name) { 
-            showSnackbar("Name is missing. Please try registering again.", 'error');
-            await supabase.auth.signOut(); // Force sign out if registered without name
-            btn.innerText = originalText;
-            btn.disabled = false;
-            return;
-        }
-        
-        // 2. Insert user profile into the custom 'users' table
-        let { error: profileError } = await supabase.from('users').insert([
-            { user_id: userId, name: name, phone: currentAuthPhone }
-        ]);
-    
-        if (profileError) {
-            showSnackbar("Profile saving failed. Please contact support.", 'error');
-            // The user is authenticated but profile is missing. We let them proceed but warn.
-            // In a real app, you might force sign out here or redirect to a profile completion page.
-        }
-
-        showSnackbar("Registration & Login successful!", 'success');
-    }
-    
-    // ** Login/Post-Registration Flow **
-    
-    // 3. Fetch User Profile from custom table
-    let { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-    if (profileError || !profileData) {
-        // If profile is missing for a logged-in user, they might be new or profile creation failed.
-        // In this OTP flow, if they registered, profile should exist. 
-        // If they logged in, we must assume they are registered.
-         showSnackbar("Profile not found. Please contact support.", 'error');
-         // Don't sign out, as they are authenticated, but warn.
-    }
-    
-    currentUser = profileData;
-    closeModal('authModal'); 
-    updateUserUI(); 
-    openHistory();
-    if (type === 'login') showSnackbar("Login successful!", 'success'); 
-    
-    btn.innerText = originalText;
-    btn.disabled = false;
-}
-
-async function doLogout() { 
-    await supabase.auth.signOut(); // Securely sign out
-    currentUser = null; 
-    closeModal('historyModal'); 
-    updateUserUI(); 
-    showSnackbar("Logged out successfully.", 'success');
-}
-
-async function openHistory() {
-    if(!currentUser) { return; }
-    document.getElementById('historyModal').style.display='flex';
-    const con = document.getElementById('historyList');
-    con.innerHTML = '<p>Loading...</p>';
-    
-    // Fetch history using the secured customer_user_id (Supabase UID)
-    let { data } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('customer_user_id', currentUser.user_id) 
-        .order('created_at', {ascending:false});
-    
-    if(!data || !data.length) { con.innerHTML='<p>No orders yet.</p>'; return; }
-    let html = '';
-    data.forEach(o => {
-        let icon = '⏳';
-        if(o.status==='reject') icon='⛔'; if(o.status==='coming') icon='🟡'; if(o.status==='owned') icon='🟢';
-        html += `<div class="history-item"><div><b>${o.item_name}</b><br>${o.price}</div><div style="font-size:20px;">${icon}</div></div>`;
-    });
-    con.innerHTML = html;
-}
-
-// --- PRODUCTS ---
-async function loadProducts(cat, title, gender = 'women') { 
-    document.getElementById('productsContainer').innerHTML='';
-    document.getElementById('sideMenu').classList.remove('active');
-    document.querySelector('.overlay').classList.remove('active');
-    document.getElementById('pageTitle').innerText = title;
-    document.getElementById('loading').style.display = 'block'; 
-    
-    let q = supabase.from('products').select('*');
-    
-    if(gender) {
-        q = q.ilike('gender', gender);
-    }
-    if(cat !== 'all') { 
-        q = q.ilike('category', cat);
-    }
-    
-    let { data, error } = await q;
-
-    document.getElementById('loading').style.display = 'none';
-
-    if (!data || data.length === 0 || error) {
-        console.log(`Using Sample Data or Fallback for ${gender} - ${cat}`);
-        data = allSampleProducts.filter(p => {
-            const genderMatch = p.gender === gender;
-            const categoryMatch = cat === 'all' || p.category === cat;
-            return genderMatch && categoryMatch;
-        });
-    }
-
-    currentProducts = data || [];
-    
-    if (currentProducts.length === 0) {
-         document.getElementById('productsContainer').innerHTML = '<p style="text-align:center; padding:20px; color:#999;">No products found.</p>';
-    } else {
-         renderProducts(currentProducts, title);
-    }
-}
-
-function renderProducts(list, title) {
-    const con = document.getElementById('productsContainer');
-    con.innerHTML = '';
-    list.forEach((p, index) => {
-        let img = p.image_url || 'https://via.placeholder.com/300';
-        let price = Number(p.price).toLocaleString();
-        con.innerHTML += `
-        <div class="product-card" onclick="openDetails(${index})">
-            <img src="${img}" class="p-img">
-            <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${price} Ks</div></div>
-            <div class="cart-btn" onclick="openDetails(${index})"><i class="fas fa-eye"></i></div>
-        </div>`;
     });
 }
 
-// --- PRODUCT DETAILS & IMAGE UPDATE FUNCTIONS ---
-function updateDetailsImage(colorIndexString) {
-    if (!selectedProduct || !selectedProduct.colors || selectedProduct.colors.length === 0) return;
-
-    const colorIndex = parseInt(colorIndexString);
-    const p = selectedProduct;
-    
-    let imageUrl = p.image_url || 'https://via.placeholder.com/300'; 
-    if (p.colors[colorIndex] && p.colors[colorIndex].image_url) {
-        imageUrl = p.colors[colorIndex].image_url;
-    }
-    
-    document.getElementById('detail-img').src = imageUrl;
-    // Store the selected image URL for the checkout modal
-    selectedProduct.current_image_url = imageUrl; 
+function switchLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    loadTranslations();
 }
 
-function openDetails(idx) {
-    if(!currentProducts || !currentProducts[idx]) return;
-    const p = currentProducts[idx];
-    selectedProduct = p; // Store the selected product globally
+function showSnackbar(message, type = 'info') {
+    const snackbar = document.getElementById("snackbar");
+    snackbar.className = "show " + type;
+    snackbar.innerText = message;
+    setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
+}
+
+// --- PRODUCT/CART LOGIC ---
+
+async function loadProducts(category, title, gender) {
+    document.getElementById('productsTitle').innerText = title;
     
-    document.getElementById('detail-name').innerText = p.name;
-    document.getElementById('detail-price').innerText = Number(p.price).toLocaleString() + " Ks";
-    document.getElementById('detail-description').innerText = p.description || "No description available.";
+    let query = supabase.from('products').select('*');
+    if (gender !== 'all') {
+        query = query.eq('gender', gender);
+    }
+    if (category !== 'all') {
+        query = query.eq('category', category);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        console.error('Error fetching products:', error);
+        return;
+    }
+
+    currentProducts = data;
+    renderProducts(data);
+    closeModal('sideMenu'); // Close the side menu after selecting a category
+}
+
+function renderProducts(products) {
+    const container = document.getElementById('productsContainer');
+    container.innerHTML = ''; 
+    products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('data-id', p.id);
+        card.innerHTML = `
+            <img src="${p.image_url}" alt="${p.name}">
+            <p class="p-name">${p.name}</p>
+            <p class="p-price">${p.price} MMK</p>
+            <button class="add-btn" onclick="openProductModal('${p.id}')"><i class="fas fa-eye"></i> View Details</button>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openProductModal(productId) {
+    selectedProduct = currentProducts.find(p => p.id === productId);
+    if (!selectedProduct) return;
+
+    document.getElementById('productModalImage').src = selectedProduct.image_url;
+    document.getElementById('productModalName').innerText = selectedProduct.name;
+    document.getElementById('productModalDesc').innerText = selectedProduct.description;
+    document.getElementById('productModalPrice').innerText = `${selectedProduct.price} MMK`;
     
-    // Populate Size Options
-    const sizeSelect = document.getElementById('sizeSelect');
+    // Size options rendering
+    const sizeSelect = document.getElementById('productSizeSelect');
     sizeSelect.innerHTML = '';
-    const sizes = p.sizes || ["One Size"]; 
-    sizes.forEach(size => {
-        sizeSelect.innerHTML += `<option value="${size}">${size}</option>`;
+    selectedProduct.sizes.forEach(size => {
+        const option = document.createElement('option');
+        option.value = size;
+        option.innerText = size;
+        sizeSelect.appendChild(option);
     });
 
-    // Populate Color Options (Key part for image switching)
-    const colorSelect = document.getElementById('colorSelect');
-    colorSelect.innerHTML = '';
-    // Handle product having a proper colors array or defaulting to N/A
-    const colors = p.colors && p.colors.length > 0 ? p.colors : [{ name: "N/A", image_url: p.image_url || 'https://via.placeholder.com/300' }]; 
-
-    colors.forEach((color, index) => {
-        // Use index as the value to link to the colors array
-        colorSelect.innerHTML += `<option value="${index}">${color.name}</option>`; 
-    });
-
-    // Set the onchange handler (This is what triggers the image change)
-    colorSelect.setAttribute('onchange', 'updateDetailsImage(this.value)');
-    document.getElementById('quantityInput').value = 1; // Reset quantity
-
-    document.getElementById('detailsModal').style.display = 'flex';
-    // Load the first color's image by default, or the default image
-    updateDetailsImage(0); 
+    document.getElementById('productModal').style.display = 'block';
 }
 
+let cart = [];
 
-// --- CART & ORDER (MODIFIED) ---
-function openCheckoutFromDetails() {
-    if(!currentUser) { 
-        closeModal('detailsModal');
-        checkAuth(); 
-        return; 
+function addToCart() {
+    if (!selectedProduct) return;
+
+    const size = document.getElementById('productSizeSelect').value;
+    const item = {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        price: selectedProduct.price,
+        size: size,
+        image_url: selectedProduct.image_url,
+        quantity: 1
+    };
+
+    // Check if item already exists in cart with the same size
+    const existingItemIndex = cart.findIndex(
+        i => i.id === item.id && i.size === item.size
+    );
+
+    if (existingItemIndex > -1) {
+        cart[existingItemIndex].quantity += 1;
+    } else {
+        cart.push(item);
     }
-    if(!selectedProduct) return;
     
-    const p = selectedProduct;
-    const size = document.getElementById('sizeSelect').value;
-    const colorIndex = document.getElementById('colorSelect').value; // Get the index value
-    
-    // Safely get the color name using the index
-    const colorName = p.colors && p.colors[colorIndex] ? p.colors[colorIndex].name : 'N/A';
-    
-    const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
+    showSnackbar(`${item.name} (${item.size}) added to cart!`, 'success');
+    closeModal('productModal');
+    updateCartIcon();
+}
 
-    if (quantity < 1) { 
-        showSnackbar("Quantity must be at least 1.", 'error'); 
-        return; 
+function updateCartIcon() {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cartCount').innerText = count;
+}
+
+function openCartModal() {
+    const container = document.getElementById('cartItemsContainer');
+    const totalElement = document.getElementById('cartTotal');
+    let total = 0;
+
+    container.innerHTML = '';
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">Your cart is empty.</p>';
+        totalElement.innerText = '0 MMK';
+        document.getElementById('cartOrderBtn').disabled = true;
+        document.getElementById('cartOrderBtn').innerText = currentTranslations[currentLang].order_btn;
+        document.getElementById('cartOrderBtn').classList.remove('active');
+        document.getElementById('cartOrderBtn').classList.add('inactive');
+        document.getElementById('cartOrderBtn').style.opacity = '0.5';
+
+    } else {
+        cart.forEach((item, index) => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.innerHTML = `
+                <img src="${item.image_url}" alt="${item.name}">
+                <div class="item-details">
+                    <p class="item-name">${item.name} (${item.size})</p>
+                    <p class="item-price">${item.price} MMK x ${item.quantity}</p>
+                    <p class="item-subtotal">Subtotal: ${itemTotal} MMK</p>
+                </div>
+                <div class="item-actions">
+                    <button onclick="updateCartQuantity(${index}, -1)" class="quantity-btn">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateCartQuantity(${index}, 1)" class="quantity-btn">+</button>
+                    <button onclick="removeFromCart(${index})" class="remove-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            container.appendChild(itemDiv);
+        });
+        totalElement.innerText = `${total} MMK`;
+        document.getElementById('cartOrderBtn').disabled = false;
+        document.getElementById('cartOrderBtn').classList.remove('inactive');
+        document.getElementById('cartOrderBtn').classList.add('active');
+        document.getElementById('cartOrderBtn').style.opacity = '1';
     }
 
-    const orderNote = `Size: ${size}, Color: ${colorName}, Qty: ${quantity}`;
-    const totalPrice = Number(p.price) * quantity;
+    document.getElementById('cartModal').style.display = 'block';
+}
 
-    // Set data for the Checkout Modal
-    document.getElementById('modal-name').innerText = `${p.name} (${orderNote})`;
-    document.getElementById('modal-price').innerText = totalPrice.toLocaleString() + " Ks"; 
+function updateCartQuantity(index, change) {
+    const item = cart[index];
+    item.quantity += change;
+
+    if (item.quantity <= 0) {
+        removeFromCart(index);
+    } else {
+        openCartModal(); // Re-render cart
+    }
+    updateCartIcon();
+}
+
+function removeFromCart(index) {
+    const removedItem = cart[index];
+    cart.splice(index, 1);
+    showSnackbar(`${removedItem.name} removed from cart.`, 'info');
+    openCartModal();
+    updateCartIcon();
+}
+
+function openOrderModal() {
+    if (!currentUser) {
+        showSnackbar("Please login to place an order.", 'error');
+        openAuthModal();
+        return;
+    }
+    if (cart.length === 0) {
+         showSnackbar("Your cart is empty.", 'error');
+         return;
+    }
     
-    // Use the currently selected image URL (stored by updateDetailsImage)
-    document.getElementById('modal-img').src = p.current_image_url || p.image_url || '';
-    
-    // Set the consolidated note and contact phone
-    document.getElementById('noteInput').value = orderNote; 
+    // Pre-fill contact info from user profile (assuming 'phone' or 'email' is used for contact)
+    // Since we are using Magic Link, we assume the user might have a phone in the 'users' table
+    document.getElementById('nameInput').value = currentUser.name || '';
     document.getElementById('contactPhoneInput').value = currentUser.phone || ''; 
+    document.getElementById('addressInput').value = currentUser.address || ''; 
     
-    // Reset slip input and button state for a fresh order
-    document.getElementById('slipInput').value = '';
-    document.getElementById('sendBtn').disabled = true;
-
-    closeModal('detailsModal');
-    document.getElementById('checkoutModal').style.display = 'flex';
+    document.getElementById('orderModal').style.display = 'block';
+    closeModal('cartModal');
 }
 
-function checkSlipFile() {
-    const file = document.getElementById('slipInput').files[0];
-    document.getElementById('sendBtn').disabled = !file;
+// --- ORDER / TELEGRAM LOGIC ---
+
+async function checkSlipFile() {
+    const fileInput = document.getElementById('slipInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (fileInput.files.length > 0) {
+        sendBtn.disabled = false;
+        sendBtn.classList.add('active');
+        sendBtn.classList.remove('inactive');
+    } else {
+        sendBtn.disabled = true;
+        sendBtn.classList.remove('active');
+        sendBtn.classList.add('inactive');
+    }
 }
 
 async function sendOrder() {
-    const btn = document.getElementById('sendBtn');
-    const file = document.getElementById('slipInput').files[0];
+    const name = document.getElementById('nameInput').value.trim();
     const address = document.getElementById('addressInput').value.trim();
     const contactPhone = document.getElementById('contactPhoneInput').value.trim();
-    let note = document.getElementById('noteInput').value.trim(); 
+    const note = document.getElementById('noteInput').value.trim();
+    const slipFile = document.getElementById('slipInput').files[0];
+    const totalAmount = document.getElementById('cartTotal').innerText;
 
-    if (!address || !contactPhone || !file) {
-        showSnackbar("Please fill in all required fields (Address, Phone, Slip).", 'error'); 
-        btn.disabled = false; return;
-    }
-    
-    if(!currentUser || !currentUser.user_id) {
-        showSnackbar("User is not logged in properly. Please re-login.", 'error'); 
+    if (!name || !address || !contactPhone || !slipFile) {
+        showSnackbar("Please fill in all required fields and upload the payment slip.", 'error');
         return;
     }
 
-    btn.innerText="Sending..."; btn.disabled=true;
-    const pNameWithDetails = document.getElementById('modal-name').innerText;
-    const pPrice = document.getElementById('modal-price').innerText;
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.innerText = 'Sending...';
+    sendBtn.disabled = true;
 
-    // Save order with the secured user_id
-    const { data: orderData, error: orderError } = await supabase.from('orders').insert([{
-        customer_name: currentUser.name, customer_phone: contactPhone, customer_user_id: currentUser.user_id,
-        item_name: pNameWithDetails, price: pPrice, status: 'pending', address: address, note: note
-    }]);
+    // 1. Upload Slip to Supabase Storage
+    const fileName = `slips/${currentUser.user_id}_${Date.now()}.jpg`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('slips') 
+        .upload(fileName, slipFile);
+
+    if (uploadError) {
+        showSnackbar("Error uploading slip: " + uploadError.message, 'error');
+        sendBtn.innerText = currentTranslations[currentLang].send_btn;
+        sendBtn.disabled = false;
+        return;
+    }
+
+    // Get public URL for the slip
+    const { data: publicUrlData } = supabase.storage
+        .from('slips')
+        .getPublicUrl(fileName);
+    const slipUrl = publicUrlData.publicUrl;
+
+    // 2. Save Order to Supabase Database
+    const orderDetails = cart.map(item => ({
+        product_id: item.id,
+        name: item.name,
+        size: item.size,
+        price: item.price,
+        quantity: item.quantity
+    }));
+
+    const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+            user_id: currentUser.user_id,
+            total_amount: totalAmount,
+            delivery_address: address,
+            contact_phone: contactPhone,
+            note: note,
+            payment_slip_url: slipUrl,
+            order_details: orderDetails,
+            status: 'pending' // Default status
+        }).select();
 
     if (orderError) {
-        showSnackbar("Database Error: Could not save order. " + orderError.message, 'error'); 
-        btn.innerText=currentTranslations[currentLang].send_btn; 
-        btn.disabled=false;
+        showSnackbar("Error saving order: " + orderError.message, 'error');
+        sendBtn.innerText = currentTranslations[currentLang].send_btn;
+        sendBtn.disabled = false;
         return;
     }
 
-    const caption = `🛍️ *New Order*\n👤 ${currentUser.name}\n📞 ${contactPhone}\n🏠 ${address}\n📝 ${note}\n---\n👗 ${pNameWithDetails}\n💰 ${pPrice}`;
-    const fd = new FormData();
-    fd.append("chat_id", CHAT_ID); fd.append("caption", caption); fd.append("parse_mode", "Markdown");
-    fd.append("photo", file); 
+    const orderId = orderData[0].id;
+
+    // 3. Send Telegram Notification
+    const cartSummary = cart.map(item => 
+        ` - ${item.name} (${item.size}) x ${item.quantity} - ${item.price * item.quantity} MMK`
+    ).join('\n');
+
+    let telegramMessage = `
+*NEW ORDER RECEIVED (Magic Link User)*
+*Order ID:* ${orderId}
+*User:* ${name} (ID: ${currentUser.user_id})
+*Email:* ${currentUser.email}
+*Total:* ${totalAmount}
+*Phone:* ${contactPhone}
+*Address:* ${address}
+*Note:* ${note || 'N/A'}
+
+*Order Details:*
+${cartSummary}
+
+*Payment Slip:* ${slipUrl}
+    `;
+
+    // Telegram Bot API call
+    const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    await fetch(telegramApiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: telegramMessage,
+            parse_mode: 'Markdown'
+        })
+    });
+
+    // 4. Success Handling
+    showSnackbar(currentTranslations[currentLang].order_sent_p, 'success');
+    closeModal('orderModal');
+    document.getElementById('successModal').style.display = 'block';
     
-    try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method:'POST', body:fd});
-        closeModal('checkoutModal');
-        document.getElementById('successModal').style.display = 'flex';
-    } catch (error) {
-         showSnackbar("Order sent to database but failed to notify Admin.", 'error'); 
-    }
+    // Clear cart and reset form
+    cart = [];
+    updateCartIcon();
+    document.getElementById('slipInput').value = '';
+    sendBtn.innerText = currentTranslations[currentLang].send_btn;
+    checkSlipFile(); // Disable button
     
-    btn.innerText=currentTranslations[currentLang].send_btn; 
-    btn.disabled = false;
-    document.getElementById('slipInput').value = ''; 
-    document.getElementById('sendBtn').disabled = true;
+    // Refresh user profile to include new order history
+    await getCurrentUserProfile();
 }
 
-// --- UI UTILITY ---
-function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.querySelector('.overlay').classList.toggle('active'); }
+// --- AUTH LOGIC (Magic Link) ---
+
+function openAuthModal() {
+    document.getElementById('authModal').style.display = 'block';
+    // Default to login form
+    showAuthForm('login');
+}
+
+function showAuthForm(type) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    // Reset forms content in case of previous Magic Link Instruction
+    // The content is reset in indexOOO.html's structure when the form is shown/switched
+    if (type === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    }
+    // Re-apply translations for dynamic elements if necessary
+    applyTranslations();
+}
+
+// Function to send the Magic Link via Email
+async function sendMagicLink(type) {
+    const emailInputId = type === 'login' ? 'lEmail' : 'rEmail';
+    const nameInputId = type === 'register' ? 'rName' : null;
+    const btnId = type === 'login' ? 'loginBtn' : 'sendMagicLinkBtn'; 
+    
+    const email = document.getElementById(emailInputId).value.trim();
+    const btn = document.getElementById(btnId);
+    const originalText = btn.innerText;
+
+    if (!email) {
+        showSnackbar("Email is required.", 'error');
+        btn.disabled = false;
+        return;
+    }
+    
+    if (type === 'register') {
+        const name = document.getElementById(nameInputId).value.trim();
+        if (!name) {
+            showSnackbar("Name is required for registration.", 'error');
+            btn.disabled = false;
+            return;
+        }
+        // Store the name temporarily before the link is sent (optional, but useful if you need to access it later)
+        // Since Magic Link redirects, we handle the registration logic in handleAuthChange
+    }
+    
+    btn.innerText = 'Sending Link...';
+    btn.disabled = true;
+
+    // Supabase signInWithOtp for Magic Link
+    let { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+            // The email will contain a link that redirects back to this URL
+            emailRedirectTo: REDIRECT_URL, 
+        }
+    });
+
+    btn.disabled = false;
+    btn.innerText = originalText;
+
+    if (error) {
+        showSnackbar("Error sending link: " + error.message, 'error');
+        return;
+    }
+    
+    // UI Update: Inform user to check their email
+    showSnackbar("Magic Link sent to " + email + ". Please check your inbox.", 'success');
+    
+    // Hide the form and show instructions, and allow user to go back
+    document.getElementById(type === 'login' ? 'loginForm' : 'registerForm').innerHTML = `
+        <h3 data-t="check_email_h3">${currentTranslations[currentLang].check_email_h3}</h3>
+        <p>A sign-in link has been sent to <b>${email}</b>. Click the link to complete your login.</p>
+        <button class="order-btn" onclick="showAuthForm('${type}')">Go Back</button>
+    `;
+    applyTranslations(); // Re-apply translations after changing innerHTML
+}
+
+// --- Check Authentication State and Load User Profile ---
+async function handleAuthChange() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Reset UI elements
+    document.getElementById('myAccountBtn').style.display = 'none';
+    document.getElementById('loginBtnHeader').style.display = 'flex';
+    document.getElementById('historyBtn').style.display = 'none';
+
+
+    if (user) {
+        // Fetch profile data from your custom 'users' table
+        let { data: profile, error } = await supabase
+            .from('users')
+            .select(`*, orders(*)`) 
+            .eq('user_id', user.id)
+            .single();
+
+        if (error && error.code === 'PGRST116') { // Record not found (New User)
+             // **MAGIC LINK REGISTRATION LOGIC:** If user exists in Auth but not in 'users' table (new user)
+             if (user.email) {
+                 // Supabase Magic Link does not capture the Name during sign-up. 
+                 // We will use the email prefix as a temporary name and ask the user to update it later.
+                 let tempName = user.email.split('@')[0];
+                 let { error: insertError } = await supabase.from('users').insert([
+                     { user_id: user.id, name: tempName, email: user.email }
+                 ]);
+                 
+                 if (insertError) {
+                     console.error("Failed to create profile for new Magic Link user:", insertError);
+                 } else {
+                     showSnackbar(`Welcome, ${tempName}! Please update your profile.`, 'success');
+                     // Try fetching again to set currentUser
+                     return handleAuthChange(); 
+                 }
+             }
+
+        } else if (error) {
+            console.error('Error fetching profile:', error);
+        } else {
+            // User is logged in and has a profile
+            currentUser = profile;
+            document.getElementById('myAccountBtn').style.display = 'flex';
+            document.getElementById('loginBtnHeader').style.display = 'none';
+            document.getElementById('historyBtn').style.display = 'block';
+            document.getElementById('myAccountBtn').innerText = currentUser.name;
+
+            closeModal('authModal');
+            closeModal('sideMenu');
+        }
+    } else {
+        // No user logged in
+        currentUser = null;
+    }
+}
+
+async function logout() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        showSnackbar("Logout failed: " + error.message, 'error');
+    } else {
+        showSnackbar("Logged out successfully.", 'info');
+        // UI is updated by the onAuthStateChange listener calling handleAuthChange()
+        closeModal('accountModal');
+    }
+}
+
+function openAccountModal() {
+    if (!currentUser) {
+        openAuthModal();
+        return;
+    }
+    
+    // Populate profile data
+    document.getElementById('profileName').value = currentUser.name || '';
+    document.getElementById('profileEmail').value = currentUser.email || '';
+    document.getElementById('profileAddress').value = currentUser.address || '';
+    document.getElementById('profilePhone').value = currentUser.phone || '';
+
+    // Render order history
+    renderOrderHistory();
+
+    document.getElementById('accountModal').style.display = 'block';
+}
+
+function renderOrderHistory() {
+    const historyContainer = document.getElementById('historyItemsContainer');
+    historyContainer.innerHTML = '';
+
+    if (!currentUser || !currentUser.orders || currentUser.orders.length === 0) {
+        historyContainer.innerHTML = '<p style="text-align:center;">No order history found.</p>';
+        return;
+    }
+
+    // Sort orders by creation date (newest first)
+    const sortedOrders = currentUser.orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    sortedOrders.forEach(order => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'history-item';
+        
+        const date = new Date(order.created_at).toLocaleDateString(currentLang === 'my' ? 'my-MM' : 'en-US');
+        const statusText = currentTranslations[currentLang][order.status] || order.status;
+        const statusClass = order.status === 'delivered' ? 'success' : 'pending';
+
+        itemDiv.innerHTML = `
+            <div>
+                <p><strong>Order ID:</strong> #${order.id}</p>
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Total:</strong> ${order.total_amount}</p>
+            </div>
+            <span class="status-tag ${statusClass}">${statusText}</span>
+        `;
+        historyContainer.appendChild(itemDiv);
+    });
+}
+
+async function saveProfile() {
+    const name = document.getElementById('profileName').value.trim();
+    const address = document.getElementById('profileAddress').value.trim();
+    const phone = document.getElementById('profilePhone').value.trim();
+
+    if (!name) {
+        showSnackbar("Name cannot be empty.", 'error');
+        return;
+    }
+    
+    const saveBtn = document.getElementById('saveProfileBtn');
+    saveBtn.innerText = 'Saving...';
+    saveBtn.disabled = true;
+
+    const { error } = await supabase
+        .from('users')
+        .update({ name: name, address: address, phone: phone })
+        .eq('user_id', currentUser.user_id);
+
+    saveBtn.innerText = 'Save Profile';
+    saveBtn.disabled = false;
+
+    if (error) {
+        showSnackbar("Failed to save profile: " + error.message, 'error');
+    } else {
+        showSnackbar("Profile updated successfully!", 'success');
+        // Re-fetch user profile to update local currentUser object
+        await handleAuthChange();
+        closeModal('accountModal');
+    }
+}
+
+// --- UI UTILS ---
+
+function toggleMenu() { 
+    document.getElementById('sideMenu').classList.toggle('active'); 
+    document.querySelector('.overlay').classList.toggle('active'); 
+}
+
 function toggleSearch() { 
     const b=document.getElementById('searchBox'); 
     b.style.display=b.style.display==='block'?'none':'block'; 
@@ -783,6 +696,7 @@ function toggleSearch() {
          searchProducts(); 
     }
 }
+
 function closeModal(id) { document.getElementById(id).style.display='none'; }
 
 function searchProducts() { 
@@ -811,4 +725,220 @@ function switchTab(t) {
         document.querySelectorAll('.tab')[1].classList.add('active'); 
         document.getElementById('men-menu').classList.add('active'); 
     }
-        }
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+}
+
+// Check for dark mode preference on load
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('darkModeSwitch').checked = true;
+}
+၂။ indexOOO.html(Magic Link UI) ပြင်ဆင်ချက်များ
+indexOOO.htmlဖိုင်တွင်ရှိသော Login/Registration ၏ အုပ်ထိန်းသူများမှ နှင့် OTP စစ်ဆေးရန် အကွက်များကို ဖယ်ရှားပြီး Email အကွက်ဖြင့် အစားထိုးကာ onclickevent များကို sendMagicLink()function အသစ်သို့ ပြောင်းလိုက်ပါသည်။
+
+indexOOO.html
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Lab</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styleOOO.css"> 
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
+</head>
+<body id="body">
+
+    <div class="overlay" onclick="toggleMenu()"></div>
+    
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-tabs">
+            <div class="tab active" onclick="switchTab('women')">WOMEN</div>
+            <div class="tab" onclick="switchTab('men')">MEN</div>
+        </div>
+        <div class="menu-content">
+            <div id="women-menu" class="menu-section active">
+                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">WOMEN'S FASHION</div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'women')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'women')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('shoes', 'Shoes', 'women')"><span data-t="shoes">Shoes</span> <i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div id="men-menu" class="menu-section">
+                <div style="padding:15px; background:var(--bg-color); font-weight:bold;" data-t="shop_cat">MEN'S FASHION</div>
+                <div class="menu-item" onclick="loadProducts('all', 'All Products', 'men')"><span data-t="all">All Products</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('clothing', 'Clothing', 'men')"><span data-t="clothing">Clothing</span> <i class="fas fa-chevron-right"></i></div>
+                <div class="menu-item" onclick="loadProducts('accessories', 'Accessories', 'men')"><span data-t="accessories">Accessories</span> <i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="nav-left">
+            <i class="fas fa-bars" onclick="toggleMenu()" data-t="menu"></i>
+            <h1>Fashion Lab</h1>
+        </div>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="toggleSearch()" data-t="search"></i>
+            <div class="cart-icon" onclick="openCartModal()">
+                <i class="fas fa-shopping-cart" data-t="cart"></i>
+                <span id="cartCount">0</span>
+            </div>
+            <div class="auth-buttons" id="loginBtnHeader">
+                <i class="fas fa-user" onclick="openAuthModal()"></i>
+            </div>
+            <div class="auth-buttons-logged-in" id="myAccountBtn" style="display:none;" onclick="openAccountModal()">
+                 </div>
+        </div>
+    </header>
+
+    <div id="searchBox" style="display: none; padding: 10px 20px; background: var(--card-bg); border-bottom: 1px solid #ddd;">
+        <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Search products..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--text-color); background: var(--bg-color); color: var(--text-color);">
+    </div>
+
+    <main>
+        <h2 id="productsTitle">All Products</h2>
+        <div class="product-grid" id="productsContainer">
+            </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Fashion Lab. All rights reserved.</p>
+        <div class="language-switch">
+             <select id="langSelect" onchange="switchLang(this.value)">
+                <option value="my">မြန်မာ</option>
+                <option value="en">English</option>
+            </select>
+            <div class="dark-mode-switch">
+                <label class="switch">
+                    <input type="checkbox" id="darkModeSwitch" onchange="toggleDarkMode()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </footer>
+
+
+    <div class="modal" id="authModal">
+        <div class="modal-content auth-modal">
+            <span class="close-btn" onclick="closeModal('authModal')">&times;</span>
+
+            <div class="auth-section" id="loginForm">
+                <h3 data-t="login_h3">Login</h3>
+                <div class="input-group"><label data-t="email_label">Email</label><input type="email" id="lEmail" placeholder="example@mail.com"></div>
+                <button class="order-btn active" id="loginBtn" onclick="sendMagicLink('login')" data-t="login_btn">Send Magic Link</button>
+                <p class="switch-auth" onclick="showAuthForm('register')" data-t="register_link">Create new account</p>
+            </div>
+
+            <div class="auth-section" id="registerForm" style="display:none;">
+                <h3 data-t="register_h3">Create Account</h3>
+                <div class="input-group"><label data-t="name_label">Name</label><input type="text" id="rName"></div>
+                <div class="input-group"><label data-t="email_label">Email</label><input type="email" id="rEmail" placeholder="example@mail.com"></div>
+                <button class="order-btn active" id="sendMagicLinkBtn" onclick="sendMagicLink('register')" data-t="register_btn">Send Magic Link</button>
+                <p class="switch-auth" onclick="showAuthForm('login')" data-t="login_link">Already have an account? Login</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="productModal">
+        <div class="modal-content product-modal">
+            <span class="close-btn" onclick="closeModal('productModal')">&times;</span>
+            <img id="productModalImage" src="" alt="Product Image">
+            <h3 id="productModalName"></h3>
+            <p id="productModalDesc"></p>
+            <p class="price" id="productModalPrice"></p>
+            <div class="input-group">
+                <label data-t="size_label">Select Size</label>
+                <select id="productSizeSelect"></select>
+            </div>
+            <button class="order-btn active" onclick="addToCart()" data-t="add_to_cart">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content cart-modal">
+            <span class="close-btn" onclick="closeModal('cartModal')">&times;</span>
+            <h3 data-t="cart_h3">Your Cart</h3>
+            <div id="cartItemsContainer">
+                </div>
+            <div class="cart-footer">
+                <p data-t="total">Total:</p>
+                <p id="cartTotal" class="total-price">0 MMK</p>
+                <button class="order-btn inactive" id="cartOrderBtn" onclick="openOrderModal()" data-t="order_btn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="orderModal">
+        <div class="modal-content order-modal">
+            <span class="close-btn" onclick="closeModal('orderModal')">&times;</span>
+            <h3 data-t="order_h3">Place Order</h3>
+            <div class="user-info-group">
+                 <h4 data-t="del_info_h3">Delivery Information</h4>
+                 <div class="input-group">
+                    <label data-t="name_label">Full Name (အမည်)</label>
+                    <input type="text" id="nameInput">
+                 </div>
+                <div class="input-group">
+                    <label data-t="del_label">Delivery Address (ပို့ဆောင်ရန်လိပ်စာ)</label>
+                    <textarea id="addressInput" rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label data-t="contact_label">Contact Phone (ဆက်သွယ်ရန်ဖုန်း)</label>
+                    <input type="tel" id="contactPhoneInput" placeholder="09xxxxxxxxx">
+                </div>
+                <div class="input-group">
+                    <label data-t="note_label">Note (အကြောင်းအရာ)</label>
+                    <input type="text" id="noteInput" placeholder="Note">
+                </div>
+            </div>
+
+            <div class="input-group"><label data-t="slip_label">Payment Slip (ပြေစာ)</label><input type="file" id="slipInput" onchange="checkSlipFile()"></div>
+            <button class="order-btn inactive" id="sendBtn" onclick="sendOrder()" disabled data-t="send_btn">Admin ထံသို့ ပို့မည်</button>
+        </div>
+    </div>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content" style="text-align:center;">
+            <i class="fas fa-check-circle" style="font-size:50px; color:#4CAF50; margin-bottom:10px;"></i>
+            <h3 data-t="order_sent_h3">👾 Order sent!</h3>
+            <p data-t="order_sent_p">Payment successful, delivery will be made soon.🎉</p>
+            <button class="order-btn active" onclick="closeModal('successModal')" data-t="ok_btn">OK</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="accountModal">
+        <div class="modal-content account-modal">
+            <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+            <h3 data-t="my_account">My Account</h3>
+            
+            <h4>Profile Information</h4>
+            <div class="input-group"><label data-t="name_label">Name</label><input type="text" id="profileName"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="profileEmail" disabled></div>
+            <div class="input-group"><label>Address</label><textarea id="profileAddress" rows="2"></textarea></div>
+            <div class="input-group"><label>Phone</label><input type="tel" id="profilePhone"></div>
+            <button class="order-btn active" id="saveProfileBtn" onclick="saveProfile()">Save Profile</button>
+            <hr style="margin: 20px 0;">
+
+            <h4 data-t="order_history">Order History</h4>
+            <div id="historyItemsContainer">
+                </div>
+            <hr style="margin: 20px 0;">
+
+            <button class="order-btn inactive" style="background-color: #f44336; margin-top: 10px;" onclick="logout()" data-t="logout">Logout</button>
+        </div>
+    </div>
+    
+    <div id="snackbar">Some text message..</div>
+
+    <script src="scriptOOO.js"></script>
+</body>
+</html>
