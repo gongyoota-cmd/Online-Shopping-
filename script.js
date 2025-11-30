@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const BOT_TOKEN = '8180483853:AAGU6BHy2Ws-PboyopehdBFkWY5kpedJn6Y'; 
 const CHAT_ID = '-5098597126'; 
 
-// Custom domain used for Supabase Auth (We use Magic Link now instead of Phone OTP)
+// Custom domain used for Supabase Auth 
 const AUTH_DOMAIN = '@kshop.com'; 
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -12,11 +12,11 @@ let currentProducts = [];
 // currentUser now stores the profile data fetched from the 'users' table
 let currentUser = null; 
 let selectedProduct = null; 
-// Variable to hold the email during login process (optional for Magic Link)
+// Variable to hold the Email during login process (ဖုန်းနံပါတ်အစား email ကို သုံးလိုက်ပါပြီ)
 let currentAuthEmail = null; 
 
 // ==========================================================
-// 🔑 AUTHENTICATION LOGIC (Magic Link)
+// 🔑 AUTHENTICATION LOGIC (Magic Link) - [အသစ်ထည့်သွင်းခြင်း]
 // ==========================================================
 
 async function fetchCurrentUser(userId) {
@@ -36,6 +36,7 @@ async function fetchCurrentUser(userId) {
         document.getElementById('authIcon').classList.add('logged-in'); 
         document.getElementById('logoutBtn').style.display = 'block'; 
         showSnackbar(`Login ဝင်ပြီးပါပြီရှင်: ${currentUser.name || currentUser.email}`);
+        // Login ဝင်ပြီးတာနဲ့ Modal ကို ပိတ်ပါ
         closeModal('loginModal'); 
     }
 }
@@ -89,7 +90,7 @@ async function sendMagicLink() {
         showSnackbar(`ပို့ဆောင်မှု မအောင်မြင်ပါဘူးရှင်: ${error.message}`);
     } else {
         showSnackbar(`Email ထဲကို Magic Link ပို့ပြီးပါပြီရှင်။ Email ကို ချက်ချင်း စစ်ကြည့်လိုက်ပါနော်!`);
-        // Magic link နဲ့ ဝင်ပြီးရင်တော့ Session ကို အလိုအလျောက် handle လုပ်ပါလိမ့်မယ်
+        // Magic link နဲ့ ဝင်ပြီးရင်တော့ Session ကို အလိုအလျောက် handle လုပ်ပါလိမ့်မယ်။
     }
 }
 
@@ -107,12 +108,9 @@ async function logout() {
 
 
 // ==========================================================
-// 🛒 PRODUCT & ORDER LOGIC (Original Functions Maintained)
+// 🛒 PRODUCT & ORDER LOGIC (မူလအတိုင်း ထားရှိသည်)
 // ==========================================================
 
-// ... (loadProducts, loadProductDetail, addToCart, renderOrderSummary, checkSlipFile, sendOrder - These functions remain the same) ...
-
-// [Original Snippet of loadProducts and loadProductDetail]
 async function loadProducts(category, title, gender) { /* ... original content ... */ }
 function loadProductDetail(product) { /* ... original content ... */ }
 function addToCart(product) { /* ... original content ... */ }
@@ -122,16 +120,19 @@ async function sendOrder() { /* ... original content ... */ }
 function showSnackbar(msg) { /* ... original content ... */ }
 function showModal(id) { document.getElementById(id).style.display='flex'; }
 function closeModal(id) { document.getElementById(id).style.display='none'; }
-// [End of Original Snippet]
+function toggleMenu() { /* ... original content ... */ }
+function toggleDarkMode() { /* ... original content ... */ }
+function toggleSearch() { /* ... original content ... */ }
+function searchProducts() { /* ... original content ... */ }
+function switchTab(t) { /* ... original content ... */ }
+function changeLanguage(lang) { /* ... original content ... */ }
+function translateUI() { /* ... original content ... */ }
 
 
 // ==========================================================
-// ⚙️ UI / INITIALIZATION (Original Functions Maintained)
+// ⚙️ INITIALIZATION (မူလအတိုင်း ထားရှိသည်)
 // ==========================================================
 
-// ... (toggleMenu, toggleDarkMode, toggleSearch, searchProducts, switchTab, changeLanguage, translateUI - These functions remain the same) ...
-
-// Initialization: Page စဖွင့်ရင် ဒီကနေ စပါတယ်
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts('all', 'All Products', 'women');
     checkLoginState(); // 🔑 Login Session ကို စစ်ဆေးခြင်း
