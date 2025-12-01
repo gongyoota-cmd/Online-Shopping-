@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // * ADMIN PHONE SECURITY CHECK *
-const MY_ADMIN_PHONE = '959xxxxxxxxx'; // <-- ဤနေရာတွင် သင့် Admin ဖုန်းနံပါတ်အမှန် (နိုင်ငံကုဒ်ပါ) ထည့်ပါ
+const MY_ADMIN_PHONE = '959650007941'; // <-- ဤနေရာတွင် သင့် Admin ဖုန်းနံပါတ်အမှန် (နိုင်ငံကုဒ်ပါ) ထည့်ပါ
 
 async function checkAdmin() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -12,7 +12,7 @@ async function checkAdmin() {
     // ၁. Login မဝင်ထားရင် မောင်းထုတ်မယ်
     if (!session) {
         alert("Please login first!");
-        window.location.href = 'indexOOO.html'; // <--- သင့် main file name အမှန် (indexOOO.html) ဖြင့် ပြင်ဆင်ပါ
+        window.location.href = 'index.html'; // <--- သင့် main file name အမှန် (indexOOO.html) ဖြင့် ပြင်ဆင်ပါ
         return;
     }
     
@@ -21,7 +21,7 @@ async function checkAdmin() {
     if (userPhone !== MY_ADMIN_PHONE) {
         alert("You are not authorized to view this page!");
         await supabase.auth.signOut(); // လုံခြုံရေးအတွက် မဟုတ်တဲ့သူကို ထုတ်
-        window.location.href = 'indexOOO.html'; // <--- သင့် main file name အမှန် (indexOOO.html) ဖြင့် ပြင်ဆင်ပါ
+        window.location.href = 'index.html'; // <--- သင့် main file name အမှန် (indexOOO.html) ဖြင့် ပြင်ဆင်ပါ
         return;
     }
 }
