@@ -1,18 +1,30 @@
-// --- CONFIG (သင့် script.js ထဲကအတိုင်း ပြန်ကူးထည့်ပါ) ---
-const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+// --- CONFIG (သင့် scriptOOO.js ထဲကအတိုင်း ပြန်ကူးထည့်ပါ) ---
+const SUPABASE_URL = 'https://hfsvxmnhoylhzbzvamiq.supabase.co'; // <--- သင့် URL အမှန်ထည့်ပါ
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmc3Z4bW5ob3lsaHpienZhbWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1NjIzNzEsImV4cCI6MjA3OTEzODM3MX0.J37qWQaKqecVsmGWWj63CyClVDup6KAD24iZVjIIL-0'; // <--- သင့် Key အမှန်ထည့်ပါ
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Login စစ်ဆေးခြင်း (ရိုးရှင်းသောနည်းလမ်း)
-// တကယ်တမ်း Production မှာ Supabase Auth RLS နဲ့ သေချာလုပ်သင့်ပါတယ်
+// *** ADMIN PHONE SECURITY CHECK ***
+const MY_ADMIN_PHONE = '959650007941'; // <-- ဤနေရာတွင် သင့် Admin ဖုန်းနံပါတ်အမှန် (နိုင်ငံကုဒ်ပါ) ထည့်ပါ
+
+// Login စစ်ဆေးခြင်း (RLS ဖြင့် Admin UUID ကို သုံးပြီးဖြစ်၍ Client Side တွင် ဖုန်းဖြင့် ထပ်စစ်သည်)
 async function checkAdmin() {
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (!session) {
         alert("Please login first!");
-        window.location.href = 'index.html'; // Login မဝင်ထားရင် user page ကို ပြန်မောင်းမယ်
+        // Main page file name ကို indexOOO.html ဖြင့် ပြင်လိုက်သည်
+        window.location.href = 'indexOOO.html'; 
+        return;
     }
-    // ဒီနေရာမှာ သင့် Email ဟုတ်မဟုတ် စစ်နိုင်ပါတယ် (Optional)
-    // if(session.user.email !== 'your_admin_email@gmail.com') { ... }
+
+    const userPhone = session.user.phone;
+    if (userPhone !== MY_ADMIN_PHONE) {
+        alert("You are not authorized to view this page!");
+        await supabase.auth.signOut();
+        // Main page file name ကို indexOOO.html ဖြင့် ပြင်လိုက်သည်
+        window.location.href = 'indexOOO.html'; 
+        return;
+    }
 }
 
 window.onload = function() {
@@ -140,5 +152,6 @@ async function deleteProduct(id) {
 
 async function adminLogout() {
     await supabase.auth.signOut();
-    window.location.href = 'index.html';
+    // Main page file name ကို indexOOO.html ဖြင့် ပြင်လိုက်သည်
+    window.location.href = 'indexOOO.html';
 }
